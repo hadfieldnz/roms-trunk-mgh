@@ -5,7 +5,7 @@
 #   See License_ROMS.txt                                                :::
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #
-# Include file for GNU g95 on Cygwin
+# Include file for GNU Fortran compiler on Cygwin
 # -------------------------------------------------------------------------
 #
 # ARPACK_LIBDIR  ARPACK libary directory
@@ -13,8 +13,10 @@
 # FFLAGS         Flags to the fortran compiler
 # CPP            Name of the C-preprocessor
 # CPPFLAGS       Flags to the C-preprocessor
+# NF_CONFIG      NetCDF Fortran configuration script
 # NETCDF_INCDIR  NetCDF include directory
-# NETCDF_LIBDIR  NetCDF libary directory
+# NETCDF_LIBDIR  NetCDF library directory
+# NETCDF_LIBS    NetCDF library switches
 # LD             Program to load the objects into an executable
 # LDFLAGS        Flags to the loader
 # RANLIB         Name of ranlib command
@@ -46,12 +48,13 @@
 
 ifdef USE_NETCDF4
         NF_CONFIG ?= nf-config
-    NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --prefix)/include
+    NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --includedir)
              LIBS := $(shell $(NF_CONFIG) --flibs)
 else
     NETCDF_INCDIR ?= /usr/local/include
     NETCDF_LIBDIR ?= /usr/local/lib
-             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
+      NETCDF_LIBS ?= -lnetcdf
+             LIBS := -L$(NETCDF_LIBDIR) $(NETCDF_LIBS)
 endif
 
 ifdef USE_ARPACK
@@ -77,7 +80,7 @@ ifdef USE_OpenMP
 endif
 
 ifdef USE_DEBUG
-           FFLAGS += -g -fbounds-check -fbacktrace
+           FFLAGS += -g -fbounds-check -fbacktrace -finit-real=nan -ffpe-trap=invalid,zero,overflow
 else
            FFLAGS += -O3 -ffast-math
 endif

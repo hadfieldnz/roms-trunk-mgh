@@ -2843,6 +2843,8 @@
         Vinfo(22)='coordinates'
         Aval(5)=REAL(r2dvar,r8)
         IF (ncid.eq.STA(ng)%ncid) THEN
+          Vinfo(24)='_FillValue'
+          Aval(6)=spval
           status=def_var(ng, model, ncid, varid, NF_TYPE,               &
      &                   1, (/stadim/), Aval, Vinfo, ncname)
           IF (exit_flag.ne.NoError) RETURN
@@ -2900,6 +2902,8 @@
           Vinfo(14)='lon_rho, scalar'
           Vinfo(21)='longitude'
           IF (ncid.eq.STA(ng)%ncid) THEN
+            Vinfo(24)='_FillValue'
+            Aval(6)=spval
             status=def_var(ng, model, ncid, varid, NF_TYPE,             &
      &                     1, (/stadim/), Aval, Vinfo, ncname)
             IF (exit_flag.ne.NoError) RETURN
@@ -2915,6 +2919,8 @@
           Vinfo(14)='lat_rho, scalar'
           Vinfo(21)='latitude'
           IF (ncid.eq.STA(ng)%ncid) THEN
+            Vinfo(24)='_FillValue'
+            Aval(6)=spval
             status=def_var(ng, model, ncid, varid, NF_TYPE,             &
      &                     1, (/stadim/), Aval, Vinfo,  ncname)
             IF (exit_flag.ne.NoError) RETURN
@@ -2929,6 +2935,8 @@
           Vinfo( 3)='meter'
           Vinfo(14)='x_rho, scalar'
           IF (ncid.eq.STA(ng)%ncid) THEN
+            Vinfo(24)='_FillValue'
+            Aval(6)=spval
             status=def_var(ng, model, ncid, varid, NF_TYPE,             &
      &                     1, (/stadim/), Aval, Vinfo, ncname)
             IF (exit_flag.ne.NoError) RETURN
@@ -2943,6 +2951,8 @@
           Vinfo( 3)='meter'
           Vinfo(14)='y_rho, scalar'
           IF (ncid.eq.STA(ng)%ncid) THEN
+            Vinfo(24)='_FillValue'
+            Aval(6)=spval
             status=def_var(ng, model, ncid, varid, NF_TYPE,             &
      &                     1, (/stadim/), Aval, Vinfo, ncname)
             IF (exit_flag.ne.NoError) RETURN
@@ -3101,6 +3111,8 @@
         Vinfo(22)='coordinates'
         Aval(5)=REAL(r2dvar,r8)
         IF (ncid.eq.STA(ng)%ncid) THEN
+          Vinfo(24)='_FillValue'
+          Aval(6)=spval
           status=def_var(ng, model, ncid, varid, NF_TYPE,               &
      &                   1, (/stadim/), Aval, Vinfo,  ncname)
           IF (exit_flag.ne.NoError) RETURN

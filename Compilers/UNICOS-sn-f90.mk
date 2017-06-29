@@ -78,7 +78,7 @@ ifdef USE_OpenMP
 endif
 
 ifdef USE_DEBUG
-           FFLAGS += -g -O 0 -e in -R abcnp
+           FFLAGS += -g -O 0 -e in -R abcn
 else
            FFLAGS += -O3
 endif
@@ -103,6 +103,16 @@ endif
 #
                FC := $(shell which ${FC})
                LD := $(FC)
+
+#
+# Work-around for problems in compiling get_grid in debug mode
+#
+
+ifdef USE_MPI
+ifdef USE_DEBUG
+$(SCRATCH_DIR)/get_grid.o: FFLAGS =  -e Im -g -O 0 -e in -R abcn
+endif
+endif
 
 #
 # Set free form format in source files to allow long string for

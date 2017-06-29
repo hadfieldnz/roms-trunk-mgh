@@ -324,7 +324,11 @@ OS := $(patsubst CYGWIN_%,CYGWIN,$(OS))
 OS := $(patsubst MINGW%,MINGW,$(OS))
 OS := $(patsubst sn%,UNICOS-sn,$(OS))
 
-CPU := $(shell uname -m | sed 's/[\/ ]/-/g')
+ifeq "$(OS)" "AIX"
+  CPU := $(shell uname -p)
+else
+  CPU := $(shell uname -m | sed 's/[\/ ]/-/g')
+endif
 
 SVNREV ?= $(shell svnversion -n .)
 
@@ -434,7 +438,7 @@ endif
 		ROMS/Nonlinear/Sediment \
 		ROMS/Utility \
 		ROMS/Drivers \
-                ROMS/Functionals
+		ROMS/Functionals
 ifdef MY_HEADER_DIR
  includes +=	$(MY_HEADER_DIR)
 endif

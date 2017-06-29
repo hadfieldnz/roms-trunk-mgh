@@ -719,13 +719,50 @@
 
       real(r8) :: cff1, cff2
 
+# ifdef UV_LOGDRAG
+      real(r8), dimension(IminS:ImaxS,JminS:JmaxS) :: wrk
+# endif
+
 #  include "set_bounds.h"
 !
 !-----------------------------------------------------------------------
 !  Set kinematic barotropic bottom momentum stress (m2/s2).
 !-----------------------------------------------------------------------
 
-#  if defined UV_LDRAG
+#  if defined UV_LOGDRAG
+!
+!  Set logarithmic bottom stress.
+!
+      DO j=JstrV-1,Jend
+        DO i=IstrU-1,Iend
+          cff1=1.0_r8/LOG(0.5_r8*(h(i,j)+zeta(i,j,krhs))/Zob(ng))
+          cff2=vonKar*vonKar*cff1*cff1
+          wrk(i,j)=MIN(Cdb_max,MAX(Cdb_min,cff2))
+        END DO
+      END DO
+      DO j=Jstr,Jend
+        DO i=IstrU,Iend
+          cff1=0.25_r8*(vbar(i  ,j  ,krhs)+                             &
+     &                  vbar(i  ,j+1,krhs)+                             &
+     &                  vbar(i-1,j  ,krhs)+                             &
+     &                  vbar(i-1,j+1,krhs))
+          cff2=SQRT(ubar(i,j,krhs)*ubar(i,j,krhs)+cff1*cff1)
+          bustr(i,j)=0.5_r8*(wrk(i-1,j)+wrk(i,j))*                      &
+     &               ubar(i,j,krhs)*cff2
+        END DO
+      END DO
+      DO j=JstrV,Jend
+        DO i=Istr,Iend
+          cff1=0.25_r8*(ubar(i  ,j  ,krhs)+                             &
+     &                  ubar(i+1,j  ,krhs)+                             &
+     &                  ubar(i  ,j-1,krhs)+                             &
+     &                  ubar(i+1,j-1,krhs))
+          cff2=SQRT(cff1*cff1+vbar(i,j,krhs)*vbar(i,j,krhs))
+          bvstr(i,j)=0.5_r8*(wrk(i,j-1)+wrk(i,j))*                      &
+     &               vbar(i,j,krhs)*cff2
+        END DO
+      END DO
+#  elif defined UV_LDRAG
 !
 !  Set linear bottom stress.
 !

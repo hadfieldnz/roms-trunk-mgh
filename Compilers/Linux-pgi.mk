@@ -22,7 +22,7 @@
 #
 # First the defaults
 #
-               FC := pgf90
+               FC := pgf95
            FFLAGS :=
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional
@@ -96,7 +96,8 @@ ifdef USE_DEBUG
 #          FFLAGS += -g
 else
 #          FFLAGS += -Bstatic -fastsse -Mipa=fast
-           FFLAGS += -O3
+#          FFLAGS += -O3
+           FFLAGS += -O2
 endif
 
 # Save compiler flags without the MCT or ESMF libraries additions

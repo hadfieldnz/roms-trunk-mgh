@@ -91,6 +91,14 @@
         Ldefine=.TRUE.
       END IF
 !
+      IF (Master) THEN
+        IF (Ldefine) THEN
+          WRITE (stdout,50) TRIM(ncname)
+        ELSE
+          WRITE (stdout,60) TRIM(ncname)
+        END IF
+      END IF
+!
       DEFINE : IF (Ldefine) THEN
         CALL netcdf_create (ng, iNLM, TRIM(ncname), RST(ng)%ncid)
         IF (exit_flag.ne.NoError) THEN
@@ -1947,6 +1955,8 @@
   30  FORMAT (/,' DEF_RST - unable to open restart NetCDF file: ',a)
   40  FORMAT (/,' DEF_RST - unable to find variable: ',a,2x,            &
      &        ' in restart NetCDF file: ',a)
+  50  FORMAT (6x,'DEF_RST   - creating restart file: ',a)
+  60  FORMAT (6x,'DEF_RST   - inquiring restart file: ',a)
 
       RETURN
       END SUBROUTINE def_rst

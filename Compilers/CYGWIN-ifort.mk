@@ -121,7 +121,7 @@ endif
 
 #
 # Use full path of compiler. Notice that a very special editing is
-# done for the FC defintion to allow blank spaces and parenthesis in the
+# done for the FC definition to allow blank spaces and parenthesis in the
 # compiler path. For example, we can have:
 #
 #      c:\\Software\\My Compilers (64 bit)

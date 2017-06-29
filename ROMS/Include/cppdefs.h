@@ -208,6 +208,8 @@
 ** FLOAT_STICKY        use to reflect/stick floats that hit surface/bottom   **
 ** FLOAT_VWALK         use if vertical random walk                           **
 ** VWALK_FORWARD       use if forward time stepping vertical random walk     **
+** FLOAT_HWALK         use if horizontal random walk (MGH: very limited)     **
+** HWALK_FORWARD       use if forward time stepping horizontal random walk   **
 **                                                                           **
 ** OPTIONS for analytical fields configuration:                              **
 **                                                                           **

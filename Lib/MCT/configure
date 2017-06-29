@@ -1447,7 +1447,14 @@ fi;
 # OS AND PLATFORM NAME
 test "$osname"=NONE && osname=`uname -s`
 test "$machinename"=NONE && machinename=`uname -m`
-fullhostname=`hostname -f`
+case $osname in
+  CYGWIN*)
+    fullhostname=`hostname`
+    ;;
+  *)
+    fullhostname=`hostname -f`
+      ;;
+  esac
 
 
 # HARDCODE SPECIFIC MACHINES FOR EXTRAORDINARY CIRCUMSTANCES

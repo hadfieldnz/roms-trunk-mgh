@@ -307,7 +307,7 @@
      &          ' locations in input script: ',a)
   70  FORMAT (/,' READ_FltPar - Error while processing line: ',/,a)
   80  FORMAT (/,' READ_FltPar - Inconsistent number of floats to',      &
-     &          ' process: ', 2i6,/,18x,'change input script.')
+     &          ' process: ', 2i9,/,18x,'change input script.')
   90  FORMAT (/,/,' Floats Initial Locations, Grid: ',i2.2,             &
      &        /,  ' ==================================',/,/,            &
      &        15x,'Ft0',5x,'Fx0',5x,'Fy0',5x,'Fz0',                     &

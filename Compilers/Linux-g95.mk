@@ -71,12 +71,8 @@ ifdef USE_MPI
 endif
 
 #
-#  G95 does not support OpenMP. However, GFORTRAN does support OpenMP.
+#  G95 does not support OpenMP.
 #
-
-ifdef USE_OpenMP
-         CPPFLAGS += -D_OPENMP
-endif
 
 ifdef USE_DEBUG
            FFLAGS += -g -fbounds-check -ftrace=full

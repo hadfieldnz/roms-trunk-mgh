@@ -65,7 +65,7 @@ ifdef USE_OpenMP
 endif
 
 ifdef USE_DEBUG
-           FFLAGS += -g -fbounds-check
+           FFLAGS += -g -fbounds-check -fbacktrace -finit-real=nan -ffpe-trap=invalid,zero,overflow
 else
            FFLAGS += -O3 -ffast-math
 endif

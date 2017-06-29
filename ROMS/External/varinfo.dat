@@ -1893,6 +1893,33 @@
   'nulvar'
   1.0d0
 
+'river_chlo'                                       ! Input
+  'river runoff chlorophyll concentration'
+  'milligrams_chlorophyll meter-3'                 ! [milligrams/m3]
+  'river_chlo, scalar, series'
+  'river_time'
+  'idRtrc(iChlo)'
+  'nulvar'
+  1.0d0
+
+'river_phyt'                                       ! Input
+  'river runoff phytoplankton concentration'
+  'millimole_nitrogen meter-3'                     ! [millimole/m3]
+  'river_phyt, scalar, series'
+  'river_time'
+  'idRtrc(iPhyt)'
+  'nulvar'
+  1.0d0
+
+'river_zoop'                                       ! Input
+  'river runoff zooplankton concentration'
+  'millimole_nitrogen meter-3'                     ! [millimole/m3]
+  'river_zoop, scalar, series'
+  'river_time'
+  'idRtrc(iZoop)'
+  'nulvar'
+  1.0d0
+
 'river_DON'                                        ! Input
   'river runoff dissolved organic nitrogen'
   'millimole_nitrogen meter-3'                     ! [millimole/m3]
@@ -1917,6 +1944,15 @@
   'river_detritus, scalar, series'
   'river_time'
   'idRtrc(iSDet)'
+  'nulvar'
+  1.0d0
+
+'river_LDeN'                                       ! Input
+  'river runoff LDeN'
+  'millimole_nitrogen meter-3'                     ! [millimole/m3]
+  'river_LDeN, scalar, series'
+  'river_time'
+  'idRtrc(iLDeN)'
   'nulvar'
   1.0d0
 

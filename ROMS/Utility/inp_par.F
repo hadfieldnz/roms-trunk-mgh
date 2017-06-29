@@ -1114,7 +1114,7 @@
 
       character (len=256), dimension(200), intent(inout) :: Cval
 
-      real(r8), dimension(100), intent(inout) :: Rval
+      real(r8), dimension(200), intent(inout) :: Rval
 !
 ! Local variable declarations
 !
@@ -1671,6 +1671,7 @@
           IF ((Icont.eq.0).and.(ifield.lt.isTvar(iTrcEnd))) THEN
             DO i=ifield+1,isTvar(iTrcEnd)
               DO ibry=1,4
+                S(ibry,i,igrid)%acquire   = S(ibry,ifield,igrid)%acquire
                 S(ibry,i,igrid)%clamped   = S(ibry,ifield,igrid)%clamped
                 S(ibry,i,igrid)%closed    = S(ibry,ifield,igrid)%closed
                 S(ibry,i,igrid)%gradient  = S(ibry,ifield,igrid)%gradient

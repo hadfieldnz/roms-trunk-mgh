@@ -100,6 +100,9 @@
 # if defined SOLVE3D && defined FLOAT_VWALK
       USE vwalk_floats_mod, ONLY : vwalk_floats
 # endif
+# if !defined SOLVE3D && defined FLOAT_HWALK
+      USE hwalk_floats_mod, ONLY : hwalk_floats
+# endif
 !
 !  Imported variable declarations.
 !
@@ -148,6 +151,9 @@
       real(r8) :: HalfDT
 
       real(r8), dimension(Lstr:Lend) :: nudg
+# if !defined SOLVE3D && defined FLOAT_HWALK
+      real(r8), dimension(Lstr:Lend) :: nudgX, nudgY
+# endif
 
 # ifdef DISTRIBUTE
       real(r8) :: Xstr, Xend, Ystr, Yend
@@ -223,6 +229,16 @@
 !
       CALL vwalk_floats (ng, Lstr, Lend, .TRUE., my_thread, nudg)
 # endif
+# if !defined SOLVE3D && defined FLOAT_HWALK
+!
+!-----------------------------------------------------------------------
+!  Compute horizontal positions due to horizontal random walk, predictor
+!  step.
+!-----------------------------------------------------------------------
+!
+      CALL hwalk_floats (ng, Lstr, Lend, .TRUE., my_thread,             &
+     &                   nudgX, nudgY)
+# endif
 !
 !-----------------------------------------------------------------------
 !  Predictor step: compute first guess floats locations using a
@@ -233,6 +249,7 @@
       cff2=4.0_r8/3.0_r8
       DO l=Lstr,Lend
         IF (my_thread(l).and.bounded(l)) THEN
+# if defined SOLVE3D || !defined FLOAT_HWALK
           track(ixgrd,nfp1,l)=track(ixgrd,nfm3,l)+                      &
      &                        dt(ng)*(cff1*track(ixrhs,nf  ,l)-         &
      &                                cff2*track(ixrhs,nfm1,l)+         &
@@ -241,7 +258,7 @@
      &                        dt(ng)*(cff1*track(iyrhs,nf  ,l)-         &
      &                                cff2*track(iyrhs,nfm1,l)+         &
      &                                cff1*track(iyrhs,nfm2,l))
-
+# endif
 # if defined SOLVE3D && !defined FLOAT_VWALK
 !
 !  Compute vertical position (grid units) 3D Lagrangian floats.
@@ -462,6 +479,7 @@
       cff4=6.0_r8/8.0_r8
       DO l=Lstr,Lend
         IF (my_thread(l).and.bounded(l)) THEN
+# if defined SOLVE3D || !defined FLOAT_HWALK
           track(ixgrd,nfp1,l)=cff1*track(ixgrd,nf  ,l)-                 &
      &                        cff2*track(ixgrd,nfm2,l)+                 &
      &                        dt(ng)*(cff3*track(ixrhs,nfp1,l)+         &
@@ -472,7 +490,7 @@
      &                        dt(ng)*(cff3*track(iyrhs,nfp1,l)+         &
      &                                cff4*track(iyrhs,nf  ,l)-         &
      &                                cff3*track(iyrhs,nfm1,l))
-
+# endif
 # if defined SOLVE3D && !defined FLOAT_VWALK
 !
 !  Compute vertical position (grid units) 3D Lagrangian floats.
@@ -802,14 +820,15 @@
       END DO
 #  endif
 # else
+#  if !defined FLOAT_HWALK
       CALL interp_floats (ng, LBi, UBi, LBj, UBj, 1, 1,                 &
      &                    Lstr, Lend, nfp1, ixrhs, isUbar,              &
      &                    -u2dvar, Lmask, spval, nudg,                  &
      &                    GRID(ng) % pm,                                &
      &                    GRID(ng) % pn,                                &
-#  ifdef MASKING
+#   ifdef MASKING
      &                    GRID(ng) % rmask,                             &
-#  endif
+#   endif
      &                    OCEAN(ng) % ubar(:,:,knew),                   &
      &                    my_thread, bounded, track)
 
@@ -818,11 +837,12 @@
      &                    -v2dvar, Lmask, spval, nudg,                  &
      &                    GRID(ng) % pm,                                &
      &                    GRID(ng) % pn,                                &
-#  ifdef MASKING
+#   ifdef MASKING
      &                    GRID(ng) % rmask,                             &
-#  endif
+#   endif
      &                    OCEAN(ng) % vbar(:,:,knew),                   &
      &                    my_thread, bounded, track)
+#  endif
 # endif
 !
 !  If newly released floats, initialize slopes at all time levels.
@@ -968,6 +988,16 @@
 !-----------------------------------------------------------------------
 !
       CALL vwalk_floats (ng, Lstr, Lend, .FALSE., my_thread, nudg)
+# endif
+# if !defined SOLVE3D && defined FLOAT_HWALK && !defined HWALK_FORWARD
+!
+!-----------------------------------------------------------------------
+!  Compute horizontal positions due to horizontal random walk, corrector
+!  step.
+!-----------------------------------------------------------------------
+!
+      CALL hwalk_floats (ng, Lstr, Lend, .FALSE., my_thread,            &
+     &                   nudgX, nudgY)
 # endif
 # ifdef SOLVE3D
 #  ifdef FLOAT_STICKY

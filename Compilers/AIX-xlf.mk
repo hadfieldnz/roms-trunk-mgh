@@ -13,9 +13,10 @@
 # FFLAGS         Flags to the fortran compiler
 # CPP            Name of the C-preprocessor
 # CPPFLAGS       Flags to the C-preprocessor
-# CLEAN          Name of cleaning executable after C-preprocessing
+# NF_CONFIG      NetCDF Fortran configuration script
 # NETCDF_INCDIR  NetCDF include directory
-# NETCDF_LIBDIR  NetCDF libary directory
+# NETCDF_LIBDIR  NetCDF library directory
+# NETCDF_LIBS    NetCDF library switches
 # LD             Program to load the objects into an executable
 # LDFLAGS        Flags to the loader
 # RANLIB         Name of ranlib command
@@ -23,12 +24,12 @@
 #
 # First the defaults
 #
-               FC  = xlf95_r
-           FFLAGS := -qsuffix=f=f90 -qmaxmem=-1 -qarch=pwr4 -qtune=pwr4
+               FC := xlf95_r
+           FFLAGS := -qsuffix=f=f90 -qmaxmem=-1 -qarch=pwr6 -qnoextname
               CPP := /usr/lib/cpp
          CPPFLAGS := -P
           LDFLAGS :=
-               AR := ar
+               AR := /usr/bin/ar
           ARFLAGS := -r
             MKDIR := mkdir -p
                RM := rm -f
@@ -52,12 +53,13 @@ endif
 
 ifdef USE_NETCDF4
         NF_CONFIG ?= nf-config
-    NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --prefix)/include
+    NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --includedir)
              LIBS := $(shell $(NF_CONFIG) --flibs)
 else
     NETCDF_INCDIR ?= /usr/local/include
     NETCDF_LIBDIR ?= /usr/local/lib
-             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
+      NETCDF_LIBS ?= -lnetcdf
+             LIBS := -L$(NETCDF_LIBDIR) $(NETCDF_LIBS)
 endif
 
 ifdef USE_ARPACK
@@ -72,7 +74,6 @@ endif
 ifdef USE_MPI
          CPPFLAGS += -DMPI
                FC := mpxlf95_r
-
 endif
 
 ifdef USE_OpenMP
@@ -112,18 +113,18 @@ endif
 # local directory and compilation flags inside the code.
 #
 
-$(SCRATCH_DIR)/mod_ncparam.o: FFLAGS += -qfree
-$(SCRATCH_DIR)/mod_strings.o: FFLAGS += -qfree
-$(SCRATCH_DIR)/analytical.o: FFLAGS += -qfree
-$(SCRATCH_DIR)/biology.o: FFLAGS += -qfree
+$(SCRATCH_DIR)/mod_ncparam.o: FFLAGS += -qfree=f90
+$(SCRATCH_DIR)/mod_strings.o: FFLAGS += -qfree=f90
+$(SCRATCH_DIR)/analytical.o: FFLAGS += -qfree=f90
+$(SCRATCH_DIR)/biology.o: FFLAGS += -qfree=f90
 ifdef USE_ADJOINT
-$(SCRATCH_DIR)/ad_biology.o: FFLAGS += -qfree
+$(SCRATCH_DIR)/ad_biology.o: FFLAGS += -qfree=f90
 endif
 ifdef USE_REPRESENTER
-$(SCRATCH_DIR)/rp_biology.o: FFLAGS += -qfree
+$(SCRATCH_DIR)/rp_biology.o: FFLAGS += -qfree=f90
 endif
 ifdef USE_TANGENT
-$(SCRATCH_DIR)/tl_biology.o: FFLAGS += -qfree
+$(SCRATCH_DIR)/tl_biology.o: FFLAGS += -qfree=f90
 endif
 
 #
@@ -150,9 +151,9 @@ $(SCRATCH_DIR)/swanpre2.o: FFLAGS += -qfixed
 $(SCRATCH_DIR)/swanser.o: FFLAGS += -qfixed
 $(SCRATCH_DIR)/swmod1.o: FFLAGS += -qfixed
 $(SCRATCH_DIR)/swmod2.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/m_constants.o: FFLAGS += -qfree
-$(SCRATCH_DIR)/m_fileio.o: FFLAGS += -qfree
-$(SCRATCH_DIR)/mod_xnl4v5.o: FFLAGS += -qfree
-$(SCRATCH_DIR)/serv_xnl4v5.o: FFLAGS += -qfree
+$(SCRATCH_DIR)/m_constants.o: FFLAGS += -qfree=f90
+$(SCRATCH_DIR)/m_fileio.o: FFLAGS += -qfree=f90
+$(SCRATCH_DIR)/mod_xnl4v5.o: FFLAGS += -qfree=f90
+$(SCRATCH_DIR)/serv_xnl4v5.o: FFLAGS += -qfree=f90
 
 endif

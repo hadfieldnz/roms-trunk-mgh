@@ -21,6 +21,9 @@
 # if defined SOLVE3D && defined FLOAT_VWALK
 !  rwalk      Normally distributed random deviates used in vertical    !
 !               random walk.                                           !
+# elif !defined SOLVE3D && defined FLOAT_HWALK
+!  rwalkX     Normally distributed random deviates used in horizontal  !
+!  rwalkY       random walk.                                           !
 # endif
 # if defined SOLVE3D && defined FLOAT_STICKY
 !  stuck      Reflection switch. Floats that hit the surface are       !
@@ -56,6 +59,9 @@
           real(r8), pointer :: Tinfo(:,:)
 # if defined SOLVE3D && defined FLOAT_VWALK
           real(r8), pointer :: rwalk(:)
+# elif !defined SOLVE3D && defined FLOAT_HWALK
+          real(r8), pointer :: rwalkX(:)
+          real(r8), pointer :: rwalkY(:)
 # endif
           real(r8), pointer :: track(:,:,:)
 
@@ -88,6 +94,8 @@
 # ifdef FLOAT_VWALK
         integer, parameter :: ifakt = 11         ! diffusivity, Akt
         integer, parameter :: ifdak = 12         ! d(Akt)/d(s)
+# elif defined FLOAT_HWALK
+        integer, parameter :: ifmsk = 11         ! mask
 # endif
 # ifdef FLOAT_OYSTER
 #  ifdef FLOAT_VWALK
@@ -189,6 +197,9 @@
 
 # if defined SOLVE3D && defined FLOAT_VWALK
           allocate ( DRIFTER(ng) % rwalk(Nfloats(ng)) )
+# elif !defined SOLVE3D && defined FLOAT_HWALK
+      allocate ( DRIFTER(ng) % rwalkX(Nfloats(ng)) )
+      allocate ( DRIFTER(ng) % rwalkY(Nfloats(ng)) )
 # endif
 
           allocate ( DRIFTER(ng) % track(NFV(ng),0:NFT,Nfloats(ng)) )
@@ -227,6 +238,9 @@
             DRIFTER(ng) % Fz0(iflt) = 0
 # if defined SOLVE3D && defined FLOAT_VWALK
             DRIFTER(ng) % rwalk = IniVal
+# elif !defined SOLVE3D && defined FLOAT_HWALK
+        DRIFTER(ng) % rwalkX = IniVal
+        DRIFTER(ng) % rwalkY = IniVal
 # endif
             DO i=0,izrhs
               DRIFTER(ng) % Tinfo(i,iflt) = IniVal
@@ -247,7 +261,7 @@
 !-----------------------------------------------------------------------
 !
       IF (.not.Ldrifter) THEN
-# ifdef FLOAT_VWALK
+# if defined FLOAT_VWALK || defined FLOAT_VWALK
         flt_iseed=149876
 # endif
         DO ng=1,Ngrids

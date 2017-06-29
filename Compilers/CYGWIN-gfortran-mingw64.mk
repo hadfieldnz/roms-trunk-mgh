@@ -1,11 +1,11 @@
 # svn $Id$
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# Copyright (c) 2002-2017 The ROMS/TOMS Group                           :::
+# Copyright (c) 2002-2011 The ROMS/TOMS Group                           :::
 #   Licensed under a MIT/X style license                                :::
 #   See License_ROMS.txt                                                :::
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #
-# Include file for GNU Fortran compiler on Linux
+# Include file for GNU g95 on Cygwin
 # -------------------------------------------------------------------------
 #
 # ARPACK_LIBDIR  ARPACK libary directory
@@ -13,10 +13,8 @@
 # FFLAGS         Flags to the fortran compiler
 # CPP            Name of the C-preprocessor
 # CPPFLAGS       Flags to the C-preprocessor
-# NF_CONFIG      NetCDF Fortran configuration script
 # NETCDF_INCDIR  NetCDF include directory
-# NETCDF_LIBDIR  NetCDF library directory
-# NETCDF_LIBS    NetCDF library switches
+# NETCDF_LIBDIR  NetCDF libary directory
 # LD             Program to load the objects into an executable
 # LDFLAGS        Flags to the loader
 # RANLIB         Name of ranlib command
@@ -24,16 +22,19 @@
 #
 # First the defaults
 #
-               FC := gfortran
+
+              BIN := $(BIN).exe
+
+               FC := /usr/bin/x86_64-w64-mingw32-gfortran
            FFLAGS := -frepack-arrays
-              CPP := /usr/bin/cpp
+              CPP := /usr/bin/x86_64-w64-mingw32-cpp
          CPPFLAGS := -P -traditional
           LDFLAGS :=
-               AR := ar
+               AR := /usr/bin/x86_64-w64-mingw32-ar
           ARFLAGS := -r
             MKDIR := mkdir -p
                RM := rm -f
-           RANLIB := ranlib
+           RANLIB := /usr/bin/x86_64-w64-mingw32-ranlib
              PERL := perl
              TEST := test
 
@@ -44,22 +45,17 @@
 #
 
 ifdef USE_NETCDF4
-        NF_CONFIG ?= nf-config
-    NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --includedir)
-             LIBS := $(shell $(NF_CONFIG) --flibs)
+        NC_CONFIG ?= nc-config
+    NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
+             LIBS := $(shell $(NC_CONFIG) --flibs)
 else
-    NETCDF_INCDIR ?= /usr/local/include
-    NETCDF_LIBDIR ?= /usr/local/lib
-      NETCDF_LIBS ?= -lnetcdff
-             LIBS := -L$(NETCDF_LIBDIR) $(NETCDF_LIBS)
+    NETCDF_INCDIR ?= /usr/local/x86_64-w64-mingw32/include
+    NETCDF_LIBDIR ?= /usr/local/x86_64-w64-mingw32/lib
+             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
 endif
 
 ifdef USE_ARPACK
- ifdef USE_MPI
-   PARPACK_LIBDIR ?= /opt/gfortransoft/PARPACK
-             LIBS += -L$(PARPACK_LIBDIR) -lparpack
- endif
-    ARPACK_LIBDIR ?= /opt/gfortransoft/PARPACK
+    ARPACK_LIBDIR ?= /usr/local/x86_64-w64-mingw32/lib
              LIBS += -L$(ARPACK_LIBDIR) -larpack
 endif
 
@@ -67,8 +63,11 @@ ifdef USE_MPI
          CPPFLAGS += -DMPI
  ifdef USE_MPIF90
                FC := mpif90
+  ifdef USE_DEBUG
+           FFLAGS += -mpe=mpicheck
+  endif
  else
-             LIBS += -lfmpi -lmpi
+  # MPI without mpif90 is not currently supported
  endif
 endif
 
@@ -80,7 +79,7 @@ endif
 ifdef USE_DEBUG
            FFLAGS += -g -fbounds-check -fbacktrace -finit-real=nan -ffpe-trap=invalid,zero,overflow
 else
-           FFLAGS += -O3 -ffast-math
+           FFLAGS += -O3
 endif
 
 ifdef USE_MCT
@@ -117,11 +116,8 @@ $(SCRATCH_DIR)/def_var.o: FFLAGS += -fno-bounds-check
 # Gfortran versions >= 4.2.
 #
 
-FC_TEST := $(findstring $(shell ${FC} --version | head -1 | \
-                              awk '{ sub("Fortran 95", "Fortran"); print }' | \
-                              cut -d " " -f 4 | \
-                              cut -d "." -f 1-2), \
-             4.0 4.1)
+FC_TEST := $(findstring $(shell ${FC} --version | head -1 | cut -d " " -f 5 | \
+                              cut -d "." -f 1-2),4.0 4.1)
 
 ifeq "${FC_TEST}" ""
 $(SCRATCH_DIR)/ran_state.o: FFLAGS += -fno-strict-overflow
