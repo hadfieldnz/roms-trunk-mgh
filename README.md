@@ -6,6 +6,6 @@ This is a Git repository of the Rutgers ROMS source code. The original is held o
 
 The present repository has been cloned at NIWA with git svn. It differs from
 the original only by the addition of this README file. The intention is to
-keep the repository it up to date with the Rutgers original.
+keep the repository up to date with the Rutgers original.
 
 Clones of this repository will be used to store NIWA-local changes to ROMS.
