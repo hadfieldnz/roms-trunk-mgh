@@ -1,0 +1,9 @@
+# Backup files left by Emacs
+*~
+
+# Backup files left by IDL Workbench and WinMerge
+*.bak
+
+# Lock files used by Emacs. Note that the "#" character is quoted
+# with a backslash to prevents it being interpreted as starting a comment.
+.\#*
