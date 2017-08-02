@@ -62,19 +62,20 @@
       USE analytical_mod
 # endif
       USE exchange_2d_mod
+      USE set_2dfld_mod
+# ifdef SOLVE3D
+      USE set_3dfld_mod
+# endif
 # ifdef DISTRIBUTE
 #  if defined WET_DRY
-      USE distribute_mod, ONLY : mp_boundary
+      USE distribute_mod,  ONLY : mp_boundary
 #  endif
       USE mp_exchange_mod, ONLY : mp_exchange2d
 #  ifdef SOLVE3D
       USE mp_exchange_mod, ONLY : mp_exchange3d
 #  endif
 # endif
-      USE set_2dfld_mod
-# ifdef SOLVE3D
-      USE set_3dfld_mod
-# endif
+      USE strings_mod,     ONLY : FoundError
 !
       implicit none
 !
@@ -119,17 +120,19 @@
 !
 #   ifdef ANA_CLOUD
       CALL ana_cloud (ng, tile, iNLM)
-#   else
+#   elif (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+         !defined ATM_COUPLING
       CALL set_2dfld_tile (ng, tile, iNLM, idCfra,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%cloudG,                           &
      &                     FORCES(ng)%cloud,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 #  endif
 
-#  if defined BULK_FLUXES || defined ECOSIM || \
+#  if defined BULK_FLUXES || defined ECOSIM  || \
     (defined SHORTWAVE && defined ANA_SRFLUX && defined ALBEDO)
 !
 !-----------------------------------------------------------------------
@@ -138,17 +141,19 @@
 !
 #   ifdef ANA_TAIR
       CALL ana_tair (ng, tile, iNLM)
-#   else
+#   elif (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+         !defined ATM_COUPLING
       CALL set_2dfld_tile (ng, tile, iNLM, idTair,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%TairG,                            &
      &                     FORCES(ng)%Tair,                             &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 #  endif
 
-#  if defined BULK_FLUXES || defined ECOSIM || \
+#  if defined BULK_FLUXES || defined ECOSIM   || \
      (defined SHORTWAVE && defined ANA_SRFLUX && defined ALBEDO)
 !
 !-----------------------------------------------------------------------
@@ -157,13 +162,15 @@
 !
 #   ifdef ANA_HUMIDITY
       CALL ana_humid (ng, tile, iNLM)
-#   else
+#   elif (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+         !defined ATM_COUPLING
       CALL set_2dfld_tile (ng, tile, iNLM, idQair,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%HairG,                            &
      &                     FORCES(ng)%Hair,                             &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 #  endif
 
@@ -175,13 +182,15 @@
 !
 #   ifdef ANA_SRFLUX
       CALL ana_srflux (ng, tile, iNLM)
-#   else
+#   elif (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+         !defined ATM_COUPLING
       CALL set_2dfld_tile (ng, tile, iNLM, idSrad,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%srflxG,                           &
      &                     FORCES(ng)%srflx,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 
 #   ifdef DIURNAL_SRFLUX
@@ -205,10 +214,14 @@
      &                     FORCES(ng)%srflxG_avg,                       &
      &                     FORCES(ng)%srflx_avg,                        &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #  endif
 
-#  if defined BULK_FLUXES && !defined LONGWAVE && !defined LONGWAVE_OUT
+#  if defined BULK_FLUXES     && \
+    !(defined LONGWAVE        || defined LONGWAVE_OUT)    && \
+     ( (defined ATM_COUPLING  && defined COUPLING_INTERP) || \
+       !defined ATM_COUPLING )
 !
 !-----------------------------------------------------------------------
 !  Surface net longwave radiation (degC m/s).
@@ -219,10 +232,13 @@
      &                     FORCES(ng)%lrflxG,                           &
      &                     FORCES(ng)%lrflx,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #  endif
 
-#  if defined LONGWAVE_OUT && defined BULK_FLUXES
+#  if defined LONGWAVE_OUT   && defined BULK_FLUXES      && \
+     ( (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+       !defined ATM_COUPLING )
 !
 !-----------------------------------------------------------------------
 !  Surface downwelling longwave radiation (degC m/s).
@@ -233,7 +249,8 @@
      &                     FORCES(ng)%lrflxG,                           &
      &                     FORCES(ng)%lrflx,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #  endif
 
 #  if defined BULK_FLUXES || defined ECOSIM
@@ -244,20 +261,23 @@
 !
 #   ifdef ANA_WINDS
       CALL ana_winds (ng, tile, iNLM)
-#   else
+#   elif (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+         !defined ATM_COUPLING
       CALL set_2dfld_tile (ng, tile, iNLM, idUair,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%UwindG,                           &
      &                     FORCES(ng)%Uwind,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 
       CALL set_2dfld_tile (ng, tile, iNLM, idVair,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%VwindG,                           &
      &                     FORCES(ng)%Vwind,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 
 #    ifdef CURVGRID
 !
@@ -308,13 +328,15 @@
 !
 #   ifdef ANA_RAIN
       CALL ana_rain (ng, tile, iNLM)
-#   else
+#   elif (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+         !defined ATM_COUPLING
       CALL set_2dfld_tile (ng, tile, iNLM, idrain,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%rainG,                            &
      &                     FORCES(ng)%rain,                             &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 #  endif
 
@@ -326,13 +348,15 @@
 !
 #   ifdef ANA_STFLUX
       CALL ana_stflux (ng, tile, iNLM, itemp)
-#   else
+#   elif (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+         !defined ATM_COUPLING
       CALL set_2dfld_tile (ng, tile, iNLM, idTsur(itemp),               &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%stflxG(:,:,:,itemp),              &
      &                     FORCES(ng)%stflx (:,:,itemp),                &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 #  endif
 
@@ -349,7 +373,8 @@
      &                       FORCES(ng)%stflxG(:,:,:,itemp),            &
      &                       FORCES(ng)%stflx (:,:,itemp),              &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
       END IF
 #  endif
 
@@ -368,7 +393,8 @@
      &                     FORCES(ng)%sstG,                             &
      &                     FORCES(ng)%sst,                              &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 !
 #   ifdef ANA_DQDSST
@@ -379,7 +405,8 @@
      &                     FORCES(ng)%dqdtG,                            &
      &                     FORCES(ng)%dqdt,                             &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 #  endif
 !
@@ -395,7 +422,8 @@
      &                     FORCES(ng)%btflxG(:,:,:,itemp),              &
      &                     FORCES(ng)%btflx (:,:,itemp),                &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #  endif
 
 #  ifdef SALINITY
@@ -423,15 +451,20 @@
      &                     FORCES(ng)%stflxG(:,:,:,isalt),              &
      &                     FORCES(ng)%stflx (:,:,isalt),                &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 
-#    elif !(defined EMINUSP || defined SRELAXATION)
+#    elif !(defined EMINUSP      || defined SRELAXATION)     && \
+         ( (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+           !defined ATM_COUPLING )
+
       CALL set_2dfld_tile (ng, tile, iNLM, idsfwf,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%stflxG(:,:,:,isalt),              &
      &                     FORCES(ng)%stflx (:,:,isalt),                &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #    endif
 #   endif
 
@@ -443,7 +476,8 @@
      &                       FORCES(ng)%stflxG(:,:,:,isalt),            &
      &                       FORCES(ng)%stflx (:,:,isalt),              &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
       END IF
 #   endif
 
@@ -461,7 +495,8 @@
      &                     FORCES(ng)%sssG,                             &
      &                     FORCES(ng)%sss,                              &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #    endif
 #   endif
 !
@@ -477,7 +512,8 @@
      &                     FORCES(ng)%btflxG(:,:,:,isalt),              &
      &                     FORCES(ng)%btflx (:,:,isalt),                &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 #  endif
 
@@ -496,7 +532,8 @@
      &                       FORCES(ng)%stflxG(:,:,:,itrc),             &
      &                       FORCES(ng)%stflx (:,:,itrc),               &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 #   endif
 #   ifdef ANA_BPFLUX
         CALL ana_btflux (ng, tile, iNLM, itrc)
@@ -506,37 +543,40 @@
      &                       FORCES(ng)%btflxG(:,:,:,itrc),             &
      &                       FORCES(ng)%btflx (:,:,itrc),               &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 #   endif
       END DO
 #  endif
 # endif
 
-# ifndef AIR_OCEAN
-#  ifndef BULK_FLUXES
+# ifndef BULK_FLUXES
 !
 !-----------------------------------------------------------------------
 !  Set kinematic surface momentum flux (m2/s2).
 !-----------------------------------------------------------------------
 !
-#   ifdef ANA_SMFLUX
+#  ifdef ANA_SMFLUX
       CALL ana_smflux (ng, tile, iNLM)
-#   else
+#  elif (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+        !defined ATM_COUPLING
       CALL set_2dfld_tile (ng, tile, iNLM, idUsms,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%sustrG,                           &
      &                     FORCES(ng)%sustr,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 
       CALL set_2dfld_tile (ng, tile, iNLM, idVsms,                      &
      &                     LBi, UBi, LBj, UBj,                          &
      &                     FORCES(ng)%svstrG,                           &
      &                     FORCES(ng)%svstr,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 
-#    ifdef CURVGRID
+#   ifdef CURVGRID
 !
 !  If input point wind stress, rotate to curvilinear grid.  Notice
 !  that rotation is done at RHO-points. It does not matter.
@@ -564,22 +604,21 @@
      &                            FORCES(ng)%svstr)
         END IF
 
-#     ifdef DISTRIBUTE
+#    ifdef DISTRIBUTE
         CALL mp_exchange2d (ng, tile, iNLM, 2,                          &
      &                      LBi, UBi, LBj, UBj,                         &
      &                      NghostPoints,                               &
      &                      EWperiodic(ng), NSperiodic(ng),             &
      &                      FORCES(ng)%sustr,                           &
      &                      FORCES(ng)%svstr)
-#     endif
-      END IF
 #    endif
+      END IF
 #   endif
 #  endif
 # endif
 
-# if !defined AIR_OCEAN   && defined FOUR_DVAR      && \
-      defined BULK_FLUXES && defined NL_BULK_FLUXES
+# if !defined ATM_COUPLING && defined FOUR_DVAR      && \
+      defined BULK_FLUXES  && defined NL_BULK_FLUXES
 !
 !-----------------------------------------------------------------------
 !  If not first NLM run, set surface wind stress components from first
@@ -592,14 +631,16 @@
      &                       FORCES(ng)%sustrG,                         &
      &                       FORCES(ng)%sustr,                          &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 
         CALL set_2dfld_tile (ng, tile, iNLM, idVsms,                    &
      &                       LBi, UBi, LBj, UBj,                        &
      &                       FORCES(ng)%svstrG,                         &
      &                       FORCES(ng)%svstr,                          &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
       END IF
 # endif
 
@@ -611,7 +652,8 @@
 !
 #  ifdef ANA_PAIR
       CALL ana_pair (ng, tile, iNLM)
-#  else
+#  elif (defined ATM_COUPLING && defined COUPLING_INTERP) || \
+        !defined ATM_COUPLING
       SetBC=.TRUE.
 !     SetBC=.FALSE.
       CALL set_2dfld_tile (ng, tile, iNLM, idPair,                      &
@@ -619,7 +661,8 @@
      &                     FORCES(ng)%PairG,                            &
      &                     FORCES(ng)%Pair,                             &
      &                     update, SetBC)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #  endif
 # endif
 
@@ -638,7 +681,8 @@
      &                     FORCES(ng)%DwaveG,                           &
      &                     FORCES(ng)%Dwave,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 
 #    ifdef CURVGRID
 !
@@ -677,7 +721,8 @@
      &                     FORCES(ng)%HwaveG,                           &
      &                     FORCES(ng)%Hwave,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 
 #   ifdef WAVES_LENGTH
@@ -686,7 +731,8 @@
      &                     FORCES(ng)%LwaveG,                           &
      &                     FORCES(ng)%Lwave,                            &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 
 #   ifdef WAVES_TOP_PERIOD
@@ -695,7 +741,8 @@
      &                     FORCES(ng)%Pwave_topG,                       &
      &                     FORCES(ng)%Pwave_top,                        &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 
 #   ifdef WAVES_BOT_PERIOD
@@ -704,7 +751,8 @@
      &                     FORCES(ng)%Pwave_botG,                       &
      &                     FORCES(ng)%Pwave_bot,                        &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 
 #   if defined WAVES_UB
@@ -713,7 +761,8 @@
      &                     FORCES(ng)%Ub_swanG,                         &
      &                     FORCES(ng)%Ub_swan,                          &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 
 #   if defined TKE_WAVEDISS
@@ -722,7 +771,8 @@
      &                     FORCES(ng)%Wave_dissipG,                     &
      &                     FORCES(ng)%Wave_dissip,                      &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 
 #   if defined SVENDSEN_ROLLER
@@ -731,7 +781,8 @@
      &                     FORCES(ng)%Wave_breakG,                      &
      &                     FORCES(ng)%Wave_break,                       &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #   endif
 #  endif
 # endif
@@ -772,7 +823,8 @@
      &                    SOURCES(ng) % QbarG,                          &
      &                    SOURCES(ng) % Qbar,                           &
      &                    update)
-          IF (exit_flag.ne.NoError) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) RETURN
 
 #  ifdef SOLVE3D
           DO k=1,N(ng)
@@ -792,7 +844,8 @@
      &                      SOURCES(ng) % TsrcG(:,:,:,itrc),            &
      &                      SOURCES(ng) % Tsrc(:,:,itrc),               &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
         END DO
 #  endif
@@ -813,7 +866,8 @@
      &                     OCEAN(ng)%respirationG,                      &
      &                     OCEAN(ng)%respiration,                       &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 #  endif
 # endif
 
@@ -828,18 +882,17 @@
      &                     OCEAN(ng)%DIN_obsG,                          &
      &                     OCEAN(ng)%DIN_obs,                           &
      &                     update)
-      IF (exit_flag.ne.NoError) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
 # endif
 !
 !-----------------------------------------------------------------------
-!  Set open boundary conditions fields.  In grid refinement, only the
-!  coarser grid (RefineScale(ng)=0) open boundary conditions data is
-!  processed and needed.
+!  Set open boundary conditions fields.
 !-----------------------------------------------------------------------
 !
 !  Free-surface
 !
-      IF (.not.(RefinedGrid(ng).and.RefineScale(ng).gt.0)) THEN
+      IF (LprocessOBC(ng)) THEN
 # ifdef ANA_FSOBC
         CALL ana_fsobc (ng, tile, iNLM)
 # else
@@ -850,7 +903,8 @@
      &                      BOUNDARY(ng) % zetaG_west,                  &
      &                      BOUNDARY(ng) % zeta_west,                   &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(ieast,isFsur,ng)%acquire) THEN
@@ -859,7 +913,8 @@
      &                      BOUNDARY(ng) % zetaG_east,                  &
      &                      BOUNDARY(ng) % zeta_east,                   &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(isouth,isFsur,ng)%acquire) THEN
@@ -868,7 +923,8 @@
      &                      BOUNDARY(ng) % zetaG_south,                 &
      &                      BOUNDARY(ng) % zeta_south,                  &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(inorth,isFsur,ng)%acquire) THEN
@@ -877,7 +933,8 @@
      &                      BOUNDARY(ng) % zetaG_north,                 &
      &                      BOUNDARY(ng) % zeta_north,                  &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
         END IF
 # endif
@@ -962,7 +1019,7 @@
 !
 !  2D momentum.
 !
-      IF (.not.(RefinedGrid(ng).and.RefineScale(ng).gt.0)) THEN
+      IF (LprocessOBC(ng)) THEN
 # ifdef ANA_M2OBC
         CALL ana_m2obc (ng, tile, iNLM)
 # else
@@ -973,7 +1030,8 @@
      &                      BOUNDARY(ng) % ubarG_west,                  &
      &                      BOUNDARY(ng) % ubar_west,                   &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(iwest,isVbar,ng)%acquire) THEN
@@ -982,7 +1040,8 @@
      &                      BOUNDARY(ng) % vbarG_west,                  &
      &                      BOUNDARY(ng) % vbar_west,                   &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(ieast,isUbar,ng)%acquire) THEN
@@ -991,7 +1050,8 @@
      &                      BOUNDARY(ng) % ubarG_east,                  &
      &                      BOUNDARY(ng) % ubar_east,                   &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(ieast,isVbar,ng)%acquire) THEN
@@ -1000,7 +1060,8 @@
      &                      BOUNDARY(ng) % vbarG_east,                  &
      &                      BOUNDARY(ng) % vbar_east,                   &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(isouth,isUbar,ng)%acquire) THEN
@@ -1009,7 +1070,8 @@
      &                      BOUNDARY(ng) % ubarG_south,                 &
      &                      BOUNDARY(ng) % ubar_south,                  &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(isouth,isVbar,ng)%acquire) THEN
@@ -1018,7 +1080,8 @@
      &                      BOUNDARY(ng) % vbarG_south,                 &
      &                      BOUNDARY(ng) % vbar_south,                  &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(inorth,isUbar,ng)%acquire) THEN
@@ -1027,7 +1090,8 @@
      &                      BOUNDARY(ng) % ubarG_north,                 &
      &                      BOUNDARY(ng) % ubar_north,                  &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(inorth,isVbar,ng)%acquire) THEN
@@ -1036,7 +1100,8 @@
      &                      BOUNDARY(ng) % vbarG_north,                 &
      &                      BOUNDARY(ng) % vbar_north,                  &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
         END IF
 # endif
@@ -1046,7 +1111,7 @@
 !
 !  3D momentum.
 !
-      IF (.not.(RefinedGrid(ng).and.RefineScale(ng).gt.0)) THEN
+      IF (LprocessOBC(ng)) THEN
 #  ifdef ANA_M3OBC
         CALL ana_m3obc (ng, tile, iNLM)
 #  else
@@ -1057,7 +1122,8 @@
      &                      BOUNDARY(ng) % uG_west,                     &
      &                      BOUNDARY(ng) % u_west,                      &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(iwest,isVvel,ng)%acquire) THEN
@@ -1066,7 +1132,8 @@
      &                      BOUNDARY(ng) % vG_west,                     &
      &                      BOUNDARY(ng) % v_west,                      &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(ieast,isUvel,ng)%acquire) THEN
@@ -1075,7 +1142,8 @@
      &                      BOUNDARY(ng) % uG_east,                     &
      &                      BOUNDARY(ng) % u_east,                      &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(ieast,isVvel,ng)%acquire) THEN
@@ -1084,7 +1152,8 @@
      &                      BOUNDARY(ng) % vG_east,                     &
      &                      BOUNDARY(ng) % v_east,                      &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(isouth,isUvel,ng)%acquire) THEN
@@ -1093,7 +1162,8 @@
      &                      BOUNDARY(ng) % uG_south,                    &
      &                      BOUNDARY(ng) % u_south,                     &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(isouth,isVvel,ng)%acquire) THEN
@@ -1102,7 +1172,8 @@
      &                      BOUNDARY(ng) % vG_south,                    &
      &                      BOUNDARY(ng) % v_south,                     &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(inorth,isUvel,ng)%acquire) THEN
@@ -1111,7 +1182,8 @@
      &                      BOUNDARY(ng) % uG_north,                    &
      &                      BOUNDARY(ng) % u_north,                     &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
 
           IF (LBC(inorth,isVvel,ng)%acquire) THEN
@@ -1120,7 +1192,8 @@
      &                      BOUNDARY(ng) % vG_north,                    &
      &                      BOUNDARY(ng) % v_north,                     &
      &                      update)
-            IF (exit_flag.ne.NoError) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
           END IF
         END IF
 #  endif
@@ -1128,7 +1201,7 @@
 !
 !  Tracers.
 !
-      IF (.not.(RefinedGrid(ng).and.RefineScale(ng).gt.0)) THEN
+      IF (LprocessOBC(ng)) THEN
 #  ifdef ANA_TOBC
         CALL ana_tobc (ng, tile, iNLM)
 #  else
@@ -1140,7 +1213,8 @@
      &                        BOUNDARY(ng) % tG_west(:,:,:,itrc),       &
      &                        BOUNDARY(ng) % t_west(:,:,itrc),          &
      &                        update)
-              IF (exit_flag.ne.NoError) RETURN
+              IF (FoundError(exit_flag, NoError, __LINE__,              &
+     &                       __FILE__)) RETURN
             END IF
 
             IF (LBC(ieast,isTvar(itrc),ng)%acquire) THEN
@@ -1149,7 +1223,8 @@
      &                        BOUNDARY(ng) % tG_east(:,:,:,itrc),       &
      &                        BOUNDARY(ng) % t_east(:,:,itrc),          &
      &                        update)
-              IF (exit_flag.ne.NoError) RETURN
+              IF (FoundError(exit_flag, NoError, __LINE__,              &
+     &                       __FILE__)) RETURN
             END IF
 
             IF (LBC(isouth,isTvar(itrc),ng)%acquire) THEN
@@ -1158,7 +1233,8 @@
      &                        BOUNDARY(ng) % tG_south(:,:,:,itrc),      &
      &                        BOUNDARY(ng) % t_south(:,:,itrc),         &
      &                        update)
-              IF (exit_flag.ne.NoError) RETURN
+              IF (FoundError(exit_flag, NoError, __LINE__,              &
+     &                       __FILE__)) RETURN
             END IF
 
             IF (LBC(inorth,isTvar(itrc),ng)%acquire) THEN
@@ -1167,7 +1243,8 @@
      &                        BOUNDARY(ng) % tG_north(:,:,:,itrc),      &
      &                        BOUNDARY(ng) % t_north(:,:,itrc),         &
      &                        update)
-              IF (exit_flag.ne.NoError) RETURN
+              IF (FoundError(exit_flag, NoError, __LINE__,              &
+     &                       __FILE__)) RETURN
             END IF
           END DO
         END IF
@@ -1188,7 +1265,8 @@
      &                       CLIMA(ng)%sshG,                            &
      &                       CLIMA(ng)%ssh,                             &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 # endif
       END IF
 !
@@ -1205,14 +1283,16 @@
      &                       CLIMA(ng)%ubarclmG,                        &
      &                       CLIMA(ng)%ubarclm,                         &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 !
         CALL set_2dfld_tile (ng, tile, iNLM, idVbcl,                    &
      &                       LBi, UBi, LBj, UBj,                        &
      &                       CLIMA(ng)%vbarclmG,                        &
      &                       CLIMA(ng)%vbarclm,                         &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 # endif
       END IF
 
@@ -1231,14 +1311,16 @@
      &                       CLIMA(ng)%uclmG,                           &
      &                       CLIMA(ng)%uclm,                            &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 !
         CALL set_3dfld_tile (ng, tile, iNLM, idVclm,                    &
      &                       LBi, UBi, LBj, UBj, 1, N(ng),              &
      &                       CLIMA(ng)%vclmG,                           &
      &                       CLIMA(ng)%vclm,                            &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 #  endif
       END IF
 !
@@ -1260,7 +1342,8 @@
      &                         CLIMA(ng)%tclmG(:,:,:,:,ic),             &
      &                         CLIMA(ng)%tclm (:,:,:,ic),               &
      &                         update)
-          IF (exit_flag.ne.NoError) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) RETURN
         END IF
       END DO
 #  endif
@@ -1282,7 +1365,8 @@
      &                       OCEAN(ng)%zetaG,                           &
      &                       OCEAN(ng)%f_zeta,                          &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 !
 !  Set 2D momentum forcing.
 !
@@ -1291,14 +1375,16 @@
      &                       OCEAN(ng)%ubarG,                           &
      &                       OCEAN(ng)%f_ubar,                          &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 
         CALL set_2dfld_tile (ng, tile, iNLM, idVbar,                    &
      &                       LBi, UBi, LBj, UBj,                        &
      &                       OCEAN(ng)%vbarG,                           &
      &                       OCEAN(ng)%f_vbar,                          &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 
 #  ifdef SOLVE3D
 !
@@ -1309,14 +1395,16 @@
      &                       OCEAN(ng)%uG,                              &
      &                       OCEAN(ng)%f_u,                             &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 
         CALL set_3dfld_tile (ng, tile, iNLM, idVvel,                    &
      &                       LBi, UBi, LBj, UBj, 1, N(ng),              &
      &                       OCEAN(ng)%vG,                              &
      &                       OCEAN(ng)%f_v,                             &
      &                       update)
-        IF (exit_flag.ne.NoError) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
 !
 !  Set 3D tracers.
 !
@@ -1326,7 +1414,8 @@
      &                         OCEAN(ng)%tG(:,:,:,:,itrc),              &
      &                         OCEAN(ng)%f_t(:,:,:,itrc),               &
      &                         update)
-          IF (exit_flag.ne.NoError) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) RETURN
         END DO
 #  endif
       END IF
