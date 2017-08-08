@@ -762,8 +762,7 @@
 #   undef DIAGNOSTICS_TS
 # endif
 #endif
-#if (!defined BIO_FENNEL  && defined DIAGNOSTICS_BIO) || \
-    (!defined HYPOXIA_SRM && defined DIAGNOSTICS_BIO)
+#if defined DIAGNOSTICS_BIO && !(defined BIO_FENNEL || HYPOXIA_SRM)
 #  undef DIAGNOSTICS_BIO
 #endif
 #if defined DIAGNOSTICS_BIO || defined DIAGNOSTICS_TS || \
