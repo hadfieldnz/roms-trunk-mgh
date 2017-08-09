@@ -688,7 +688,7 @@
       defined SOLAR_SOURCE && !defined ANA_SRFLUX)   || \
     ( defined SSH_TIDES    || defined UV_TIDES)      || \
     ( defined BBL_MODEL    && (!defined ANA_WWAVE    && \
-     !defined WAV_COUPLING))                          || \
+     !defined WAV_COUPLING))                         || \
     ( defined SEDIMENT     && !defined ANA_SPFLUX)   || \
     ( defined SEDIMENT     && !defined ANA_BPFLUX)   || \
     ( defined WAVE_DATA    && (!defined ANA_WWAVE    && \
