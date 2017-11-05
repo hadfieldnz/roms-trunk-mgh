@@ -85,7 +85,9 @@
 
       real(r8), allocatable :: Rtracer(:,:)
       real(r8), allocatable :: tracer(:,:)
-
+#ifdef NESTING
+      real(r8), allocatable :: RunTimeDay(:), RunTimeSec(:)
+#endif
       real(r8) :: Rvalue(1)
 
       real(r8), dimension(100) :: Rval
@@ -5660,9 +5662,17 @@
           fname=varname
           IF (.not.find_file(ng, fname, 'VARNAME')) GO TO 30
           GO TO 40
-  30      IF (Master) WRITE (out,270) ng, TRIM(fname)
+  30      IF (Master) THEN
+            IF (LEN_TRIM(fname).eq.0) THEN
+              WRITE (out,270) ng, 'Oops unassigned file name. '//       &
+     &                            'Check standard input script...'
+            ELSE
+              WRITE (out,270) ng, TRIM(fname)
+            END IF
+          END IF
           exit_flag=4
-          RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) RETURN
   40      CONTINUE
         END DO
         IF (Nuser.gt.0) THEN
@@ -5702,6 +5712,34 @@
       END IF
 #endif
 
+#ifdef NESTING
+!
+!-----------------------------------------------------------------------
+!  If nesting, make sure that all grids are computing solutions for the
+!  same amount of time (seconds).
+!-----------------------------------------------------------------------
+!
+      IF (.not.allocated(RunTimeDay)) THEN
+        allocate ( RunTimeDay(Ngrids) )
+      END IF
+      IF (.not.allocated(RunTimeSec)) THEN
+        allocate ( RunTimeSec(Ngrids) )
+      END IF
+      DO ng=1,Ngrids
+        RunTimeSec(ng)=REAL(ntimes(ng),r8)*dt(ng)
+        RunTimeDay(ng)=RunTimeSec(ng)*sec2day
+      END DO
+      DO ng=2,Ngrids
+        IF (ABS(RunTimeSec(1)-RunTimeSec(ng)).ne.0.0_r8) THEN
+          IF (Master) THEN
+            WRITE (out,340)  1, RunTimeSec( 1), RunTimeDay( 1),         &
+    &                       ng, RunTimeSec(ng), RunTimeDay(ng)
+          END IF
+          exit_flag=5
+          RETURN
+        END IF
+      END DO
+#endif
 #ifdef SOLVE3D
 !
 !-----------------------------------------------------------------------
@@ -5818,6 +5856,11 @@
  320  FORMAT (/,' READ_PHYPAR - Could not find input parameter: ', a,   &
      &        /,15x,'in ROMS standard input script.',/,15x,a)
  330  FORMAT (/,' READ_PHYPAR - Invalid input parameter, ',a,i4,/,15x,a)
+ 340  FORMAT (/,' READ_PHYPAR - Inconsistent time-stepping period:',    &
+     &        /,15x,'Grid ',i2.2,':',f14.1,' (sec)',2x,f14.2,' (days)', &
+     &        /,15x,'Grid ',i2.2,':',f14.1,' (sec)',2x,f14.2,' (days)', &
+     &        /,15x,'Adjust standard input parameter NTIMES in ',       &
+     &              '''ocean.in''.'/)
 
       RETURN
       END SUBROUTINE read_PhyPar
