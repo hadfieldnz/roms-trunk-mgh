@@ -706,7 +706,7 @@
 #  define FRC_FILE
 # endif
 #else
-# if(!defined ATM_COUPLING    && !defined ANA_SMFLUX)
+# if(!defined ATM_COUPLING && !defined ANA_SMFLUX)
 #  define FRC_FILE
 # endif
 #endif
