@@ -24,7 +24,7 @@
 # First the defaults
 #
                FC := ftn
-           FFLAGS := -e I -e m
+           FFLAGS := -heap-arrays -fp-model precise
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional
           LDFLAGS :=
@@ -67,12 +67,13 @@ endif
 
 ifdef USE_OpenMP
          CPPFLAGS += -D_OPENMP
+           FFLAGS += -openmp -fpp
 endif
 
 ifdef USE_DEBUG
-           FFLAGS += -G 0
+           FFLAGS += -g -check bounds -traceback -check uninit -warn interfaces,nouncalled -gen-interfaces
 else
-           FFLAGS += -O 3,aggress
+           FFLAGS += -ip -O3
 endif
 
 ifdef USE_MCT
@@ -102,18 +103,18 @@ endif
 # local directory and compilation flags inside the code.
 #
 
-$(SCRATCH_DIR)/mod_ncparam.o: FFLAGS += -free-form
-$(SCRATCH_DIR)/mod_strings.o: FFLAGS += -free-form
-$(SCRATCH_DIR)/analytical.o: FFLAGS += -free-form
-$(SCRATCH_DIR)/biology.o: FFLAGS += -free-form
+$(SCRATCH_DIR)/mod_ncparam.o: FFLAGS += -free
+$(SCRATCH_DIR)/mod_strings.o: FFLAGS += -free
+$(SCRATCH_DIR)/analytical.o: FFLAGS += -free
+$(SCRATCH_DIR)/biology.o: FFLAGS += -free
 ifdef USE_ADJOINT
-$(SCRATCH_DIR)/ad_biology.o: FFLAGS += -free-form
+$(SCRATCH_DIR)/ad_biology.o: FFLAGS += -free
 endif
 ifdef USE_REPRESENTER
-$(SCRATCH_DIR)/rp_biology.o: FFLAGS += -free-form
+$(SCRATCH_DIR)/rp_biology.o: FFLAGS += -free
 endif
 ifdef USE_TANGENT
-$(SCRATCH_DIR)/tl_biology.o: FFLAGS += -free-form
+$(SCRATCH_DIR)/tl_biology.o: FFLAGS += -free
 endif
 
 #
@@ -123,26 +124,26 @@ endif
 
 ifdef USE_SWAN
 
-$(SCRATCH_DIR)/ocpcre.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/ocpids.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/ocpmix.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swancom1.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swancom2.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swancom3.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swancom4.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swancom5.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swanmain.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swanout1.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swanout2.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swanparll.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swanpre1.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swanpre2.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swanser.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swmod1.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/swmod2.o: FFLAGS += -fixed-form
-$(SCRATCH_DIR)/m_constants.o: FFLAGS += -free-form
-$(SCRATCH_DIR)/m_fileio.o: FFLAGS += -free-form
-$(SCRATCH_DIR)/mod_xnl4v5.o: FFLAGS += -free-form
-$(SCRATCH_DIR)/serv_xnl4v5.o: FFLAGS += -free-form
+$(SCRATCH_DIR)/ocpcre.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/ocpids.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/ocpmix.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swancom1.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swancom2.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swancom3.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swancom4.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swancom5.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swanmain.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swanout1.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swanout2.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swanparll.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swanpre1.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swanpre2.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swanser.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swmod1.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/swmod2.o: FFLAGS += -nofree
+$(SCRATCH_DIR)/m_constants.o: FFLAGS += -free
+$(SCRATCH_DIR)/m_fileio.o: FFLAGS += -free
+$(SCRATCH_DIR)/mod_xnl4v5.o: FFLAGS += -free
+$(SCRATCH_DIR)/serv_xnl4v5.o: FFLAGS += -free
 
 endif
