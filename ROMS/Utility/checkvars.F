@@ -50,7 +50,7 @@
 !
 !  Imported variable declarations.
 !
-      integer, intent(in) :: ng, model, Nvar
+      integer, intent(in) :: ng, model, Nvar, ncid
       integer, intent(inout) :: Nrec
 
       character (len=*), intent(in) :: ncname
