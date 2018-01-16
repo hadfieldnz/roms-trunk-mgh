@@ -66,11 +66,8 @@ ifdef USE_MPI
          CPPFLAGS += -DMPI
  ifdef USE_MPIF90
                FC := mpif90
-  ifdef USE_DEBUG
-           FFLAGS += -mpe=mpicheck
-  endif
  else
-  # MPI without mpif90 is not currently supported
+  # MPI without mpif90 is not supported on this platform
  endif
 endif
 

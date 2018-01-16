@@ -68,7 +68,7 @@ ifdef USE_MPI
  ifdef USE_MPIF90
                FC := mpif90
  else
-             LIBS += -lfmpi -lmpi
+  # MPI without mpif90 is not supported on this platform
  endif
 endif
 

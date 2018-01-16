@@ -96,7 +96,7 @@ endif
 #
 # Use full path of compiler.
 #
-               FC = $(shell which ${FC})
+               FC := $(shell which ${FC})
                LD = $(FC)
 
 #
