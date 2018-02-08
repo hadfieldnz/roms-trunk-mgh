@@ -567,7 +567,7 @@
 #endif
 
 #if defined CICE_COUPLING
-  define ICE_COUPLING
+# define ICE_COUPLING
 #endif
 
 #if defined REFDIF_COUPLING || defined SWAN_COUPLING || \
@@ -575,7 +575,7 @@
 # define WAV_COUPLING
 #endif
 
-#if defined ATM_COUPLING || ICE_COUPLING || WAV_COUPLING
+#if defined ATM_COUPLING || defined ICE_COUPLING || defined WAV_COUPLING
 # define MODEL_COUPLING
 #endif
 
