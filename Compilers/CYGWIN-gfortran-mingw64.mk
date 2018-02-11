@@ -1,11 +1,11 @@
 # svn $Id$
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# Copyright (c) 2002-2011 The ROMS/TOMS Group                           :::
+# Copyright (c) 2002-2018 The ROMS/TOMS Group                           :::
 #   Licensed under a MIT/X style license                                :::
 #   See License_ROMS.txt                                                :::
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #
-# Include file for GNU g95 on Cygwin
+# Include file for MINGW64 Gfortran on Cygwin
 # -------------------------------------------------------------------------
 #
 # ARPACK_LIBDIR  ARPACK libary directory
@@ -45,9 +45,9 @@
 #
 
 ifdef USE_NETCDF4
-        NC_CONFIG ?= nc-config
-    NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
-             LIBS := $(shell $(NC_CONFIG) --flibs)
+        NF_CONFIG ?= nf-config
+    NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --includedir)
+             LIBS := $(shell $(NF_CONFIG) --flibs)
 else
     NETCDF_INCDIR ?= /usr/local/x86_64-w64-mingw32/include
     NETCDF_LIBDIR ?= /usr/local/x86_64-w64-mingw32/lib

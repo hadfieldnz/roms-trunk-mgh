@@ -3,7 +3,7 @@
 **
 ** svn $Id$
 ********************************************************** Hernan G. Arango ***
-** Copyright (c) 2002-2017 The ROMS/TOMS Group     Alexander F. Shchepetkin  **
+** Copyright (c) 2002-2018 The ROMS/TOMS Group     Alexander F. Shchepetkin  **
 **   Licensed under a MIT/X style license                                    **
 **   See License_ROMS.txt                                                    **
 *******************************************************************************
@@ -421,6 +421,12 @@
       defined OBS_IMPACT
 # undef OBS_IMPACT
 #endif
+#if !(defined OBS_IMPACT             && \
+      (defined W4DVAR_SENSITIVITY    || defined W4DPSAS_SENSITIVITY || \
+       defined IS4DVAR_SENSITIVITY))
+# undef IMPACT_INNER
+#endif
+
 
 /*
 ** Activate internal switch to process 4DVAR observations.
