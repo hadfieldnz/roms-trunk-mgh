@@ -1,14 +1,14 @@
 # README for roms-trunk-mgh
 
-This is a Git repository of the Rutgers ROMS trunk source code with changes made by Mark Hadfield
-at NIWA. The master copy is held on the NIWA Gitlab server in project hadfield/roms-trunk-mgh.
+This is a Git repository of the Rutgers ROMS source code with changes made by Mark Hadfield
+at NIWA. The repository is hosted on GitHub.com at https://github.com/hadfieldnz/roms-trunk-mgh 
 
-An unmodified copy of the Rutgers ROMS trunk source code is also being maintained on the NIWA Gitlab server
-in project hadfield/roms-trunk.
+The roms-trunk branch contains unmodified ROMS source code
+imported from the Rutgers Subversion repository, https://www.myroms.org/svn/src/trunk.
 
-The intention for the current repository is to regularly fetch and incroporate changes from the Rutgers
-trunk, via hadfield/roms-trunk.
+The master branch contains the same source code with local modifications (mostly minor) including this
+README file.
 
-A further project, hadfield/roms-trunk-mgh-aquaculture, has been created to hold the much more extensive modifications
-made to ROMS at NIWA by Mark Hadfield and Niall Broekhuizen, relating to fish farms and mussel farms. This will fetch 
-and incorporate changes from hadfield/roms-trunk-mgh.
+The intention for the current repository is to regularly fetch changes from Rutgers, import them into
+roms-trunk, and then merge them into master.
+
