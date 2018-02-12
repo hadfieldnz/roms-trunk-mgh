@@ -50,7 +50,7 @@ ifdef USE_NETCDF4
 else
     NETCDF_INCDIR ?= /usr/local/include
     NETCDF_LIBDIR ?= /usr/local/lib
-      NETCDF_LIBS ?= -lnetcdff
+      NETCDF_LIBS ?= -lnetcdf
              LIBS := -L$(NETCDF_LIBDIR) $(NETCDF_LIBS)
 endif
 
