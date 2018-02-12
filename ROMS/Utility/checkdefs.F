@@ -976,12 +976,6 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+13)=' FLOAT_VWALK,'
 #endif
-#if defined FLOATS && defined FLOAT_HVWALK && !defined SOLVE3D
-      IF (Master) WRITE (stdout,20) 'FLOAT_HWALK',                      &
-     &   'Lagrangian drifters with horizontal diffusion, random walk.'
-      is=LEN_TRIM(Coptions)+1
-      Coptions(is:is+13)=' FLOAT_HWALK,'
-#endif
 #ifdef FORCING_SV
 !
       IF (Master) WRITE (stdout,20) 'FORCING_SV',                       &
@@ -2728,19 +2722,6 @@
      &   'Lagrangian drifters, predictor/corrector random walk.'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+16)=' !VWALK_FORWARD,'
-# endif
-#endif
-#if defined FLOATS && defined FLOAT_HWALK && !defined SOLVE3D
-# ifdef HWALK_FORWARD
-      IF (Master) WRITE (stdout,20) 'HWALK_FORWARD',                    &
-     &   'Lagrangian drifters, forward stepping random walk.'
-      is=LEN_TRIM(Coptions)+1
-      Coptions(is:is+15)=' HWALK_FORWARD,'
-# else
-      IF (Master) WRITE (stdout,20) '!HWALK_FORWARD',                   &
-     &   'Lagrangian drifters, predictor/corrector random walk.'
-      is=LEN_TRIM(Coptions)+1
-      Coptions(is:is+16)=' !HWALK_FORWARD,'
 # endif
 #endif
 #if defined VISC_3DCOEF

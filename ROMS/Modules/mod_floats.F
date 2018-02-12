@@ -21,9 +21,6 @@
 # if defined SOLVE3D && defined FLOAT_VWALK
 !  rwalk      Normally distributed random deviates used in vertical    !
 !               random walk.                                           !
-# elif !defined SOLVE3D && defined FLOAT_HWALK
-!  rwalkX     Normally distributed random deviates used in horizontal  !
-!  rwalkY       random walk.                                           !
 # endif
 # if defined SOLVE3D && defined FLOAT_STICKY
 !  stuck      Reflection switch. Floats that hit the surface are       !
