@@ -1,7 +1,23 @@
 MIT License
 
-Copyright (c) 2018 Mark Hadfield
+The majority of this software is (c) 2002-2018 The ROMS/TOMS Group and is
+governed by the ROMS license, which is in ROMS/License_ROMS.txt. The
+modifications are (c) 2018 National Institute of Water and Atmospheric
+Research Ltd (NIWA). You can determine the modifications with a "git diff"
+between the original ROMS code in the roms-trunk branch and the modified
+code in the master branch, which contains this file.
 
+NIWA and the ROMS/TOMS Group ask that users make appropriate acknowledgement
+of the ROMS/TOMS Group, individual developers, participating agencies and
+institutions, and funding agencies. One way to do this is to cite one or more
+of the relevant publications listed at:
+
+  http://www.myroms.org/papers  
+
+NIWA and the ROMS/TOMS Group recommend that users register at the ROMS site
+
+  https://www.myroms.org/
+  
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
