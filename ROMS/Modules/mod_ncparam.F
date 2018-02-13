@@ -518,10 +518,11 @@
         character (len=256), dimension(4) :: BIONAME
 #endif
 !
-!  SVN revision and repository root URL.
+!  Git revision and repository root URL
 !
-        character (len=40 ) :: svn_rev
-        character (len=256) :: svn_url
+        character (len=256) :: git_url
+        character (len=80 ) :: git_rev
+
 !
       CONTAINS
 !
@@ -878,18 +879,18 @@
         READ (inp,*,ERR=30,END=40) Vinfo(1)
         Lvar=LEN_TRIM(Vinfo(1))
 !
-!  Extract SVN Repository Root URL.
+!  Extract Git Repository Root URL.
 !
         IF ((Lvar.gt.0).and.(Vinfo(1)(1:1).eq.CHAR(36))) THEN
           is=INDEX(Vinfo(1),'https')
           ie=INDEX(Vinfo(1),'/ROMS')-1
           IF (ie.gt.is) THEN
-            svn_url=Vinfo(1)(is:ie)
+            git_url=Vinfo(1)(is:ie)
           ELSE
-            svn_url='https:://myroms.org/svn/src'
+            git_url='https://github.com/hadfieldnz/roms-trunk-mgh'
           END IF
-#ifdef SVN_REV
-          svn_rev=SVN_REV
+#ifdef GIT_REV
+          git_rev=GIT_REV
 #endif
 !
 !  Read in other variable information.

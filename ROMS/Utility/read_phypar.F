@@ -3373,12 +3373,12 @@
 #ifdef DISTRIBUTE
         WRITE (out,60) TRIM(title), TRIM(my_os), TRIM(my_cpu),          &
      &                 TRIM(my_fort), TRIM(my_fc), TRIM(my_fflags),     &
-     &                 TRIM(Iname), TRIM(svn_url), TRIM(svn_rev),       &
+     &                 TRIM(Iname), TRIM(git_url), TRIM(git_rev),       &
      &                 TRIM(Rdir), TRIM(Hdir), TRIM(Hfile), TRIM(Adir)
 #else
         WRITE (out,60) TRIM(title), TRIM(my_os), TRIM(my_cpu),          &
      &                 TRIM(my_fort), TRIM(my_fc), TRIM(my_fflags),     &
-     &                 TRIM(svn_url), TRIM(svn_rev), TRIM(Rdir),        &
+     &                 TRIM(git_url), TRIM(git_rev), TRIM(Rdir),        &
      &                 TRIM(Hdir), TRIM(Hfile), TRIM(Adir)
 #endif
 
@@ -5799,8 +5799,8 @@
      &        /,1x,'Compiler command : ',a,                             &
      &        /,1x,'Compiler flags   : ',a,/,                           &
      &        /,1x,'Input Script  : ',a,/,                              &
-     &        /,1x,'SVN Root URL  : ',a,                                &
-     &        /,1x,'SVN Revision  : ',a,/,                              &
+     &        /,1x,'Git Root URL  : ',a,                                &
+     &        /,1x,'Git Revision  : ',a,/,                              &
      &        /,1x,'Local Root    : ',a,                                &
      &        /,1x,'Header Dir    : ',a,                                &
      &        /,1x,'Header file   : ',a,                                &
@@ -5812,8 +5812,8 @@
      &        /,1x,'Compiler system  : ',a,                             &
      &        /,1x,'Compiler command : ',a,                             &
      &        /,1x,'Compiler flags   : ',a,/,                           &
-     &        /,1x,'SVN Root URL  : ',a,                                &
-     &        /,1x,'SVN Revision  : ',a,/,                              &
+     &        /,1x,'Git Root URL  : ',a,                                &
+     &        /,1x,'Git Revision  : ',a,/,                              &
      &        /,1x,'Local Root    : ',a,                                &
      &        /,1x,'Header Dir    : ',a,                                &
      &        /,1x,'Header file   : ',a,                                &

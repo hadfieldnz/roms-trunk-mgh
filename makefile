@@ -326,7 +326,7 @@ else
   CPU := $(shell uname -m | sed 's/[\/ ]/-/g')
 endif
 
-SVNREV ?= $(shell svnversion -n .)
+GITREV ?= branch $(shell git rev-parse --abbrev-ref HEAD) $(shell git log -1 | head -n 1)
 
 ROOTDIR := $(shell pwd)
 
@@ -372,11 +372,11 @@ ifdef MY_ANALYTICAL
   CPPFLAGS += -D'MY_ANALYTICAL="$(MY_ANALYTICAL)"'
 endif
 
-ifdef SVNREV
-  CPPFLAGS += -D'SVN_REV="$(SVNREV)"'
+ifdef GITREV
+  CPPFLAGS += -D'GIT_REV="$(GITREV)"'
 else
-  SVNREV := $(shell grep Revision ./ROMS/Version | sed 's/.* \([0-9]*\) .*/\1/')
-  CPPFLAGS += -D'SVN_REV="$(SVNREV)"'
+  GITREV := "Unknown version"
+  CPPFLAGS += -D'GIT_REV="$(GITREV)"'
 endif
 
 #--------------------------------------------------------------------------

@@ -800,26 +800,26 @@
 # endif
 #endif
 !
-!  SVN repository information.
+!  Git repository information.
 !
         IF (exit_flag.eq.NoError) THEN
-          status=nf90_put_att(ncid, nf90_global, 'svn_url',             &
-     &                        TRIM(svn_url))
+          status=nf90_put_att(ncid, nf90_global, 'git_url',             &
+     &                        TRIM(git_url))
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
-            IF (Master) WRITE (stdout,20) 'svn_url', TRIM(ncname)
+            IF (Master) WRITE (stdout,20) 'git_url', TRIM(ncname)
             exit_flag=3
             ioerror=status
           END IF
         END IF
 
-#if !defined DEBUGGING && defined SVN_REV
+#if !defined DEBUGGING && defined GIT_REV
         IF (exit_flag.eq.NoError) THEN
-          status=nf90_put_att(ncid, nf90_global, 'svn_rev',             &
-     &                        TRIM(svn_rev))
+          status=nf90_put_att(ncid, nf90_global, 'git_rev',             &
+     &                        TRIM(git_rev))
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
-            IF (Master) WRITE (stdout,20) 'svn_rev', TRIM(ncname)
+            IF (Master) WRITE (stdout,20) 'git_rev', TRIM(ncname)
             exit_flag=3
             ioerror=status
           END IF
