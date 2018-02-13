@@ -341,6 +341,8 @@
 !
 !  Git repository information.
 !
+# ifndef DEBUGGING
+#  ifdef GIT_URL
           IF (exit_flag.eq.NoError) THEN
             status=nf90_put_att(DAV(ng)%ncid, nf90_global,              &
      &                          'git_url', TRIM(git_url))
@@ -351,8 +353,8 @@
               ioerror=status
             END IF
           END IF
+#  endif
 
-# ifndef DEBUGGING
 #  ifdef GIT_REV
           IF (exit_flag.eq.NoError) THEN
             status=nf90_put_att(DAV(ng)%ncid, nf90_global,              &

@@ -5812,7 +5812,7 @@
      &        /,1x,'Compiler system  : ',a,                             &
      &        /,1x,'Compiler command : ',a,                             &
      &        /,1x,'Compiler flags   : ',a,/,                           &
-     &        /,1x,'Git Root URL  : ',a,                                &
+     &        /,1x,'Git Origin URL: ',a,                                &
      &        /,1x,'Git Revision  : ',a,/,                              &
      &        /,1x,'Local Root    : ',a,                                &
      &        /,1x,'Header Dir    : ',a,                                &

@@ -802,6 +802,7 @@
 !
 !  Git repository information.
 !
+#if !defined DEBUGGING && defined GIT_URL
         IF (exit_flag.eq.NoError) THEN
           status=nf90_put_att(ncid, nf90_global, 'git_url',             &
      &                        TRIM(git_url))
@@ -812,7 +813,8 @@
             ioerror=status
           END IF
         END IF
-
+#endif
+        
 #if !defined DEBUGGING && defined GIT_REV
         IF (exit_flag.eq.NoError) THEN
           status=nf90_put_att(ncid, nf90_global, 'git_rev',             &

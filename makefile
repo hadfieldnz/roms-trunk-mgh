@@ -326,6 +326,7 @@ else
   CPU := $(shell uname -m | sed 's/[\/ ]/-/g')
 endif
 
+GITURL ?= $(shell git remote show origin | grep "Fetch URL" | tr -s ' ' | cut -d ' ' -f 4)
 GITREV ?= branch $(shell git rev-parse --abbrev-ref HEAD) $(shell git log -1 | head -n 1)
 
 ROOTDIR := $(shell pwd)
@@ -372,10 +373,10 @@ ifdef MY_ANALYTICAL
   CPPFLAGS += -D'MY_ANALYTICAL="$(MY_ANALYTICAL)"'
 endif
 
+ifdef GITURL
+  CPPFLAGS += -D'GIT_URL="$(GITURL)"'
+endif
 ifdef GITREV
-  CPPFLAGS += -D'GIT_REV="$(GITREV)"'
-else
-  GITREV := "Unknown version"
   CPPFLAGS += -D'GIT_REV="$(GITREV)"'
 endif
 
