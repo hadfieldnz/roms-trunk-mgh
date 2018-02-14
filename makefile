@@ -326,9 +326,9 @@ else
   CPU := $(shell uname -m | sed 's/[\/ ]/-/g')
 endif
 
-GITURL ?= $(shell git remote show origin | grep "Fetch URL" | tr -s ' ' | cut -d ' ' -f 4)
-GITREV ?= $(shell git rev-parse --abbrev-ref HEAD) $(shell git log -1 | head -n 1)
-GITSTATUS ?= $(shell git status --porcelain | wc -l)
+GITURL ?= $(shell git remote show origin 2> /dev/null | grep "Fetch URL" | tr -s ' ' | cut -d ' ' -f 4)
+GITREV ?= $(shell git rev-parse --abbrev-ref HEAD 2> /dev/null) $(shell git log -1  2> /dev/null | head -n 1)
+GITSTATUS ?= $(shell git status --porcelain 2> /dev/null | wc -l)
 
 ROOTDIR := $(shell pwd)
 
