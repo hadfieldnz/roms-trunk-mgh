@@ -522,7 +522,6 @@
 !
         character (len=256) :: git_url = 'unknown'
         character (len=80 ) :: git_rev = 'unknown'
-
 !
       CONTAINS
 !
@@ -895,7 +894,7 @@
 !
 !  Read in other variable information.
 !
-        ELSEIF ((Lvar.gt.0).and.(Vinfo(1)(1:1).ne.CHAR(33))) THEN
+        ELSE IF ((Lvar.gt.0).and.(Vinfo(1)(1:1).ne.CHAR(33))) THEN
           READ (inp,*,ERR=30) Vinfo(2)
           READ (inp,*,ERR=30) Vinfo(3)
           READ (inp,*,ERR=30) Vinfo(4)
