@@ -327,7 +327,8 @@ else
 endif
 
 GITURL ?= $(shell git remote show origin | grep "Fetch URL" | tr -s ' ' | cut -d ' ' -f 4)
-GITREV ?= branch $(shell git rev-parse --abbrev-ref HEAD) $(shell git log -1 | head -n 1)
+GITREV ?= $(shell git rev-parse --abbrev-ref HEAD) $(shell git log -1 | head -n 1)
+GITSTATUS ?= $(shell git status --porcelain | wc -l)
 
 ROOTDIR := $(shell pwd)
 
@@ -378,6 +379,9 @@ ifdef GITURL
 endif
 ifdef GITREV
   CPPFLAGS += -D'GIT_REV="$(GITREV)"'
+endif
+ifdef GITSTATUS
+  CPPFLAGS += -D'GIT_STATUS=$(GITSTATUS)'
 endif
 
 #--------------------------------------------------------------------------
