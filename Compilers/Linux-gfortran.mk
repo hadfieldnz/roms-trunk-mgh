@@ -67,8 +67,6 @@ ifdef USE_MPI
          CPPFLAGS += -DMPI
  ifdef USE_MPIF90
                FC := mpif90
- else
-  # MPI without mpif90 is not supported on this platform
  endif
 endif
 
@@ -78,7 +76,8 @@ ifdef USE_OpenMP
 endif
 
 ifdef USE_DEBUG
-           FFLAGS += -g -fbounds-check -fbacktrace -finit-real=nan -ffpe-trap=invalid,zero,overflow
+           FFLAGS += -g -fbounds-check -fbacktrace
+           FFLAGS += -finit-real=nan -ffpe-trap=invalid,zero,overflow
 else
            FFLAGS += -O3 -ffast-math
 endif
