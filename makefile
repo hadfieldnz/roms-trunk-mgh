@@ -173,7 +173,7 @@ endif
 #  library to account for calls to objects in other ROMS libraries or
 #  cycling dependencies. These type of dependencies are problematic in
 #  some compilers during linking. This library appears twice at linking
-#  step (beggining and almost the end of ROMS library list).
+#  step (beginning and almost the end of ROMS library list).
 #--------------------------------------------------------------------------
 
   libraries  := $(SCRATCH_DIR)/libUTIL.a
