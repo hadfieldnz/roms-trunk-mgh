@@ -101,7 +101,7 @@
       real(r8) :: cff, cff1, cff2, cff3, dt2d, dVde, dVdt, dVdx
       real(r8) :: obc_in, obc_out, tau
 
-#  if defined ATM_PRESS & defined PRESS_COMPENSATE
+#  if defined ATM_PRESS && defined PRESS_COMPENSATE
       real(r8) :: OneAtm, fac
 #  endif
 
@@ -123,7 +123,7 @@
         know=kstp
         dt2d=dtfast(ng)
       END IF
-#  if defined ATM_PRESS & defined PRESS_COMPENSATE
+#  if defined ATM_PRESS && defined PRESS_COMPENSATE
       OneAtm=1013.25_r8                  ! 1 atm = 1013.25 mb
       fac=100.0_r8/(g*rho0)
 #  endif
@@ -253,7 +253,7 @@
      &                            GRID(ng)%h(i,Jstr  )+                 &
      &                            zeta(i,Jstr  ,know)))
               Ce=SQRT(g*cff)
-#  if defined ATM_PRESS & defined PRESS_COMPENSATE
+#  if defined ATM_PRESS && defined PRESS_COMPENSATE
             vbar(i,Jstr,kout)=                                            &
      &         bry_val-Ce*(0.5_r8*(zeta(i,Jstr-1,know)+                 &
      &                             zeta(i,Jstr  ,know)+                 &
@@ -581,7 +581,7 @@
      &                            GRID(ng)%h(i,Jend+1)+                 &
      &                            zeta(i,Jend+1,know)))
               Ce=SQRT(g*cff)
-#  if defined ATM_PRESS & defined PRESS_COMPENSATE
+#  if defined ATM_PRESS && defined PRESS_COMPENSATE
             vbar(i,Jend+1,kout)=                                          &
      &         bry_val+Ce*(0.5_r8*(zeta(i,Jend  ,know)+                 &
      &                             zeta(i,Jend+1,know)+                 &
