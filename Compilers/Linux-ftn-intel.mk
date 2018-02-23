@@ -71,7 +71,7 @@ ifdef USE_OpenMP
 endif
 
 ifdef USE_DEBUG
-           FFLAGS += -g -check bounds -traceback -check uninit -warn interfaces,nouncalled -gen-interfaces
+           FFLAGS += -g -check all,noarg_temp_created -traceback -warn interfaces,nouncalled -gen-interfaces
 else
            FFLAGS += -ip -O3
 endif
