@@ -96,8 +96,7 @@ ifdef USE_DEBUG
 #          FFLAGS += -g
 else
 #          FFLAGS += -Bstatic -fastsse -Mipa=fast
-#          FFLAGS += -O3
-           FFLAGS += -O2
+           FFLAGS += -O3
 endif
 
 # Save compiler flags without the MCT or ESMF libraries additions
