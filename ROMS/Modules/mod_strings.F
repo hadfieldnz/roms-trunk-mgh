@@ -239,6 +239,11 @@
 #else
         character (len=256) :: Hfile = "NONE"
 #endif
+#ifdef HOST_NAME
+        character (len=256) :: Host = HOST_NAME
+#else
+        character (len=256) :: Host = "NONE"
+#endif
 #ifdef ROOT_DIR
         character (len=256) :: Rdir = ROOT_DIR
 #else

@@ -330,6 +330,7 @@ GITURL ?= $(shell git remote show origin 2> /dev/null | grep "Fetch URL" | tr -s
 GITREV ?= $(shell git rev-parse --abbrev-ref HEAD 2> /dev/null) $(shell git log -1  2> /dev/null | head -n 1)
 GITSTATUS ?= $(shell git status --porcelain 2> /dev/null | wc -l)
 
+HOSTNAME := $(shell hostname)
 ROOTDIR := $(shell pwd)
 
 ifndef FORT
@@ -355,7 +356,7 @@ CPPFLAGS += -D$(shell echo ${OS} | tr "-" "_" | tr [a-z] [A-Z])
 CPPFLAGS += -D$(shell echo ${CPU} | tr "-" "_" | tr [a-z] [A-Z])
 CPPFLAGS += -D$(shell echo ${FORT} | tr "-" "_" | tr [a-z] [A-Z])
 
-CPPFLAGS += -D'ROOT_DIR="$(ROOTDIR)"'
+CPPFLAGS += -D'HOST_NAME="$(HOSTNAME)"' -D'ROOT_DIR="$(ROOTDIR)"'
 ifdef ROMS_APPLICATION
   CPPFLAGS  += $(ROMS_CPPFLAGS)
   CPPFLAGS  += -DNestedGrids=$(NestedGrids)

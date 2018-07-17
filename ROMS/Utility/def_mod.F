@@ -368,6 +368,19 @@
           END IF
 #  endif
 
+#  ifdef HOST_NAME
+          IF (exit_flag.eq.NoError) THEN
+            status=nf90_put_att(DAV(ng)%ncid, nf90_global,              &
+     &                          'host_name', TRIM(Host))
+            IF (FoundError(status, nf90_noerr, __LINE__,                &
+     &                     __FILE__)) THEN
+              WRITE (stdout,50) 'host_name', TRIM(ncname)
+              exit_flag=3
+              ioerror=status
+            END IF
+          END IF
+#  endif
+
 #  ifdef ROOT_DIR
           IF (exit_flag.eq.NoError) THEN
             status=nf90_put_att(DAV(ng)%ncid, nf90_global,              &

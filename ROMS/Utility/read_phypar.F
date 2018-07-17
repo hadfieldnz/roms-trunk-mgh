@@ -95,7 +95,7 @@
       character (len=50 ) :: label
       character (len=256) :: fname, line
       character (len=256), dimension(200) :: Cval
-      
+
       character (len=80) :: git_msg
 !
 !-----------------------------------------------------------------------
@@ -3601,12 +3601,14 @@
      &                 OCN_COMM_WORLD, numthreads,                      &
      &                 TRIM(Iname),                                     &
      &                 TRIM(git_url), TRIM(git_rev), TRIM(git_msg),     &
-     &                 TRIM(Rdir), TRIM(Hdir), TRIM(Hfile), TRIM(Adir)
+     &                 TRIM(Host), TRIM(Rdir), TRIM(Hdir), TRIM(Hfile), &
+     &                 TRIM(Adir)
 #else
         WRITE (out,60) TRIM(title), TRIM(my_os), TRIM(my_cpu),          &
      &                 TRIM(my_fort), TRIM(my_fc), my_fflags(1:lstr),   &
      &                 TRIM(git_url), TRIM(git_rev), TRIM(git_msg),     &
-     &                 TRIM(Rdir), TRIM(Hdir), TRIM(Hfile), TRIM(Adir)
+     &                 TRIM(Host), TRIM(Rdir), TRIM(Hdir), TRIM(Hfile), &
+     &                 TRIM(Adir)
 #endif
 
         DO ng=1,Ngrids
@@ -6052,6 +6054,7 @@
      &        /,1x,'Git Root URL  : ',a,                                &
      &        /,1x,'Git Revision  : ',a,                                &
      &        /,1x,'Git Status    : ',a,/,                              &
+     &        /,1x,'Host Name     : ',a,                                &
      &        /,1x,'Local Root    : ',a,                                &
      &        /,1x,'Header Dir    : ',a,                                &
      &        /,1x,'Header file   : ',a,                                &
@@ -6066,6 +6069,7 @@
      &        /,1x,'Git Origin URL: ',a,                                &
      &        /,1x,'Git Revision  : ',a,                                &
      &        /,1x,'Git Status    : ',a,/,                              &
+     &        /,1x,'Host Name     : ',a,                                &
      &        /,1x,'Local Root    : ',a,                                &
      &        /,1x,'Header Dir    : ',a,                                &
      &        /,1x,'Header file   : ',a,                                &
