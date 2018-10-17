@@ -1068,7 +1068,7 @@
       Vinfo( 1)='dt'
       Vinfo( 2)='size of long time-steps'
       Vinfo( 3)='second'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1077,7 +1077,7 @@
       Vinfo( 1)='dtfast'
       Vinfo( 2)='size of short time-steps'
       Vinfo( 3)='second'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1087,7 +1087,7 @@
       Vinfo( 2)='time stamp assigned to model initilization'
       WRITE (Vinfo( 3),'(a,a)') 'days since ', TRIM(Rclock%string)
       Vinfo( 4)=TRIM(Rclock%calendar)
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1293,7 +1293,7 @@
 
       Vinfo( 1)='Ritz_tol'
       Vinfo( 2)='relative accuracy of Ritz values'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1363,7 +1363,7 @@
 !
       Vinfo( 1)='Falpha'
       Vinfo( 2)='Power-law shape barotropic filter parameter'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1371,7 +1371,7 @@
 
       Vinfo( 1)='Fbeta'
       Vinfo( 2)='Power-law shape barotropic filter parameter'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1379,7 +1379,7 @@
 
       Vinfo( 1)='Fgamma'
       Vinfo( 2)='Power-law shape barotropic filter parameter'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1847,7 +1847,7 @@
       Vinfo( 1)='Znudg'
       Vinfo( 2)='free-surface nudging/relaxation inverse time scale'
       Vinfo( 3)='day-1'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1856,7 +1856,7 @@
       Vinfo( 1)='M2nudg'
       Vinfo( 2)='2D momentum nudging/relaxation inverse time scale'
       Vinfo( 3)='day-1'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1866,7 +1866,7 @@
       Vinfo( 1)='M3nudg'
       Vinfo( 2)='3D momentum nudging/relaxation inverse time scale'
       Vinfo( 3)='day-1'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1875,7 +1875,7 @@
       Vinfo( 1)='Tnudg'
       Vinfo( 2)='Tracers nudging/relaxation inverse time scale'
       Vinfo( 3)='day-1'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/trcdim/), Aval, Vinfo, ncname,                &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -1890,7 +1890,7 @@
         Vinfo( 1)='FSobc_in'
         Vinfo( 2)='free-surface inflow, nudging inverse time scale'
         Vinfo( 3)='second-1'
-        status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
+        status=def_var(ng, model, ncid, varid, NF_TOUT,                 &
      &                 1, (/brydim/), Aval, Vinfo, ncname,              &
      &                 SetParAccess = .FALSE.)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
@@ -1899,7 +1899,7 @@
         Vinfo( 1)='FSobc_out'
         Vinfo( 2)='free-surface outflow, nudging inverse time scale'
         Vinfo( 3)='second-1'
-        status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
+        status=def_var(ng, model, ncid, varid, NF_TOUT,                 &
      &                 1, (/brydim/), Aval, Vinfo, ncname,              &
      &                 SetParAccess = .FALSE.)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
@@ -1908,7 +1908,7 @@
         Vinfo( 1)='M2obc_in'
         Vinfo( 2)='2D momentum inflow, nudging inverse time scale'
         Vinfo( 3)='second-1'
-        status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
+        status=def_var(ng, model, ncid, varid, NF_TOUT,                 &
      &                 1, (/brydim/), Aval, Vinfo, ncname,              &
      &                 SetParAccess = .FALSE.)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
@@ -1917,7 +1917,7 @@
         Vinfo( 1)='M2obc_out'
         Vinfo( 2)='2D momentum outflow, nudging inverse time scale'
         Vinfo( 3)='second-1'
-        status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
+        status=def_var(ng, model, ncid, varid, NF_TOUT,                 &
      &                 1, (/brydim/), Aval, Vinfo, ncname,              &
      &                 SetParAccess = .FALSE.)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
@@ -1927,7 +1927,7 @@
         Vinfo( 1)='Tobc_in'
         Vinfo( 2)='tracers inflow, nudging inverse time scale'
         Vinfo( 3)='second-1'
-        status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
+        status=def_var(ng, model, ncid, varid, NF_TOUT,                 &
      &                 2, tbrydim, Aval, Vinfo, ncname,                 &
      &                 SetParAccess = .FALSE.)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
@@ -1936,7 +1936,7 @@
         Vinfo( 1)='Tobc_out'
         Vinfo( 2)='tracers outflow, nudging inverse time scale'
         Vinfo( 3)='second-1'
-        status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
+        status=def_var(ng, model, ncid, varid, NF_TOUT,                 &
      &                 2, tbrydim, Aval, Vinfo, ncname,                 &
      &                 SetParAccess = .FALSE.)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
@@ -1945,7 +1945,7 @@
         Vinfo( 1)='M3obc_in'
         Vinfo( 2)='3D momentum inflow, nudging inverse time scale'
         Vinfo( 3)='second-1'
-        status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
+        status=def_var(ng, model, ncid, varid, NF_TOUT,                 &
      &                 1, (/brydim/), Aval, Vinfo, ncname,              &
      &                 SetParAccess = .FALSE.)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
@@ -1954,7 +1954,7 @@
         Vinfo( 1)='M3obc_out'
         Vinfo( 2)='3D momentum outflow, nudging inverse time scale'
         Vinfo( 3)='second-1'
-        status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
+        status=def_var(ng, model, ncid, varid, NF_TOUT,                 &
      &                 1, (/brydim/), Aval, Vinfo, ncname,              &
      &                 SetParAccess = .FALSE.)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
@@ -2959,7 +2959,7 @@
 
       Vinfo( 1)='theta_s'
       Vinfo( 2)='S-coordinate surface control parameter'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -2967,7 +2967,7 @@
 
       Vinfo( 1)='theta_b'
       Vinfo( 2)='S-coordinate bottom control parameter'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -2976,7 +2976,7 @@
       Vinfo( 1)='Tcline'
       Vinfo( 2)='S-coordinate surface/bottom layer width'
       Vinfo( 3)='meter'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -2985,7 +2985,7 @@
       Vinfo( 1)='hc'
       Vinfo( 2)='S-coordinate parameter, critical depth'
       Vinfo( 3)='meter'
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -3020,7 +3020,7 @@
       vinfo(25)='up'
       Aval(2)=-1.0_r8
       Aval(3)=0.0_r8
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/srdim/), Aval, Vinfo, ncname,                 &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -3047,7 +3047,7 @@
       vinfo(25)='up'
       Aval(2)=-1.0_r8
       Aval(3)=0.0_r8
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/swdim/), Aval, Vinfo, ncname,                 &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -3062,7 +3062,7 @@
       Vinfo(14)='Cs_r, scalar'
       Aval(2)=-1.0_r8
       Aval(3)=0.0_r8
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/srdim/), Aval, Vinfo, ncname,                 &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
@@ -3077,7 +3077,7 @@
       Vinfo(14)='Cs_w, scalar'
       Aval(2)=-1.0_r8
       Aval(3)=0.0_r8
-      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+      status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
      &               1, (/swdim/), Aval, Vinfo, ncname,                 &
      &               SetParAccess = .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
