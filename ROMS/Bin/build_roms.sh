@@ -2,7 +2,7 @@
 #
 # svn $Id$
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# Copyright (c) 2002-2018 The ROMS/TOMS Group                           :::
+# Copyright (c) 2002-2019 The ROMS/TOMS Group                           :::
 #   Licensed under a MIT/X style license                                :::
 #   See License_ROMS.txt                                                :::
 #::::::::::::::::::::::::::::::::::::::::::::::::::::: Hernan G. Arango :::
@@ -210,8 +210,10 @@ endif
  setenv USE_MY_LIBS no           # use system default library paths
 #setenv USE_MY_LIBS yes          # use my customized library paths
 
+set MY_PATHS = ${COMPILERS}/my_build_paths.sh
+
 if ($USE_MY_LIBS == 'yes') then
-  source ${COMPILERS}/my_build_paths.sh
+  source ${MY_PATHS} ${MY_PATHS}
 endif
 
 #--------------------------------------------------------------------------

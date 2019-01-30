@@ -2,7 +2,7 @@
 #
 # svn $Id$
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# Copyright (c) 2002-2018 The ROMS/TOMS Group                           :::
+# Copyright (c) 2002-2019 The ROMS/TOMS Group                           :::
 #   Licensed under a MIT/X style license                                :::
 #   See License_ROMS.txt                                                :::
 #::::::::::::::::::::::::::::::::::::::::::::::::::::: Hernan G. Arango :::
@@ -209,8 +209,10 @@ fi
  export USE_MY_LIBS=no            # use system default library paths
 #export USE_MY_LIBS=yes           # use my customized library paths
 
+MY_PATHS=${COMPILERS}/my_build_paths.bash
+
 if [ "${USE_MY_LIBS}" = "yes" ]; then
-  source ${COMPILERS}/my_build_paths.bash
+  source ${MY_PATHS} ${MY_PATHS}
 fi
 
 #--------------------------------------------------------------------------
