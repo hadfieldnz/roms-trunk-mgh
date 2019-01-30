@@ -13,6 +13,9 @@
 # FFLAGS         Flags to the fortran compiler
 # CPP            Name of the C-preprocessor
 # CPPFLAGS       Flags to the C-preprocessor
+# HDF5_INCDIR    HDF5 include directory
+# HDF5_LIBDIR    HDF5 library directory
+# HDF5_LIBS      HDF5 library switches
 # NF_CONFIG      NetCDF Fortran configuration script
 # NETCDF_INCDIR  NetCDF include directory
 # NETCDF_LIBDIR  NetCDF library directory
@@ -90,21 +93,22 @@ endif
 
 ifdef USE_NETCDF4
         NF_CONFIG ?= nf-config
-    NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --includedir)
-             LIBS := $(shell $(NF_CONFIG) --flibs)
+    NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --prefix)/include
+             LIBS += $(shell $(NF_CONFIG) --flibs)
            INCDIR += $(NETCDF_INCDIR) $(INCDIR)
 else
-    NETCDF_INCDIR ?= /usr/local/include
-    NETCDF_LIBDIR ?= /usr/local/lib
+    NETCDF_INCDIR ?= /opt/gfortransoft/serial/netcdf3/include
+    NETCDF_LIBDIR ?= /opt/gfortransoft/serial/netcdf3/lib
       NETCDF_LIBS ?= -lnetcdf
-             LIBS := -L$(NETCDF_LIBDIR) $(NETCDF_LIBS)
+             LIBS += -L$(NETCDF_LIBDIR) $(NETCDF_LIBS)
            INCDIR += $(NETCDF_INCDIR) $(INCDIR)
 endif
 
 ifdef USE_HDF5
       HDF5_INCDIR ?= /opt/gfortransoft/serial/hdf5/include
       HDF5_LIBDIR ?= /opt/gfortransoft/serial/hdf5/lib
-             LIBS += -L$(HDF5_LIBDIR) -lhdf5_fortran -lhdf5hl_fortran -lhdf5 -lz
+       HDF5_LIBS ?= -lhdf5_fortran -lhdf5hl_fortran -lhdf5 -lz
+             LIBS += -L$(HDF5_LIBDIR)  $(HDF5_LIBS)
            INCDIR += $(HDF5_INCDIR)
 endif
 
