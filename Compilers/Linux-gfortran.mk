@@ -59,7 +59,7 @@ ifdef ROMS_APPLICATION
            FFLAGS += -fbounds-check
            FFLAGS += -fbacktrace
            FFLAGS += -fcheck=all
-           FFLAGS += -fsanitize=address -fsanitize=undefined
+#          FFLAGS += -fsanitize=address -fsanitize=undefined
            FFLAGS += -finit-real=nan -ffpe-trap=invalid,zero,overflow
  else
            FFLAGS += -O3
