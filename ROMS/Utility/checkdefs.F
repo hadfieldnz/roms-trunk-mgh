@@ -524,6 +524,12 @@
      &   'Impose atmospheric pressure onto sea surface'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+11)=' ATM_PRESS,'
+# ifdef PRESS_COMPENSATE
+      IF (Master) WRITE (stdout,20) 'PRESS_COMPENSATE',                 &
+     &   'Compensate for boundary data without atm. pressure effect'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+18)=' PRESS_COMPENSATE,'
+# endif
 #endif
 #ifdef AVERAGES
 !

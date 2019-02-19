@@ -265,7 +265,7 @@
      &                            zeta(i,Jstr  ,know)))
               Ce=SQRT(g*cff)
 #  if defined ATM_PRESS && defined PRESS_COMPENSATE
-            vbar(i,Jstr,kout)=                                            &
+            vbar(i,Jstr,kout)=                                          &
      &         bry_val-Ce*(0.5_r8*(zeta(i,Jstr-1,know)+                 &
      &                             zeta(i,Jstr  ,know)+                 &
      &                             fac*(FORCES(ng)%Pair(i,Jstr-1)+      &
@@ -606,7 +606,7 @@
      &                            zeta(i,Jend+1,know)))
               Ce=SQRT(g*cff)
 #  if defined ATM_PRESS && defined PRESS_COMPENSATE
-            vbar(i,Jend+1,kout)=                                          &
+            vbar(i,Jend+1,kout)=                                        &
      &         bry_val+Ce*(0.5_r8*(zeta(i,Jend  ,know)+                 &
      &                             zeta(i,Jend+1,know)+                 &
      &                             fac*(FORCES(ng)%Pair(i,Jend  )+      &

@@ -264,7 +264,7 @@
      &                            zeta(Istr  ,j,know)))
               Cx=SQRT(g*cff)
 #  if defined ATM_PRESS && defined PRESS_COMPENSATE
-            ubar(Istr,j,kout)=                                            &
+            ubar(Istr,j,kout)=                                          &
      &         bry_val-Cx*(0.5_r8*(zeta(Istr-1,j,know)+                 &
      &                             zeta(Istr  ,j,know)+                 &
      &                             fac*(FORCES(ng)%Pair(Istr-1,j)+      &
@@ -604,7 +604,7 @@
      &                            zeta(Iend+1,j,know)))
               Cx=SQRT(g*cff)
 #  if defined ATM_PRESS && defined PRESS_COMPENSATE
-            ubar(Iend+1,j,kout)=                                          &
+            ubar(Iend+1,j,kout)=                                        &
      &         bry_val+Cx*(0.5_r8*(zeta(Iend  ,j,know)+                 &
      &                             zeta(Iend+1,j,know)+                 &
      &                             fac*(FORCES(ng)%Pair(Iend  ,j)+      &
