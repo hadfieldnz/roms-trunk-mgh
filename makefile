@@ -173,7 +173,7 @@ endif
 #  library to account for calls to objects in other ROMS libraries or
 #  cycling dependencies. These type of dependencies are problematic in
 #  some compilers during linking. This library appears twice at linking
-#  step (beginning and almost the end of ROMS library list).
+#  step (beggining and almost the end of ROMS library list).
 #--------------------------------------------------------------------------
 
   libraries  := $(SCRATCH_DIR)/libUTIL.a
@@ -320,11 +320,7 @@ OS := $(patsubst CYGWIN_%,CYGWIN,$(OS))
 OS := $(patsubst MINGW%,MINGW,$(OS))
 OS := $(patsubst sn%,UNICOS-sn,$(OS))
 
-ifeq "$(OS)" "AIX"
-  CPU := $(shell uname -p)
-else
-  CPU := $(shell uname -m | sed 's/[\/ ]/-/g')
-endif
+CPU := $(shell uname -m | sed 's/[\/ ]/-/g')
 
 GITURL ?= $(shell git remote show origin 2> /dev/null | grep "Fetch URL" | tr -s ' ' | cut -d ' ' -f 4)
 GITREV ?= $(shell git rev-parse --abbrev-ref HEAD 2> /dev/null) $(shell git log -1  2> /dev/null | head -n 1)
@@ -440,7 +436,7 @@ endif
 		ROMS/Nonlinear/Sediment \
 		ROMS/Utility \
 		ROMS/Drivers \
-		ROMS/Functionals
+                ROMS/Functionals
 ifdef MY_HEADER_DIR
  includes +=	$(MY_HEADER_DIR)
 endif
