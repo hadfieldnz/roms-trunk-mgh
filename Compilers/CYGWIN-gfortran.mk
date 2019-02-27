@@ -32,8 +32,8 @@
 
                FC := gfortran
            FFLAGS := -frepack-arrays
-       FIXEDFLAGS := -132
-        FREEFLAGS := -free
+       FIXEDFLAGS := -ffixed-form
+        FREEFLAGS := -ffree-form -ffree-line-length-none
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional -w
            INCDIR := /usr/include /usr/local/bin
@@ -79,7 +79,6 @@ ifdef CICE_APPLICATION
           CPPDEFS := -DLINUS $(MY_CPP_FLAGS)
  ifdef USE_DEBUG
            FFLAGS += -g
-#          FFLAGS += -O3
            FFLAGS += -fbounds-check
 #          FFLAGS += -fcheck=all
            FFLAGS += -fsanitize=address -fsanitize=undefined
@@ -139,8 +138,8 @@ ifdef USE_NETCDF4
              LIBS += $(shell $(NF_CONFIG) --flibs)
            INCDIR += $(NETCDF_INCDIR) $(INCDIR)
 else
-    NETCDF_INCDIR ?= /usr/local/include
-    NETCDF_LIBDIR ?= /usr/local/lib
+    NETCDF_INCDIR ?= /usr/include
+    NETCDF_LIBDIR ?= /usr/lib
       NETCDF_LIBS ?= -lnetcdf
              LIBS += -L$(NETCDF_LIBDIR) $(NETCDF_LIBS)
            INCDIR += $(NETCDF_INCDIR) $(INCDIR)
@@ -168,14 +167,13 @@ ifdef USE_MPI
  ifdef USE_MPIF90
                FC := mpif90
  else
-  # MPI without mpif90 is not supported on this platform
+             LIBS += -lfmpi -lmpi
  endif
 endif
 
 ifdef USE_OpenMP
          CPPFLAGS += -D_OPENMP
            FFLAGS += -fopenmp -static-libgcc
-#            LIBS += -lgomp
 endif
 
 ifdef USE_MCT
@@ -231,19 +229,19 @@ endif
 # local directory and compilation flags inside the code.
 
 ifdef USE_ROMS
- $(SCRATCH_DIR)/mod_ncparam.o: FFLAGS += -ffree-form -ffree-line-length-none
- $(SCRATCH_DIR)/mod_strings.o: FFLAGS += -ffree-form -ffree-line-length-none
- $(SCRATCH_DIR)/analytical.o: FFLAGS += -ffree-form -ffree-line-length-none
- $(SCRATCH_DIR)/biology.o: FFLAGS += -ffree-form -ffree-line-length-none
+ $(SCRATCH_DIR)/mod_ncparam.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/mod_strings.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/analytical.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/biology.o: FFLAGS += $(FREEFLAGS)
 
  ifdef USE_ADJOINT
-  $(SCRATCH_DIR)/ad_biology.o: FFLAGS += -ffree-form -ffree-line-length-none
+  $(SCRATCH_DIR)/ad_biology.o: FFLAGS += $(FREEFLAGS)
  endif
  ifdef USE_REPRESENTER
-  $(SCRATCH_DIR)/rp_biology.o: FFLAGS += -ffree-form -ffree-line-length-none
+  $(SCRATCH_DIR)/rp_biology.o: FFLAGS += $(FREEFLAGS)
  endif
  ifdef USE_TANGENT
-  $(SCRATCH_DIR)/tl_biology.o: FFLAGS += -ffree-form -ffree-line-length-none
+  $(SCRATCH_DIR)/tl_biology.o: FFLAGS += $(FREEFLAGS)
  endif
 endif
 
@@ -272,25 +270,25 @@ endif
 # beyond column 72.
 
 ifdef USE_SWAN
- $(SCRATCH_DIR)/ocpcre.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/ocpids.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/ocpmix.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swancom1.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swancom2.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swancom3.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swancom4.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swancom5.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swanmain.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swanout1.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swanout2.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swanparll.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swanpre1.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swanpre2.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swanser.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swmod1.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/swmod2.o: FFLAGS += -ffixed-form
- $(SCRATCH_DIR)/m_constants.o: FFLAGS += -ffree-form -ffree-line-length-none
- $(SCRATCH_DIR)/m_fileio.o: FFLAGS += -ffree-form -ffree-line-length-none
- $(SCRATCH_DIR)/mod_xnl4v5.o: FFLAGS += -ffree-form -ffree-line-length-none
- $(SCRATCH_DIR)/serv_xnl4v5.o: FFLAGS += -ffree-form -ffree-line-length-none
+ $(SCRATCH_DIR)/ocpcre.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/ocpids.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/ocpmix.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom1.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom2.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom3.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom4.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom5.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanmain.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanout1.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanout2.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanparll.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanpre1.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanpre2.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanser.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swmod1.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swmod2.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/m_constants.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/m_fileio.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/mod_xnl4v5.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/serv_xnl4v5.o: FFLAGS += $(FREEFLAGS)
 endif
