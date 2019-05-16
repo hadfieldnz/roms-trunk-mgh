@@ -278,6 +278,22 @@
       real(r8), dimension(IminS:ImaxS,JminS:JmaxS,0:N(ng)) :: Wa
 # endif
 
+# if defined T_PASSIVE && defined GREATER_COOK
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Parameters for passive tracer sources, see COOK.docx.
+!  NB: This code is specific to Cook sim34
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      ! An index for passive tracers
+      integer :: ip
+      ! Number of sources (must not exceed NPT)
+      integer, parameter :: n0=4
+      ! Source locations on rho grid
+      integer, dimension(n0), parameter :: i0=(/100,100,314,314/)
+      integer, dimension(n0), parameter :: j0=(/ 39, 39, 32, 32/)
+      integer, dimension(n0), parameter :: k0=(/ 14,  6, 15,  8/)
+      ! Source strength, the same for all tracers
+      real(r8), parameter :: q0=1.0_r8
+# endif
 # include "set_bounds.h"
 
 # ifdef NESTING
@@ -1215,6 +1231,23 @@
             END DO
           END DO
         END IF
+# if defined T_PASSIVE && defined GREATER_COOK
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Passive tracer sources
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        ip=itrc-NAT
+        IF (ip.ge.0.and.ip.le.n0) THEN
+          DO j=JstrR,JendR
+            DO i=IstrR,IendR
+              IF (i.eq.i0(ip).and.j.eq.j0(ip)) THEN
+                  t(i,j,k0(ip),nnew,itrc)=                              &
+     &                t(i,j,k0(ip),nnew,itrc)+                          &
+     &                dt(ng)*q0*pm(i,j)*pn(i,j)/Hz(i,j,k0(ip))
+              END IF
+            END DO
+          END DO
+        END IF
+# endif
 
 # ifdef MASKING
 !
