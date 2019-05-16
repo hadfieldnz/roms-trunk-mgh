@@ -602,6 +602,13 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+7)=' BNORM,'
 #endif
+#if defined BIO_OPTIC && defined ECOSIM
+!
+      IF (Master) WRITE (stdout,20) 'BIO_OPTIC',                        &
+     &   'Underwater light field calculations'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+11)=' BIO_OPTIC,'
+#endif
 #if defined BIO_SEDIMENT && \
    (defined BIO_FENNEL   || defined NEMURO || defined ECOSIM)
 !
@@ -2327,8 +2334,8 @@
 #endif
 #if defined TIME_INTERP && defined MODEL_COUPLING
 !
-      IF (Master) WRITE (stdout,20) 'TIME_INTERP',                  &
-     &   'Time interpolation from coupling snapshots arrays'
+      IF (Master) WRITE (stdout,20) 'TIME_INTERP',                      &
+     &   'Time interpolation from imported coupling snapshots data'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+13)=' TIME_INTERP,'
 #endif
