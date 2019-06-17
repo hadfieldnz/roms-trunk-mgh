@@ -322,7 +322,8 @@ OS := $(patsubst sn%,UNICOS-sn,$(OS))
 
 CPU := $(shell uname -m | sed 's/[\/ ]/-/g')
 
-SVNREV ?= $(shell svnversion -n .)
+SVNURL := $(shell svn info | grep '^URL:' | sed 's/URL: //')
+SVNREV := $(shell svn info | grep '^Revision:' | sed 's/Revision: //')
 
 ROOTDIR := $(shell pwd)
 
@@ -368,12 +369,8 @@ ifdef MY_ANALYTICAL
   CPPFLAGS += -D'MY_ANALYTICAL="$(MY_ANALYTICAL)"'
 endif
 
-ifdef SVNREV
-  CPPFLAGS += -D'SVN_REV="$(SVNREV)"'
-else
-  SVNREV := $(shell grep Revision ./ROMS/Version | sed 's/.* \([0-9]*\) .*/\1/')
-  CPPFLAGS += -D'SVN_REV="$(SVNREV)"'
-endif
+CPPFLAGS += -D'SVN_URL="$(SVNURL)"'
+CPPFLAGS += -D'SVN_REV="$(SVNREV)"'
 
 #--------------------------------------------------------------------------
 #  Build target directories.
