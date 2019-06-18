@@ -6053,7 +6053,6 @@
      &        /,1x,'Compiler system  : ',a,                             &
      &        /,1x,'Compiler command : ',a,                             &
      &        /,1x,'Compiler flags   : ',a,                             &
-#ifdef DISTRIBUTE
      &        /,1x,'MPI Communicator : ',i0,2x,'PET size = ',i0,/,      &
      &        /,1x,'Input Script  : ',a,/,                              &
      &        /,1x,'Git Root URL  : ',a,                                &
