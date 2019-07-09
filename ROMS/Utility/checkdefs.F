@@ -1129,9 +1129,9 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+10)=' ICESHELF,'
 #endif
-#if defined IMPACT_INNER        && defined OBS_IMPACT          && \
-   (defined W4DVAR_SENSITIVITY  || defined W4DPSAS_SENSITIVITY || \
-    defined IS4DVAR_SENSITIVITY)
+#if defined IMPACT_INNER        && defined OBS_IMPACT              && \
+   (defined IS4DVAR_SENSITIVITY || defined W4DPSAS_FCT_SENSITIVITY || \
+    defined W4DPSAS_SENSITIVITY || defined W4DVAR_SENSITIVITY)
 !
       IF (Master) WRITE (stdout,20) 'IMPACT_INNER',                     &
      &   'Writing observations impacts for each inner loop'
@@ -2815,6 +2815,14 @@
      &   'Weak constraint 4D-PSAS data assimilation'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+9)=' W4DPSAS,'
+      idriver=idriver+1
+#endif
+#ifdef W4DPSAS_FCT_SENSITIVITY
+!
+      IF (Master) WRITE (stdout,20) 'W4DPSAS_FCT_SENSITIVITY',          &
+     &   'Weak constraint 4D-PSAS observation forecast sensitivity'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+25)=' W4DPSAS_FCT_SENSITIVITY,'
       idriver=idriver+1
 #endif
 #ifdef W4DPSAS_SENSITIVITY
