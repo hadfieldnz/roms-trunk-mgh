@@ -103,10 +103,6 @@
       real(r8) :: OneAtm, fac
 #endif
 
-#  if defined ATM_PRESS && defined PRESS_COMPENSATE
-      real(r8) :: OneAtm, fac
-#  endif
-
       real(r8), dimension(IminS:ImaxS,JminS:JmaxS) :: grad
 
 #include "set_bounds.h"
