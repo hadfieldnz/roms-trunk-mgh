@@ -14,6 +14,7 @@
 # CPP            Name of the C-preprocessor
 # CPPFLAGS       Flags to the C-preprocessor
 # NF_CONFIG      NetCDF Fortran configuration script
+# LIBS           Required libraries during linking
 # NETCDF_INCDIR  NetCDF include directory
 # NETCDF_LIBDIR  NetCDF library directory
 # NETCDF_LIBS    NetCDF library switches
@@ -28,6 +29,7 @@
            FFLAGS := -qsuffix=f=f90 -qmaxmem=-1 -qarch=pwr6 -qnoextname
               CPP := /usr/lib/cpp
          CPPFLAGS := -P
+             LIBS := $(SCRATCH_DIR)/libNLM.a         # cyclic dependencies
           LDFLAGS :=
                AR := /usr/bin/ar
           ARFLAGS := -r
@@ -59,7 +61,7 @@ else
     NETCDF_INCDIR ?= /usr/local/include
     NETCDF_LIBDIR ?= /usr/local/lib
       NETCDF_LIBS ?= -lnetcdf
-             LIBS := -L$(NETCDF_LIBDIR) $(NETCDF_LIBS)
+             LIBS += -L$(NETCDF_LIBDIR) $(NETCDF_LIBS)
 endif
 
 ifdef USE_ARPACK
