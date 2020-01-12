@@ -3,7 +3,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2019 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2020 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -383,6 +383,62 @@
               IF (.not.allocated(tracer)) THEN
                 allocate (tracer(MT,Ngrids))
               END IF
+#ifdef SOLVE3D
+            CASE ('Hadvection')
+              IF (itracer.lt.(NAT+NPT)) THEN
+                itracer=itracer+1
+              ELSE
+                itracer=1                      ! next nested grid
+              END IF
+              itrc=itracer
+              Npts=load_tadv(Nval, Cval, line, nline, itrc, igrid,      &
+     &                       itracer, 1, NAT+NPT,                       &
+     &                       Vname(1,idTvar(itrc)),                     &
+     &                       Hadvection)
+              IF (FoundError(exit_flag, NoError, __LINE__,              &
+     &                       __FILE__)) RETURN
+            CASE ('Vadvection')
+              IF (itracer.lt.(NAT+NPT)) THEN
+                itracer=itracer+1
+              ELSE
+                itracer=1                      ! next nested grid
+              END IF
+              itrc=itracer
+              Npts=load_tadv(Nval, Cval, line, nline, itrc, igrid,      &
+     &                       itracer, 1, NAT+NPT,                       &
+     &                       Vname(1,idTvar(itrc)),                     &
+     &                       Vadvection)
+              IF (FoundError(exit_flag, NoError, __LINE__,              &
+     &                       __FILE__)) RETURN
+# if defined ADJOINT || defined TANGENT || defined TL_IOMS
+            CASE ('ad_Hadvection')
+              IF (itracer.lt.(NAT+NPT)) THEN
+                itracer=itracer+1
+              ELSE
+                itracer=1                      ! next nested grid
+              END IF
+              itrc=itracer
+              Npts=load_tadv(Nval, Cval, line, nline, itrc, igrid,      &
+     &                       itracer, 1, NAT+NPT,                       &
+     &                       Vname(1,idTvar(itrc)),                     &
+     &                       ad_Hadvection)
+              IF (FoundError(exit_flag, NoError, __LINE__,              &
+     &                       __FILE__)) RETURN
+            CASE ('ad_Vadvection')
+              IF (itracer.lt.(NAT+NPT)) THEN
+                itracer=itracer+1
+              ELSE
+                itracer=1                      ! next nested grid
+              END IF
+              itrc=itracer
+              Npts=load_tadv(Nval, Cval, line, nline, itrc, igrid,      &
+     &                       itracer, 1, NAT+NPT,                       &
+     &                       Vname(1,idTvar(itracer)),                  &
+     &                       ad_Vadvection)
+              IF (FoundError(exit_flag, NoError, __LINE__,              &
+     &                       __FILE__)) RETURN
+# endif
+#endif
             CASE ('LBC(isFsur)')
               Npts=load_lbc(Nval, Cval, line, nline, isFsur, igrid,     &
      &                      0, 0, Vname(1,idFsur), LBC)
@@ -3126,20 +3182,20 @@
             CASE ('FOInameA')
               label='FOIA - adjoint sensitivity functional A'
               Npts=load_s1d(Nval, Cval, Cdim, line, label, igrid,       &
-     &                      Nfiles, FOIA)
+     &                      Ngrids, Nfiles, FOIA)
             CASE ('FOInameB')
               label='FOIB - adjoint sensitivity functional B'
               Npts=load_s1d(Nval, Cval, Cdim, line, label, igrid,       &
-     &                      Nfiles, FOIB)
+     &                      Ngrids, Nfiles, FOIB)
 # endif
             CASE ('FCTnameA')
               label='FCTA - forecast state forward trajectory A'
               Npts=load_s1d(Nval, Cval, Cdim, line, label, igrid,       &
-     &                      Nfiles, FCTA)
+     &                      Ngrids, Nfiles, FCTA)
             CASE ('FCTnameB')
               label='FCTB - forecast state forward trajectory B'
               Npts=load_s1d(Nval, Cval, Cdim, line, label, igrid,       &
-     &                      Nfiles, FCTB)
+     &                      Ngrids, Nfiles, FCTB)
 #endif
             CASE ('NGCNAME')
               DO i=1,LEN(NGCname)
@@ -3232,6 +3288,16 @@
 !-----------------------------------------------------------------------
 !  Process input parameters.
 !-----------------------------------------------------------------------
+!
+!  Set switch for three ghost-points in the halo region.
+!
+#ifdef UV_VIS4
+      ThreeGhostPoints=.TRUE.
+#else
+      IF (ANY(Hadvection(:,:)%MPDATA)) THEN
+        ThreeGhostPoints=.TRUE.
+      END IF
+#endif
 !
 !  Check if nesting parameters "NestLayers", "GridsInLayer", and
 !  "GridNumber" have been assigned.  The code below is necessary
@@ -3630,13 +3696,15 @@
         IF ((nAVG(ng).gt.0).and.(ndefAVG(ng).gt.0)) THEN
           OutFiles=ntimes(ng)/ndefAVG(ng)
           CALL edit_file_struct (ng, OutFiles, AVG)
-        END IF
+          AVG(ng)%load=0       ! because delayed creation of NetCDF file
+        END IF                 ! due to time-aveeraging
 #endif
 #ifdef DIAGNOSTICS
         IF ((nDIA(ng).gt.0).and.(ndefDIA(ng).gt.0)) THEN
           OutFiles=ntimes(ng)/ndefDIA(ng)
           CALL edit_file_struct (ng, OutFiles, DIA)
-        END IF
+          DIA(ng)%load=0       ! because delayed creation of NetCDF file
+        END IF                 ! due to time-aveeraging
 #endif
 #if defined TANGENT || defined TL_IOMS
         IF ((nTLM(ng).gt.0).and.(ndefTLM(ng).gt.0)) THEN
