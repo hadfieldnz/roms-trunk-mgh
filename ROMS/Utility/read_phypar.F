@@ -3715,7 +3715,7 @@
 #endif
       END DO
 
-#if defined BULK_FLUXES && defined NL_BULK_FLUXES
+#ifdef BULK_FLUXES
 !
 !  Allocate and initialize BLK I/O structure with the same values as
 !  HIS.
