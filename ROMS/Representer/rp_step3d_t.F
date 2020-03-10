@@ -318,12 +318,14 @@
 !-----------------------------------------------------------------------
 !  Time-step horizontal advection term.
 !-----------------------------------------------------------------------
+!
+      Lmpdata=ANY(tl_Hadvection(:,ng)%MPDATA).and.                      &
+     &        ANY(tl_Vadvection(:,ng)%MPDATA)
+
 # ifdef RP_SUPPORTED
 !
 !  Allocate local arrays for MPDATA.
 !
-      Lmpdata=ANY(tl_Hadvection(:,ng)%MPDATA).and.                      &
-     &        ANY(tl_Vadvection(:,ng)%MPDATA)
       IF (Lmpdata) THEN
 #  ifdef DIAGNOSTICS_TS
         IF (.not.allocated(Dhadv)) THEN
@@ -370,10 +372,9 @@
       END IF
 # endif
 !
-!  Compute eciprocal thickness, 1/Hz.
+!  Compute reciprocal thickness, 1/Hz.
 !
-      IF (ANY(tl_Vadvection(:,ng)%MPDATA).or.                           &
-     &    ANY(tl_Vadvection(:,ng)%HSIMT)) THEN
+      IF (Lmpdata) THEN
         DO k=1,N(ng)
           DO j=Jstrm2,Jendp2
             DO i=Istrm2,Iendp2
