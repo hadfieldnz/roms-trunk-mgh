@@ -144,7 +144,7 @@
         IF (LwrtPER(ng)) THEN
           Tval(1)=REAL(ADM(ng)%Rindex,r8)*day2sec
         ELSE
-# ifdef WEAK_CONSTRAINT
+# if defined WEAK_CONSTRAINT && !defined WEAK_NOINTERP
           Tval(1)=ForceTime(ng)
 # else
           Tval(1)=time(ng)
@@ -915,7 +915,7 @@
 !
       DO itrc=1,NT(ng)
         IF (Hout(idTsur(itrc),ng)) THEN
-#   if defined AD_SENSITIVITY   || defined IS4DVAR_SENSITIVITY || \
+#   if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
        defined OPT_OBSERVATIONS
           IF (itrc.eq.itemp) THEN
 !!          scale=rho0*Cp
@@ -954,7 +954,7 @@
 !  Write out surface U-momentum stress.
 !
       IF (Hout(idUsms,ng)) THEN
-#  if defined AD_SENSITIVITY   || defined IS4DVAR_SENSITIVITY || \
+#  if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
       defined OPT_OBSERVATIONS
 !!      scale=rho0
         scale=1.0_r8/rho0
@@ -984,7 +984,7 @@
 !
       IF (Hout(idVsms,ng)) THEN
 !!      scale=rho0
-#  if defined AD_SENSITIVITY   || defined IS4DVAR_SENSITIVITY || \
+#  if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
       defined OPT_OBSERVATIONS
         scale=1.0_r8/rho0
 #  else

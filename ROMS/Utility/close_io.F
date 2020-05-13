@@ -47,7 +47,7 @@
       DO i=1,nFfiles(ng)
         IF ((FRC(i,ng)%Nfiles.gt.0).and.(FRC(i,ng)%ncid.ne.-1)) THEN
           CALL netcdf_close (ng, model, FRC(i,ng)%ncid,                 &
-     &                       FRC(i,ng)%name, .FALSE.)
+     &                       FRC(i,ng)%files(i), .FALSE.)
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
           FRCids=-1
@@ -62,29 +62,37 @@
 !  If appropriate, close boundary files.
 !
       IF (ObcData(ng)) THEN
-        IF ((BRY(ng)%Nfiles.gt.0).and.(BRY(ng)%ncid.ne.-1)) THEN
-          CALL netcdf_close (ng, model, BRY(ng)%ncid,                   &
-     &                       BRY(ng)%name, .FALSE.)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+        DO i=1,nBCfiles(ng)
+          IF ((BRY(i,ng)%Nfiles.gt.0).and.(BRY(i,ng)%ncid.ne.-1)) THEN
+            CALL netcdf_close (ng, model, BRY(i,ng)%ncid,               &
+     &                         BRY(i,ng)%files(i),  .FALSE.)
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                   __FILE__)) RETURN
-          Fcount=1
-          BRY(ng)%Fcount=Fcount
-          BRY(ng)%name=TRIM(BRY(ng)%files(Fcount))
-        END IF
+            BRYids=-1
+            ncBRYid=-1
+            Fcount=1
+            BRY(i,ng)%Fcount=Fcount
+            BRY(i,ng)%name=TRIM(BRY(i,ng)%files(Fcount))
+          END IF
+        END DO
       END IF
 !
 !  If appropriate, close climatology files.
 !
       IF (CLM_FILE(ng)) THEN
-        IF ((CLM(ng)%Nfiles.gt.0).and.(CLM(ng)%ncid.ne.-1)) THEN
-          CALL netcdf_close (ng, model, CLM(ng)%ncid,                   &
-     &                       CLM(ng)%name, .FALSE.)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+        DO i=1,nCLMfiles(ng)
+          IF ((CLM(i,ng)%Nfiles.gt.0).and.(CLM(i,ng)%ncid.ne.-1)) THEN
+            CALL netcdf_close (ng, model, CLM(i,ng)%ncid,                 &
+     &                         CLM(i,ng)%files(i),  .FALSE.)
+            IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
-          Fcount=1
-          CLM(ng)%Fcount=Fcount
-          CLM(ng)%name=TRIM(CLM(ng)%files(Fcount))
-        END IF
+            CLMids=-1
+            ncCLMid=-1
+            Fcount=1
+            CLM(i,ng)%Fcount=Fcount
+            CLM(i,ng)%name=TRIM(CLM(i,ng)%files(Fcount))
+          END IF
+        END DO
       END IF
 !
       RETURN
@@ -148,6 +156,17 @@
         IF (QCK(ng)%ncid.ne.-1) THEN
           CALL netcdf_close (ng, iNLM, QCK(ng)%ncid, QCK(ng)%name)
         END IF
+#ifdef SP4DVAR
+        IF (SPT(ng)%ncid.ne.-1) THEN
+          CALL netcdf_close (ng, iTLM, SPT(ng)%ncid, SPT(ng)%name)
+        END IF
+        IF (SCT(ng)%ncid.ne.-1) THEN
+          CALL netcdf_close (ng, iTLM, SCT(ng)%ncid, SCT(ng)%name)
+        END IF
+        IF (SPA(ng)%ncid.ne.-1) THEN
+          CALL netcdf_close (ng, iADM, SPA(ng)%ncid, SPA(ng)%name)
+        END IF
+#endif
 #ifdef ADJOINT
         IF (ADM(ng)%ncid.ne.-1) THEN
           CALL netcdf_close (ng, iADM, ADM(ng)%ncid, ADM(ng)%name)

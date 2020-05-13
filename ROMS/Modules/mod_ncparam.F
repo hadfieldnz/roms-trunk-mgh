@@ -463,8 +463,10 @@
         integer  :: isBv3d                    ! 3D V-variables
         integer  :: isBw3d                    ! 3D W-variables
 !
-!  Input forcing NetCDF files IDs.
+!  Input lateral boundary, climatology, and forcing NetCDF files IDs.
 !
+        integer, allocatable :: ncBRYid(:,:)
+        integer, allocatable :: ncCLMid(:,:)
         integer, allocatable :: ncFRCid(:,:)
 !
 !  Flags to create output files.
@@ -800,6 +802,14 @@
         Dmem(1)=Dmem(1)+REAL(MAXVAL(NSV)+1,r8)
       END IF
 
+      IF (.not.allocated(ncBRYid)) THEN
+        allocate ( ncBRYid(NV,Ngrids) )
+        Dmem(1)=Dmem(1)+REAL(NV*Ngrids,r8)
+      END IF
+      IF (.not.allocated(ncCLMid)) THEN
+        allocate ( ncCLMid(NV,Ngrids) )
+        Dmem(1)=Dmem(1)+REAL(NV*Ngrids,r8)
+      END IF
       IF (.not.allocated(ncFRCid)) THEN
         allocate ( ncFRCid(NV,Ngrids) )
         Dmem(1)=Dmem(1)+REAL(NV*Ngrids,r8)
@@ -1081,6 +1091,8 @@
           Tintrp(2,i,ng)=0.0_dp
           Vtime(1,i,ng)=0.0_dp
           Vtime(2,i,ng)=0.0_dp
+          ncBRYid(i,ng)=-1
+          ncCLMid(i,ng)=-1
           ncFRCid(i,ng)=-1
         END DO
       END DO
@@ -1228,12 +1240,16 @@
               idDano=varid
             CASE ('idsurT(itemp)')
               idsurT(itemp)=varid
+#ifdef SALINITY
             CASE ('idsurT(isalt)')
               idsurT(isalt)=varid
+#endif
             CASE ('idTvar(itemp)')
               idTvar(itemp)=varid
+#ifdef SALINITY
             CASE ('idTvar(isalt)')
               idTvar(isalt)=varid
+#endif
             CASE ('idUsms')
               idUsms=varid
             CASE ('idVsms')
@@ -1256,16 +1272,22 @@
               iddQdT=varid
             CASE ('idsfwf')
               idsfwf=varid
+#ifdef SALINITY
             CASE ('idTsur(isalt)')
               idTsur(isalt)=varid
+#endif
             CASE ('idTbot(itemp)')
               idTbot(itemp)=varid
+#ifdef SALINITY
             CASE ('idTbot(isalt)')
               idTbot(isalt)=varid
+#endif
             CASE ('idGhat(itemp)')
               idGhat(itemp)=varid
+#ifdef SALINITY
             CASE ('idGhat(isalt)')
               idGhat(isalt)=varid
+#endif
             CASE ('idMtke')
               idMtke=varid
             CASE ('idMtls')
@@ -1275,9 +1297,11 @@
             CASE ('idTdif')
               idTdif=varid
               idDiff(itemp)=idTdif
+#ifdef SALINITY
             CASE ('idSdif')
               idSdif=varid
               idDiff(isalt)=idSdif
+#endif
             CASE ('idVmLS')
               idVmLS=varid
             CASE ('idVmKK')
@@ -1332,6 +1356,7 @@
               idTbry(isouth,itemp)=varid
             CASE ('idTbry(inorth,itemp)')
               idTbry(inorth,itemp)=varid
+#ifdef SALINITY
             CASE ('idTbry(iwest,isalt)')
               idTbry(iwest,isalt)=varid
             CASE ('idTbry(ieast,isalt)')
@@ -1340,6 +1365,7 @@
               idTbry(isouth,isalt)=varid
             CASE ('idTbry(inorth,isalt)')
               idTbry(inorth,isalt)=varid
+#endif
             CASE ('idPwet')
               idPwet=varid
             CASE ('idRwet')
@@ -1452,8 +1478,10 @@
               idRflg=varid
             CASE ('idRtrc(itemp)')
               idRtrc(itemp)=varid
+#ifdef SALINITY
             CASE ('idRtrc(isalt)')
               idRtrc(isalt)=varid
+#endif
             CASE ('idHsbl')
               idHsbl=varid
             CASE ('idHbbl')
@@ -1492,8 +1520,8 @@
               idSSSc=varid
             CASE ('idSSTc')
               idSSTc=varid
-#if defined AD_SENSITIVITY   || defined IS4DVAR_SENSITIVITY || \
-    defined OPT_OBSERVATIONS || defined SENSITIVITY_4DVAR   || \
+#if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
+    defined OPT_OBSERVATIONS || defined SENSITIVITY_4DVAR      || \
     defined SO_SEMI
             CASE ('idZads')
               idZads=varid
@@ -1507,8 +1535,10 @@
               idVads=varid
             CASE ('idTads(itemp)')
               idTads(itemp)=varid
+# ifdef SALINITY
             CASE ('idTads(isalt)')
               idTads(isalt)=varid
+# endif
             CASE ('idWads')
               idWads=varid
 #endif
@@ -1525,8 +1555,10 @@
               idVtlf=varid
             CASE ('idTtlf(itemp)')
               idTtlf(itemp)=varid
+# ifdef SALINITY
             CASE ('idTtlf(isalt)')
               idTtlf(isalt)=varid
+# endif
 #endif
             CASE ('idM2nc')
               idM2nc=varid
@@ -1570,10 +1602,12 @@
               idTrcD(itemp)=varid
             CASE ('idTrcH(itemp)')
               idTrcH(itemp)=varid
+#  ifdef SALINITY
             CASE ('idTrcD(isalt)')
               idTrcD(isalt)=varid
             CASE ('idTrcH(isalt)')
               idTrcH(isalt)=varid
+#  endif
 # endif
 #endif
             CASE ('idU2av')

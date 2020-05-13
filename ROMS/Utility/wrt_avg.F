@@ -89,7 +89,7 @@
 !  Write out averaged time.
 !
       CALL netcdf_put_fvar (ng, iNLM, AVG(ng)%name,                     &
-     &                      TRIM(Vname(idtime,ng)), AVGtime(ng:),       &
+     &                      TRIM(Vname(1,idtime)), AVGtime(ng:),        &
      &                      (/AVG(ng)%Rindex/), (/1/),                  &
      &                      ncid = AVG(ng)%ncid,                        &
      &                      varid = AVG(ng)%Vid(idtime))
@@ -1645,7 +1645,7 @@
 !
       IF (Aout(idTsur(itemp),ng)) THEN
 #  ifdef ADJOINT
-#   if defined AD_SENSITIVITY   || defined IS4DVAR_SENSITIVITY || \
+#   if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
        defined OPT_OBSERVATIONS
        scale=1.0_r8/(rho0*Cp)
 #   else
@@ -1865,7 +1865,7 @@
 !
       IF (Aout(idUsms,ng)) THEN
 # ifdef ADJOINT
-#  if defined AD_SENSITIVITY   || defined IS4DVAR_SENSITIVITY || \
+#  if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
       defined OPT_OBSERVATIONS
         scale=1.0_r8/rho0
 #  else
@@ -1897,7 +1897,7 @@
 !
       IF (Aout(idVsms,ng)) THEN
 # ifdef ADJOINT
-#  if defined AD_SENSITIVITY   || defined IS4DVAR_SENSITIVITY || \
+#  if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
       defined OPT_OBSERVATIONS
         scale=1.0_r8/rho0
 #  else
@@ -1929,7 +1929,7 @@
 !
       IF (Aout(idUbms,ng)) THEN
 # ifdef ADJOINT
-#  if defined AD_SENSITIVITY   || defined IS4DVAR_SENSITIVITY || \
+#  if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
       defined OPT_OBSERVATIONS
         scale=1.0_r8/rho0
 #  else
@@ -1961,7 +1961,7 @@
 !
       IF (Aout(idVbms,ng)) THEN
 # ifdef ADJOINT
-#  if defined AD_SENSITIVITY   || defined IS4DVAR_SENSITIVITY || \
+#  if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
       defined OPT_OBSERVATIONS
         scale=1.0_r8/rho0
 #  else
