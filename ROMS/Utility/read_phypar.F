@@ -3904,11 +3904,6 @@
      &                 TRIM(Host), TRIM(Rdir), TRIM(Hdir), TRIM(Hfile), &
      &                 TRIM(Adir)
 #endif
-#ifdef GIT_URL
-     &                 TRIM(git_url), TRIM(git_rev),                    &
-#endif
-     &                 TRIM(svn_url), TRIM(svn_rev),                    &
-     &                 TRIM(Rdir), TRIM(Hdir), TRIM(Hfile), TRIM(Adir)
 !
         DO ng=1,Ngrids
 !
@@ -6421,29 +6416,11 @@
   50  FORMAT (/,' READ_PhyPar - Error while processing line: ',/,a)
 #ifdef DISTRIBUTE
   60  FORMAT (/,1x,a,/,                                                 &
-<<<<<<< HEAD
      &        /,1x,'Operating system : ',a,                             &
      &        /,1x,'CPU/hardware     : ',a,                             &
      &        /,1x,'Compiler system  : ',a,                             &
      &        /,1x,'Compiler command : ',a,                             &
      &        /,1x,'Compiler flags   : ',a,                             &
-     &        /,1x,'MPI Communicator : ',i0,2x,'PET size = ',i0,/,      &
-     &        /,1x,'Input Script  : ',a,/,                              &
-     &        /,1x,'Git Root URL  : ',a,                                &
-     &        /,1x,'Git Revision  : ',a,                                &
-     &        /,1x,'Git Status    : ',a,/,                              &
-     &        /,1x,'Host Name     : ',a,                                &
-     &        /,1x,'Local Root    : ',a,                                &
-     &        /,1x,'Header Dir    : ',a,                                &
-     &        /,1x,'Header file   : ',a,                                &
-     &        /,1x,'Analytical Dir: ',a)
-=======
-     &        /,1x,'Operating system  : ',a,                            &
-     &        /,1x,'CPU/hardware      : ',a,                            &
-     &        /,1x,'Compiler system   : ',a,                            &
-     &        /,1x,'Compiler command  : ',a,                            &
-     &        /,1x,'Compiler flags    : ',a,                            &
-#ifdef DISTRIBUTE
 # ifdef DISJOINTED
      &        /,1x,'Full Communicator : ',i0,',  PET size = ',i0,       &
      &         ',  Disjointed Subgroups = ',i0,                         &
@@ -6453,12 +6430,18 @@
      &        /,1x,'Task Communicator : ',i0,',  PET size = ',i0,       &
      &         ',  Color Range = ',i0,' to ',i0,                        &
 #  endif
-              /,                                                        &
 # else
      &        /,1x,'OCN Communicator  : ',i0,',  PET size = ',i0,/,     &
 # endif
-     &        /,1x,'Input Script      : ',a,/,                          &
->>>>>>> roms-trunk
+     &        /,1x,'Input Script  : ',a,/,                              &
+     &        /,1x,'Git Root URL  : ',a,                                &
+     &        /,1x,'Git Revision  : ',a,                                &
+     &        /,1x,'Git Status    : ',a,/,                              &
+     &        /,1x,'Host Name     : ',a,                                &
+     &        /,1x,'Local Root    : ',a,                                &
+     &        /,1x,'Header Dir    : ',a,                                &
+     &        /,1x,'Header file   : ',a,                                &
+     &        /,1x,'Analytical Dir: ',a)
 #else
   60  FORMAT (/,1x,a,/,                                                 &
      &        /,1x,'Operating system : ',a,                             &
