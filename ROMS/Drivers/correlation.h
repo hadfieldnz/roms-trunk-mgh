@@ -70,6 +70,7 @@
       USE mod_ncparam
       USE mod_scalars
 !
+      USE inp_par_mod,       ONLY : inp_par
       USE normalization_mod, ONLY : normalization
       USE strings_mod,       ONLY : FoundError
 !

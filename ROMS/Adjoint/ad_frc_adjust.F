@@ -250,7 +250,7 @@
               ad_tflux(i,j,it1,Linp,itrc)=ad_tflux(i,j,it1,Linp,itrc)+  &
      &                                    fac1*ad_stflx(i,j,itrc)
               ad_tflux(i,j,it2,Linp,itrc)=ad_tflux(i,j,it2,Linp,itrc)+  &
-     &                                  fac2*ad_stflx(i,j,itrc)
+     &                                    fac2*ad_stflx(i,j,itrc)
               ad_stflx(i,j,itrc)=0.0_r8
             END DO
           END DO

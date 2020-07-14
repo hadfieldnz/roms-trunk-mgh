@@ -1418,6 +1418,7 @@
       var_type=0
       var_ndim=0
       var_dim=0
+      status=nf90_noerr
       DO i=1,Matts
         DO j=1,LEN(att_name(1))
           att_name(i)(j:j)=' '

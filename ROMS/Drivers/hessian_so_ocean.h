@@ -50,6 +50,7 @@
       USE mod_fourdvar
       USE mod_netcdf
 !
+      USE inp_par_mod,       ONLY : inp_par
 #ifdef MCT_LIB
 # ifdef ATM_COUPLING
       USE ocean_coupler_mod, ONLY : initialize_ocn2atm_coupling

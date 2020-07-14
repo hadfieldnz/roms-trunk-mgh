@@ -834,7 +834,7 @@
         END IF
       END IF
 
-#  if defined FORWARD_MIXING     && \
+#  if defined FORWARD_MIXING && \
      (defined BVF_MIXING     || defined GLS_MIXING  || \
       defined LMD_MIXING     || defined MY25_MIXING)
 !

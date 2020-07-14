@@ -48,6 +48,7 @@
       USE mod_iounits
       USE mod_scalars
 !
+      USE inp_par_mod, ONLY : inp_par
       USE strings_mod, ONLY : FoundError
 !
 !  Imported variable declarations.

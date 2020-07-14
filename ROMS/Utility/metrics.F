@@ -1356,7 +1356,6 @@
 !  Report convolution parameters.
 !
       IF (Master.and.LwrtInfo(ng)) THEN
-        LwrtInfo(ng)=.FALSE.
         DO rec=1,NSA
           DO is=1,NstateVar(ng)
             IF (rec.eq.1) THEN

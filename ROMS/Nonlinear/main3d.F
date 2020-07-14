@@ -56,7 +56,7 @@
       USE forcing_mod,          ONLY : forcing
 # endif
 # if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
-      USE frc_adjust_mod,       ONLY : frc_adjust
+      USE frc_adjust_mod,       ONLY : frc_adjust, load_frc
 # endif
 # ifdef GLS_MIXING
       USE gls_corstep_mod,      ONLY : gls_corstep
@@ -438,6 +438,7 @@
               IF (iic(ng).lt.(ntend(ng)+1)) THEN
                 DO tile=first_tile(ng),last_tile(ng),+1
                   CALL frc_adjust (ng, tile, Lfinp(ng))
+                  CALL load_frc (ng, tile, Lfout(ng))
                 END DO
 !$OMP BARRIER
               END IF

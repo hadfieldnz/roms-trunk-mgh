@@ -211,8 +211,9 @@
         END DO
 # ifndef SP4DVAR
         IF (Ifirst.eq.0) THEN
-          WRITE (stdout,30) tend, tdays(ng)
-          STOP
+          IF (Master) WRITE (stdout,30) tend, tdays(ng)
+          exit_flag=2
+          RETURN
         END IF
 # endif
       ELSE
@@ -226,8 +227,9 @@
         END DO
 # ifndef SP4DVAR
         IF (Ifirst.eq.0) THEN
-          WRITE (stdout,30) tdays(ng), tend
-          STOP
+          IF (Master) WRITE (stdout,30) tdays(ng), tend
+          exit_flag=2
+          RETURN
         END IF
 # endif
       END IF

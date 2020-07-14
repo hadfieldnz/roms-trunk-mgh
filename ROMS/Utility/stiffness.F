@@ -285,7 +285,7 @@
         rx1(ng)=buffer(5)
 # endif
 #endif
-        IF (Master) THEN
+        IF (Master.and.LwrtInfo(ng)) THEN
           WRITE (stdout,10) ng
   10      FORMAT (/,' Basin information for Grid ',i2.2,':',/)
 #ifdef SOLVE3D

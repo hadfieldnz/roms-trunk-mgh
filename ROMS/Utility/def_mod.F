@@ -50,6 +50,7 @@
 
       integer :: iterDim, datumDim, recordDim
       integer :: stateDim, stateDimp, surveyDim
+      integer :: Fcount
 # ifdef RPCG
       integer :: datumDimp, NouterDimp
 # endif
@@ -2263,6 +2264,16 @@
           RETURN
         END IF
 # endif
+
+# if defined I4DVAR || defined BACKGROUND
+!
+!  Set unlimited time record dimension to the appropriate value.
+!
+        DAV(ng)%Rindex=rec_size
+        Fcount=DAV(ng)%Fcount
+        DAV(ng)%Nrec(Fcount)=rec_size
+# endif
+
       END IF QUERY
 
   10  FORMAT (/,6x,'DEF_MOD   - creating model/observation data',       &

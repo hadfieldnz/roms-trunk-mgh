@@ -473,7 +473,7 @@
 !  Report input parameters.
 !-----------------------------------------------------------------------
 !
-      IF (Lwrite) THEN
+      IF (Master.and.Lwrite) THEN
         DO ng=1,Ngrids
           IF (Lbiology(ng)) THEN
             WRITE (out,50) ng

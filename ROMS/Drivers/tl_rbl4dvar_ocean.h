@@ -75,6 +75,7 @@
       USE mod_iounits
       USE mod_scalars
 !
+      USE inp_par_mod,       ONLY : inp_par
 #ifdef MCT_LIB
 # ifdef ATM_COUPLING
       USE ocean_coupler_mod, ONLY : initialize_ocn2atm_coupling
@@ -1024,7 +1025,7 @@
             CALL initialize_boundary (ng, tile, iTLM)
 # endif
           END DO
-!$OMF END PARALLEL
+!$OMP END PARALLEL
         END DO
 !
 !  Initialize nonlinear model INI(ng)%name file, record outer+2.
