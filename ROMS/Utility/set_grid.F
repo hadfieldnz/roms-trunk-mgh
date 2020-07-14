@@ -15,6 +15,9 @@
 !
       USE mod_param
       USE mod_parallel
+#ifdef NESTING
+      USE mod_nesting
+#endif
       USE mod_scalars
 !
       USE analytical_mod
