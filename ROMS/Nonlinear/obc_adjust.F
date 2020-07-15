@@ -491,10 +491,10 @@
         END IF
       END DO
 # endif
-
+!
       RETURN
       END SUBROUTINE obc_adjust_tile
-
+!
       SUBROUTINE load_obc (ng, tile, Lout)
 !
 !=======================================================================
@@ -568,7 +568,7 @@
 !  Load nonlinear open boundary fields into storage arrays.
 !-----------------------------------------------------------------------
 !
-      LOAD : IF (MOD(iic(ng)-1,nOBC(ng)).eq.0) THEN
+      LOAD_OBC : IF (MOD(iic(ng)-1,nOBC(ng)).eq.0) THEN
         OBCcount(ng)=OBCcount(ng)+1
         ic=OBCcount(ng)
 !
@@ -828,7 +828,7 @@
           END IF
         END DO
 # endif
-      END IF LOAD
+      END IF LOAD_OBC
 
       RETURN
       END SUBROUTINE load_obc_tile

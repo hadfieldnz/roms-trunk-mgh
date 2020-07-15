@@ -64,6 +64,7 @@
       USE mod_iounits
       USE mod_scalars
 !
+      USE inp_par_mod,       ONLY : inp_par
 #ifdef MCT_LIB
 # ifdef ATM_COUPLING
       USE ocean_coupler_mod, ONLY : initialize_ocn2atm_coupling
@@ -191,7 +192,8 @@
 #endif
 !
 !-----------------------------------------------------------------------
-!  Proccess background and mode prior error covariance standard
+!  Set application grid, metrics, and associated variables. Then,
+!  Proccess background and model prior error covariance standard
 !  deviations and normalization coefficients.
 !-----------------------------------------------------------------------
 !
@@ -199,6 +201,7 @@
         CALL prior_error (ng)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
+        SetGridConfig(ng)=.FALSE.
       END DO
 !
       RETURN

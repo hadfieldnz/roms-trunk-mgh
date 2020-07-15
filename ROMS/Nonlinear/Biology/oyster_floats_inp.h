@@ -196,7 +196,7 @@
 !  Report input parameters.
 !-----------------------------------------------------------------------
 !
-      IF (Lwrite) THEN
+      IF (Master.and.Lwrite) THEN
         DO ng=1,Ngrids
           WRITE (out,60) ng
           WRITE (out,70) Larvae_size0(ng), 'Larvae_size0',              &

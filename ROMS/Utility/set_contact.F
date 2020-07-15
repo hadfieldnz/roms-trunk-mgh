@@ -980,6 +980,15 @@
         RefinedGrid(rg)=Lrefinement(cr)
       END DO
 !
+!  Set the switch to compute vertical interpolation weights. Currently,
+!  they are only needed in non-coincident composite grids.
+!
+      IF (.not.ANY(Lcoincident).and.ANY(Lcomposite)) THEN
+        get_Vweights=.TRUE.
+      ELSE
+        get_Vweights=.FALSE.
+      END IF
+!
 !  Refinement grid scale factor.
 !
       DO ig=1,Ngrids

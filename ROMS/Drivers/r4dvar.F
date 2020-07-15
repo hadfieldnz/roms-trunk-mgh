@@ -1201,6 +1201,21 @@
       SourceFile=__FILE__
 !
 !-----------------------------------------------------------------------
+!  Set application grid, metrics, and associated variables and
+!  parameters.
+!-----------------------------------------------------------------------
+!
+!  The ROMS application grid configuration is done once. It is usually
+!  done in the "initial" kernel routine. However, since we are calling
+!  the "normalization" routine here, we need several grid variables and
+!  parameter.  Also, if reading only water points, we need to know the
+!  land/sea mask arrays to unpack.
+!
+      IF (SetGridConfig(ng)) THEN
+        CALL set_grid (ng, iNLM)
+      END IF
+!
+!-----------------------------------------------------------------------
 !  Read in standard deviation factors for error covariance.
 !-----------------------------------------------------------------------
 !

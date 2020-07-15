@@ -149,7 +149,7 @@
      &                                   Fdy(nentry(igrid)+1,igrid),    &
      &                                   Fdz(nentry(igrid)+1,igrid)
                 IF (igrid.gt.Ngrids) THEN
-                  IF (Lwrite) WRITE (out,60) fposnam
+                  IF (Master) WRITE (out,60) fposnam
                   exit_flag=4
                   RETURN
                 END IF
@@ -179,7 +179,7 @@
 !  Report input parameters.
 !-----------------------------------------------------------------------
 !
-      IF (Lwrite) THEN
+      IF (Master.and.Lwrite) THEN
         DO ng=1,Ngrids
           IF (Lfloats(ng).and.Fprint(ng)) THEN
             IF (ncount(ng).ne.Nfloats(ng)) THEN
@@ -219,11 +219,13 @@
         END IF
       END IF
       exit_flag=4
-      IF (FoundError(exit_flag, NoError, __LINE__,                       &
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
  50   CONTINUE
-      IF (Lwrite) WRITE (out,120) 'biological floats behavior File:  ', &
-     &                            TRIM(fname)
+      IF (Master.and.Lwrite) THEN
+        WRITE (out,120) 'biological floats behavior File:  ',           &
+     &                  TRIM(fname)
+      END IF
 # endif
 !
 !-----------------------------------------------------------------------

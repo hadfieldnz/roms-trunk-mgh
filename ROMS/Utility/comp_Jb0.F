@@ -161,6 +161,8 @@
       USE mod_param
       USE mod_ncparam
       USE mod_fourdvar
+      USE mod_iounits
+      USE mod_netcdf
 # if defined ADJUST_STFLUX   || defined ADJUST_WSTRESS || \
      defined ADJUST_BOUNDARY
       USE mod_scalars
@@ -170,6 +172,7 @@
 # endif
 !
       USE state_dotprod_mod, ONLY : state_dotprod
+      USE strings_mod,       ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -326,9 +329,21 @@
      &                    ad_vbar(:,:,LADJ), tl_vbar(:,:,LTLM),         &
 # endif
      &                    ad_zeta(:,:,LADJ), tl_zeta(:,:,LTLM))
-
+!
+!  Compute outer loop background cost function.
+!
       Jb0(outLoop)=Jb0(outLoop)+dot(0)
-
+!
+!  Write out outer loop background cost function into 4D-Var NetCDF
+!  (DAV struc) file.  Recall that Jb0(0:Nouter)
+!
+      CALL netcdf_put_fvar (ng, model, DAV(ng)%name,                    &
+     &                      'Jb0', Jb0(0:),                             &
+     &                      (/1/), (/Nouter+1/),                        &
+     &                      ncid = DAV(ng)%ncid)
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
+!
       RETURN
       END SUBROUTINE comp_Jb0_tile
 !

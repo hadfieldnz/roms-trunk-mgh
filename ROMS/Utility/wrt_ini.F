@@ -1037,7 +1037,7 @@
      &                   __FILE__)) THEN
             IF (Master) THEN
               WRITE (stdout,10) TRIM(Vname(1,idSbry(isTvar(itrc)))),    &
-     &                          INI(ng)%Rindex
+     &                          OutRec
             END IF
             exit_flag=3
             ioerror=status

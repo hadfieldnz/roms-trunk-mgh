@@ -549,9 +549,16 @@
      &    (ObsTime(ng).lt.(time(ng)+0.5_r8*dt(ng)))) THEN
         ProcessObs=.TRUE.
         CALL obs_read (ng, iNLM, .FALSE.)
+#   ifdef SP4DVAR
+        IF (iic(ng).ne.ntend(ng)+1.or.Lsadd(ng)) THEN
+          CALL obs_write (ng, tile, iNLM)
+          CALL obs_cost (ng, iNLM)
+        END IF
+#   else
         CALL obs_write (ng, tile, iNLM)
-#   if !(defined R4DVAR || defined VERIFICATION)
+#    if !(defined R4DVAR || defined VERIFICATION)
         CALL obs_cost (ng, iNLM)
+#    endif
 #   endif
       ELSE
         ProcessObs=.FALSE.

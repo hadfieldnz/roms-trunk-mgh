@@ -325,6 +325,10 @@
         integer :: inner = 0                    ! inner loop counter
         integer :: outer = 0                    ! outer loop counter
 !
+! Set checksum algorithm: "adler32" or "crc32"
+!
+        character (len=*), parameter :: HashMethod = "crc32"
+!
 ! Split 4D-Var phase.
 !
         character (len=20) :: Phase4DVAR
@@ -362,6 +366,11 @@
 !  Switch to use three ghost-points in the halo region.
 !
         logical :: ThreeGhostPoints = .FALSE.
+!
+!  Switch to set-up application grid, metrics, and associated variables
+!  and parameters.
+!
+        logical, allocatable :: SetGridConfig(:)
 !
 !  Switch to proccess nudging coefficients for radiation open boundary
 !  conditions.
@@ -944,10 +953,19 @@
         logical, allocatable :: LwrtState2d(:)
         logical, allocatable :: LwrtTime(:)
 !
+!  Switch to write 4D-Var cost functions to DAV NetCDF.
+!
+        logical, allocatable :: LwrtCost(:)
+!
 !  Switch to write out adjoint surface forcing fields adjusted by the
 !  4DVAR algorithms.
 !
         logical, allocatable :: Ladjusted(:)
+!
+!  Switch to append information to an existing ROMS standard output
+!  log file.
+!
+        logical :: Lappend = .FALSE.
 !
 !  Switch to read input open boundary conditions data.
 !
@@ -1981,6 +1999,11 @@
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
 
+      IF (.not.allocated(SetGridConfig)) THEN
+        allocate ( SetGridConfig(Ngrids) )
+        Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
+      END IF
+
       IF (.not.allocated(NudgingCoeff)) THEN
         allocate ( NudgingCoeff(Ngrids) )
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
@@ -2716,6 +2739,10 @@
         allocate ( LwrtTime(Ngrids) )
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
+      IF (.not.allocated(LwrtCost)) THEN
+        allocate ( LwrtCost(Ngrids) )
+        Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
+      END IF
 
       IF (.not.allocated(Ladjusted)) THEN
         allocate ( Ladjusted(Ngrids) )
@@ -3368,6 +3395,7 @@
         NSperiodic(ng)=.FALSE.
         NudgingCoeff(ng)=.FALSE.
         ObcData(ng)=.FALSE.
+        SetGridConfig(ng)=.TRUE.
         RefineScale(ng)=0
         gamma2(ng)=-1.0_r8
         Vtransform(ng)=1
@@ -3558,7 +3586,11 @@
         LdefFLT(ng)=.TRUE.
 #endif
         LdefHIS(ng)=.TRUE.
+#ifdef FOUR_DVAR
+        LdefINI(ng)=.TRUE.
+#else
         LdefINI(ng)=.FALSE.
+#endif
         LdefIRP(ng)=.FALSE.
         LdefITL(ng)=.FALSE.
         LdefMOD(ng)=.FALSE.
@@ -3591,6 +3623,7 @@
         SOinitial(ng)=.FALSE.
 #endif
         LwrtTime(ng)=.TRUE.
+        LwrtCost(ng)=.FALSE.
         ldefout(ng)=.FALSE.
 
       END DO

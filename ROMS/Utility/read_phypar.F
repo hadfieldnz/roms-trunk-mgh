@@ -3870,7 +3870,7 @@
 !  Report input parameters.
 !-----------------------------------------------------------------------
 !
-      IF (Lwrite) THEN
+      IF (Master.and.Lwrite) THEN
         IF (git_status.EQ.0) THEN
           git_msg = 'The working tree is clean'
         ELSE
