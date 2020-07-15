@@ -1247,9 +1247,9 @@
 !  J. Levin (Jupiter Intelligence Inc.) and J. Wilkin
 !
       IF (LwSrc(ng)) THEN
-        IF (.not.((tl_Hadvection(itrc,ng)%MPDATA).and.                  &
-     &            (tl_Vadvection(itrc,ng)%MPDATA))) THEN
-          DO itrc=1,NT(ng)
+        DO itrc=1,NT(ng)
+          IF (.not.((tl_Hadvection(itrc,ng)%MPDATA).and.                  &
+     &              (tl_Vadvection(itrc,ng)%MPDATA))) THEN
             DO is=1,Nsrc(ng)
               Isrc=SOURCES(ng)%Isrc(is)
               Jsrc=SOURCES(ng)%Jsrc(is)
@@ -1259,6 +1259,7 @@
                   cff=dt(ng)*pm(i,j)*pn(i,j)
 # ifdef SPLINES_VDIFF
                   cff=cff*oHz(Isrc,Jsrc,k)
+                  tl_cff=cff*tl_oHz(Isrc,Jsrc,k)
 # endif
                   IF (LtracerSrc(itrc,ng)) THEN
                     cff3=SOURCES(ng)%Tsrc(is,k,itrc)
@@ -1271,6 +1272,20 @@
 !>   &                                     cff*SOURCES(ng)%Qsrc(is,k)*  &
 !>   &                                     cff3
 !>
+# ifdef SPLINES_VDIFF
+                  tl_t(Isrc,Jsrc,k,nnew,itrc)=                          &
+     &                                  tl_t(Isrc,Jsrc,k,nnew,itrc)+    &
+     &                                  cff*(SOURCES(ng)%tl_Qsrc(is,k)* &
+     &                                       cff3+                      &
+     &                                       SOURCES(ng)%Qsrc(is,k)*    &
+     &                                       tl_cff3)+                  &
+     &                                  tl_cff*SOURCES(ng)%Qsrc(is,k)*  &
+     &                                         cff3-                    &
+#  ifdef TL_IOMS
+     &                                  2.0_r8*cff*                     &
+     &                                  SOURCES(ng)%Qsrc(is,k)*cff3
+#  endif
+# else
                   tl_t(Isrc,Jsrc,k,nnew,itrc)=                          &
      &                                  tl_t(Isrc,Jsrc,k,nnew,itrc)+    &
      &                                  cff*(SOURCES(ng)%tl_Qsrc(is,k)* &
@@ -1281,11 +1296,12 @@
      &                                  cff*SOURCES(ng)%Qsrc(is,k)*     &
      &                                  cff3
 #  endif
+# endif
                 END DO
               END IF
             END DO
-          END DO
-        END IF
+          END IF
+        END DO
       END IF
 !
 !-----------------------------------------------------------------------

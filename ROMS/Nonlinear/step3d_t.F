@@ -1316,9 +1316,9 @@
 !  J. Levin (Jupiter Intelligence Inc.) and J. Wilkin
 !
       IF (LwSrc(ng)) THEN
-        IF (.not.((Hadvection(itrc,ng)%MPDATA).and.                     &
-     &            (Vadvection(itrc,ng)%MPDATA))) THEN
-          DO itrc=1,NT(ng)
+        DO itrc=1,NT(ng)
+          IF (.not.((Hadvection(itrc,ng)%MPDATA).and.                   &
+     &              (Vadvection(itrc,ng)%MPDATA))) THEN
             DO is=1,Nsrc(ng)
               Isrc=SOURCES(ng)%Isrc(is)
               Jsrc=SOURCES(ng)%Jsrc(is)
@@ -1340,8 +1340,8 @@
                 END DO
               END IF
             END DO
-          END DO
-        END IF
+          END IF
+        END DO
       END IF
 !
 !-----------------------------------------------------------------------
