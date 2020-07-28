@@ -1,8 +1,8 @@
 #include "cppdefs.h"
 
+      MODULE rpcg_lanczos_mod
+
 #if defined WEAK_CONSTRAINT && defined RPCG
-      SUBROUTINE rpcg_lanczos (ng, model, outLoop, innLoop, NinnLoop,   &
-     &                         Lcgini)
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -35,6 +35,22 @@
 !      539-556.                                                        !
 !                                                                      !
 !=======================================================================
+!
+      implicit none
+!
+      PUBLIC  :: rpcg_lanczos
+      PUBLIC  :: cg_read_rpcg
+!
+      PRIVATE :: RPevecs
+      PRIVATE :: rprecond
+      PRIVATE :: cg_write_rpcg
+!
+      CONTAINS
+!
+!***********************************************************************
+      SUBROUTINE rpcg_lanczos (ng, model, outLoop, innLoop, NinnLoop,   &
+     &                         Lcgini)
+!***********************************************************************
 !
       USE mod_param
       USE mod_parallel
@@ -1136,17 +1152,17 @@
 100   FORMAT (/,1x,'(',i3.3,',',i3.3,'): ',                             &
      &        'New Ritz eigenvalues and their accuracy,  ',             &
      &        'RitzMaxErr = ',1p,e12.5,/)
-
+!
       RETURN
       END SUBROUTINE rpcg_lanczos
 !
+!***********************************************************************
       SUBROUTINE RPevecs (ng, outLoop, NinnLoop)
-!
-!=======================================================================
+!***********************************************************************
 !                                                                      !
 !  This routine computes the converged eigenvectors of (R_n+Cobs).     !
 !                                                                      !
-!=======================================================================
+!***********************************************************************
 !
       USE mod_param
       USE mod_parallel
@@ -1241,13 +1257,13 @@
       RETURN
       END SUBROUTINE RPevecs
 !
+!***********************************************************************
       SUBROUTINE rprecond (ng, Lscale, Laug, outLoop, NinnLoop, py)
-!
-!=======================================================================
+!***********************************************************************
 !                                                                      !
 !  This routine is the preconditioner in observation space.            !
 !                                                                      !
-!=======================================================================
+!***********************************************************************
 !
       USE mod_param
       USE mod_scalars
@@ -1260,8 +1276,8 @@
 !
       logical, intent(in) :: Laug
       integer, intent(in) :: ng, Lscale, outLoop, NinnLoop
-!  AUGMENTED
-      real(r8), intent(inout) :: py(Ndatum(ng)+1)
+!
+      real(r8), intent(inout) :: py(Ndatum(ng)+1)            ! AUGMENTED
 !
 !  Local variable declarations.
 !
@@ -1400,16 +1416,16 @@
       RETURN
       END SUBROUTINE rprecond
 !
+!***********************************************************************
       SUBROUTINE cg_write_rpcg (ng, model, innLoop, outLoop,            &
      &                          Jf, Jdata, Jmod, Jopt, Jb, Jobs, Jact,  &
      &                          preducv, preducy)
-!
-!=======================================================================
+!***********************************************************************
 !                                                                      !
 !  This routine writes conjugate gradient vectors into 4D-Var NetCDF   !
 !  (DAV struc) file for restart purposes.                              !
 !                                                                      !
-!=======================================================================
+!***********************************************************************
 !
       USE mod_param
       USE mod_parallel
@@ -1694,15 +1710,13 @@
 !
       RETURN
       END SUBROUTINE cg_write_rpcg
-
-# ifdef SPLIT_4DVAR
 !
       SUBROUTINE cg_read_rpcg (ng, model, outLoop)
 !
 !=======================================================================
 !                                                                      !
-!  If split 4D-Var and outer>1, this routine reads conjugate gradient  !
-!  variables for previous outer loops from 4D-Var NetCDF (DAV) file.   !
+!  This routine reads conjugate gradient variables for previous outer  !
+!  loops from 4D-Var NetCDF (DAV) file.                                !
 !                                                                      !
 !=======================================================================
 !
@@ -1921,9 +1935,6 @@
 !
       RETURN
       END SUBROUTINE cg_read_rpcg
-# endif
-#else
-      SUBROUTINE rpcg_lanczos
-      RETURN
-      END SUBROUTINE rpcg_lanczos
 #endif
+      END MODULE rpcg_lanczos_mod
+

@@ -7615,8 +7615,8 @@
       RETURN
       END SUBROUTINE precond
 !
+!***********************************************************************
       SUBROUTINE cg_write (ng, model, innLoop, outLoop)
-!
 !***********************************************************************
 !                                                                      !
 !  This routine writes conjugate gradient vectors into 4DVAR NetCDF    !
@@ -7845,8 +7845,8 @@
       RETURN
       END SUBROUTINE cg_write
 !
+!***********************************************************************
       SUBROUTINE cg_read (ng, model, outLoop)
-!
 !***********************************************************************
 !                                                                      !
 !  If split 4D-Var and outer>1, this routine reads conjugate gradient  !
@@ -7897,13 +7897,13 @@
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 !
-!  Read in Ritz eigenvalues.
+!  Read in Ritz eigenvalues from previous outer loop.
 !
       CALL netcdf_get_fvar (ng, model, DAV(ng)%name,                    &
      &                      'Ritz', Ritz,                               &
      &                      ncid = DAV(ng)%ncid,                        &
-     &                      start = (/1/),                              &
-     &                      total = (/Ninner/))
+     &                      start = (/1,outLoop-1/),                    &
+     &                      total = (/Ninner+1,1/))
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 !

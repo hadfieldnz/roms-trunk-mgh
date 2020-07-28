@@ -272,6 +272,7 @@
       USE mod_scalars
       USE mod_stepping
 !
+      USE congrad_mod,       ONLY : congrad
       USE convolve_mod,      ONLY : error_covariance
 #ifdef ADJUST_BOUNDARY
       USE mod_boundary,      ONLY : initialize_boundary

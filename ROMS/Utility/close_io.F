@@ -147,7 +147,8 @@
         END IF
 #endif
 #if defined FORWARD_READ || defined FORWARD_WRITE
-        IF ((FWD(ng)%ncid.ne.-1).and.(FWD(ng)%ncid.eq.HIS(ng)%ncid)) THEN
+        IF ((FWD(ng)%ncid.ne.-1).and.                                  &
+     &      (FWD(ng)%ncid.eq.HIS(ng)%ncid)) THEN
           FWD(ng)%ncid=-1
         END IF
         IF (FWD(ng)%ncid.ne.-1) THEN

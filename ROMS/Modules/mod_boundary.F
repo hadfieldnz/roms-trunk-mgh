@@ -2445,7 +2445,7 @@
         END IF
       END IF
 
-      IF ((model.eq.0).or.(model.eq.iTLM)) THEN
+      IF ((model.eq.0).or.(model.eq.iTLM).or.(model.eq.iRPM)) THEN
         IF (DOMAIN(ng)%NorthEast_Test(tile)) THEN
 # ifdef SOLVE3D
           BOUNDARY(ng) % tl_t_obc = IniVal

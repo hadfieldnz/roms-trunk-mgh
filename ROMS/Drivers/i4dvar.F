@@ -534,7 +534,7 @@
 !
 !  Local variable declarations.
 !
-      integer :: i, lstr, my_inner, ng, tile
+      integer :: i, ifile, lstr, my_inner, ng, tile
       integer :: Fcount, InpRec, Lcon, Lsav
 # ifdef PROFILE
       integer :: thread
@@ -544,6 +544,8 @@
 # ifdef SPLIT_4DVAR
       real(dp) :: stime
 # endif
+!
+      character (len=10) :: suffix
 !
       SourceFile=__FILE__
 !
@@ -706,6 +708,15 @@
         WRITE (HIS(ng)%name,10) TRIM(FWD(ng)%head), my_outer-1
         lstr=LEN_TRIM(HIS(ng)%name)
         HIS(ng)%base=HIS(ng)%name(1:lstr-3)
+        IF (HIS(ng)%Nfiles.gt.1) THEN
+          DO ifile=1,HIS(ng)%Nfiles
+            WRITE (suffix,"('_',i4.4,'.nc')") ifile
+            HIS(ng)%files(ifile)=TRIM(HIS(ng)%base)//TRIM(suffix)
+          END DO
+          HIS(ng)%name=TRIM(HIS(ng)%files(1))
+        ELSE
+          HIS(ng)%files(1)=TRIM(HIS(ng)%name)
+        END IF
       END DO
 !
 !  Read in 4D-Var starting time (sec) from nonlinear trajectory.
@@ -1200,7 +1211,7 @@
 !  ADM(ng)%name history NetCDF file. Noticed that the lastest adjoint
 !  solution record is over-written in the NetCDF file for future use.
 !  The switch "LwrtState2d" is activated to write out state arrays
-!  instead ad_*_sol arrays.
+!  instead ad_*_sol arrays (HGA).
 !
         DO ng=1,Ngrids
 # if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
@@ -1679,12 +1690,14 @@
 !
 !  Local variable declarations.
 !
-      integer :: i, lstr, ng, tile
+      integer :: i, ifile, lstr, ng, tile
       integer :: InpRec
 # ifdef PROFILE
       integer :: thread
 # endif
       integer :: Fcount
+!
+      character (len=10) :: suffix
 !
       SourceFile=__FILE__
 !
@@ -1814,6 +1827,15 @@
         WRITE (HIS(ng)%name,10) TRIM(FWD(ng)%head), Nouter-1
         lstr=LEN_TRIM(HIS(ng)%name)
         HIS(ng)%base=HIS(ng)%name(1:lstr-3)
+        IF (HIS(ng)%Nfiles.gt.1) THEN
+          DO ifile=1,HIS(ng)%Nfiles
+            WRITE (suffix,"('_',i4.4,'.nc')") ifile
+            HIS(ng)%files(ifile)=TRIM(HIS(ng)%base)//TRIM(suffix)
+          END DO
+          HIS(ng)%name=TRIM(HIS(ng)%files(1))
+        ELSE
+          HIS(ng)%files(1)=TRIM(HIS(ng)%name)
+        END IF
       END DO
 !
       CALL edit_multifile ('HIS2BLK')

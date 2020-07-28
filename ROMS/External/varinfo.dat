@@ -5569,6 +5569,15 @@
   'nulvar'
   1.0d0
 
+'NLmodel_final'                                    ! Output
+  'final nonlinear model at observation locations'
+  'state variable units'
+  'nulvar'
+  'datum'
+  'idNLmf'
+  'nulvar'
+  1.0d0
+
 'NLmodel_value'                                    ! Output
   'nonlinear model at observation locations'
   'state variable units'
@@ -5623,7 +5632,7 @@
   'nulvar'
   1.0d0
 
-'residual'                                       ! Output
+'residual'                                         ! Output
   '4D-Var residual: observation minus analysis, d_a = y - H(x_b + dx_a)'
   'state variable units'                           ! [state units]
   'nulvar'

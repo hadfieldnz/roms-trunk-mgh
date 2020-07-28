@@ -119,7 +119,6 @@
         CALL wclock_on (ng, iADM, 82, __LINE__,                         &
      &                  __FILE__)
 # endif
-!$OMP PARALLEL
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
 # ifdef BALANCE_OPERATOR
@@ -128,7 +127,6 @@
           CALL ad_variability (ng, tile, Rold(ng), Lweak)
           CALL ad_convolution (ng, tile, Rold(ng), Lweak, 2)
         END DO
-!$OMP END PARALLEL
 # ifdef PROFILE
         CALL wclock_off (ng, iADM, 82, __LINE__,                        &
      &                   __FILE__)
@@ -148,7 +146,6 @@
         CALL wclock_on (ng, iTLM, 82, __LINE__,                         &
      &                  __FILE__)
 # endif
-!$OMP PARALLEL
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL load_ADtoTL (ng, tile, Rold(ng), Rnew(ng), add)
           CALL tl_convolution (ng, tile, Rnew(ng), Lweak, 2)
@@ -157,7 +154,6 @@
           CALL tl_balance (ng, tile, Rini, Rnew(ng))
 # endif
         END DO
-!$OMP END PARALLEL
 # ifdef PROFILE
         CALL wclock_off (ng, iTLM, 82, __LINE__,                        &
      &                   __FILE__)
@@ -255,11 +251,9 @@
 !  Clear adjoint state arrays.
 !
       DO ng=1,Ngrids
-!$OMP PARALLEL
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL initialize_ocean (ng, tile, iADM)
         END DO
-!$OMP END PARALLEL
       END DO
 !
 !  Get number of records in adjoint NetCDF and initialize indices.
@@ -321,7 +315,6 @@
         CALL wclock_on (ng, model, 82, __LINE__,                        &
      &                  __FILE__)
 # endif
-!$OMP PARALLEL
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
 # ifdef BALANCE_OPERATOR
@@ -335,7 +328,6 @@
           CALL initialize_boundary (ng, tile, iTLM)
 # endif
         END DO
-!$OMP END PARALLEL
 # ifdef PROFILE
         CALL wclock_off (ng, model, 82, __LINE__,                       &
      &                   __FILE__)
@@ -356,7 +348,6 @@
         CALL wclock_on (ng, model, 82, __LINE__,                        &
      &                  __FILE__)
 # endif
-!$OMP PARALLEL
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL load_ADtoTL (ng, tile, Rold(ng), Rold(ng), add)
           CALL tl_convolution (ng, tile, Rold(ng), Lweak, 2)
@@ -365,7 +356,6 @@
           CALL tl_balance (ng, tile, Rini, Rold(ng))
 # endif
         END DO
-!$OMP END PARALLEL
 
 # ifdef POSTERIOR_ERROR_I
 !
@@ -373,11 +363,9 @@
 !  into ADM so that it can be written to Hessian NetCDF file.
 !
         IF (Lposterior) THEN
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
           END DO
-!$OMP END PARALLEL
         END IF
 # endif
 # ifdef PROFILE
@@ -405,12 +393,10 @@
 !
         add=.FALSE.
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
             CALL rp_ini_adjust (ng, tile, Rnew(ng), Rold(ng))
           END DO
-!$OMP END PARALLEL
         END DO
       END IF
 
@@ -433,12 +419,10 @@
 !
         add=.FALSE.
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
             CALL ini_adjust (ng, tile, Rold(ng), Rnew(ng))
           END DO
-!$OMP END PARALLEL
         END DO
       END IF
 #  endif
@@ -536,17 +520,13 @@
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
 !
-!$OMP PARALLEL
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL aug_oper (ng, tile, LTLM1, LTLM2)
             END DO
-!$OMP END PARALLEL
 !
-!$OMP PARALLEL
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL sum_grad (ng, tile, LTLM1, LTLM2)
             END DO
-!$OMP END PARALLEL
 !
 !  Need to read adjoint netcdf file in reverse.
 !
@@ -555,11 +535,9 @@
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
 !
-!$OMP PARALLEL
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL sum_grad (ng, tile, LTLM1, LTLM2)
             END DO
-!$OMP END PARALLEL
 !
 !  Write the current sum of adjoint solutions into record jrec of the
 !  ITL file.
@@ -588,10 +566,10 @@
 !
       DO ng=1,Ngrids
         IF (Nrec(ng).gt.3) THEN
-# ifdef PROFILE
+#  ifdef PROFILE
           CALL wclock_on (ng, model, 82, __LINE__,                      &
      &                    __FILE__)
-# endif
+#  endif
           DO irec=1,Nrec(ng)-1
 !
 !  Read adjoint solution. Since routine "get_state" loads data into the
@@ -613,39 +591,37 @@
 !
             Lweak=.TRUE.
             add=.FALSE.
-!$OMP PARALLEL
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
-# ifdef BALANCE_OPERATOR
+#  ifdef BALANCE_OPERATOR
               CALL ad_balance (ng, tile, Rini, Rold(ng))
-# endif
+#  endif
               CALL ad_variability (ng, tile, Rold(ng), Lweak)
               CALL ad_convolution (ng, tile, Rold(ng), Lweak, 2)
               CALL initialize_ocean (ng, tile, iTLM)
               CALL initialize_forces (ng, tile, iTLM)
-# ifdef ADJUST_BOUNDARY
+#  ifdef ADJUST_BOUNDARY
               CALL initialize_boundary (ng, tile, iTLM)
-# endif
+#  endif
             END DO
-!$OMP END PARALLEL
 !
 !  Overwrite ADM(ng)%name history NetCDF file with convolved adjoint
 !  solution.
 !
             kstp(ng)=Rold(ng)
-# ifdef SOLVE3D
+#  ifdef SOLVE3D
             nstp(ng)=Rold(ng)
-# endif
+#  endif
             CALL ad_wrt_his (ng)
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
           END DO
           LwrtState2d(ng)=.FALSE.
           LwrtTime(ng)=.TRUE.
-# ifdef PROFILE
+#  ifdef PROFILE
         CALL wclock_off (ng, model, 82, __LINE__,                       &
      &                   __FILE__)
-# endif
+#  endif
         END IF
       END DO
 !
@@ -654,21 +630,19 @@
 !
       DO ng=1,Ngrids
         TLF(ng)%Rindex=0
-!$OMP PARALLEL
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL time_corr (ng, tile, iADM, ADM(ng)%name)
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
-!$OMP END PARALLEL
       END DO
 !
       DO ng=1,Ngrids
         IF (Nrec(ng).gt.3) THEN
-# ifdef PROFILE
+#  ifdef PROFILE
           CALL wclock_on (ng, model, 82, __LINE__,                      &
      &                    __FILE__)
-# endif
+#  endif
           ADM(ng)%Rindex=0
           LwrtState2d(ng)=.TRUE.
           DO irec=Nrec(ng)-1,1,-1
@@ -686,34 +660,32 @@
 !
             Lweak=.TRUE.
             add=.FALSE.
-!$OMP PARALLEL
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL tl_convolution (ng, tile, Rold(ng), Lweak, 2)
               CALL tl_variability (ng, tile, Rold(ng), Lweak)
-# ifdef BALANCE_OPERATOR
+#  ifdef BALANCE_OPERATOR
               CALL tl_balance (ng, tile, Rini, Rold(ng))
-# endif
+#  endif
               CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
             END DO
-!$OMP END PARALLEL
 !
 !  Overwrite ADM(ng)%name history NetCDF file with convolved adjoint
 !  solution.
 !
             kstp(ng)=Rold(ng)
-# ifdef SOLVE3D
+#  ifdef SOLVE3D
             nstp(ng)=Rold(ng)
-# endif
+#  endif
             CALL ad_wrt_his (ng)
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
           END DO
           LwrtState2d(ng)=.FALSE.
           LwrtTime(ng)=.TRUE.
-# ifdef PROFILE
+#  ifdef PROFILE
           CALL wclock_off (ng, model, 82, __LINE__,                     &
      &                     __FILE__)
-# endif
+#  endif
         END IF
       END DO
 
@@ -728,10 +700,10 @@
 !
       DO ng=1,Ngrids
         IF (Nrec(ng).gt.3) THEN
-# ifdef PROFILE
+#  ifdef PROFILE
           CALL wclock_on (ng, model, 82, __LINE__,                      &
      &                    __FILE__)
-# endif
+#  endif
           DO irec=1,Nrec(ng)-1
 !
 !  Read adjoint solution. Since routine "get_state" loads data into the
@@ -753,21 +725,19 @@
 !
             Lweak=.TRUE.
             add=.FALSE.
-!$OMP PARALLEL
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
-# ifdef BALANCE_OPERATOR
+#  ifdef BALANCE_OPERATOR
               CALL ad_balance (ng, tile, Rini, Rold(ng))
-# endif
+#  endif
               CALL ad_variability (ng, tile, Rold(ng), Lweak)
               CALL ad_convolution (ng, tile, Rold(ng), Lweak, 2)
               CALL initialize_ocean (ng, tile, iTLM)
               CALL initialize_forces (ng, tile, iTLM)
-# ifdef ADJUST_BOUNDARY
+#  ifdef ADJUST_BOUNDARY
               CALL initialize_boundary (ng, tile, iTLM)
-# endif
+#  endif
             END DO
-!$OMP END PARALLEL
 !
 !  To insure symmetry, convolve resulting filtered adjoint solution
 !  from above with the squared-root (half of steps) tangent linear
@@ -779,34 +749,32 @@
 !
             Lweak=.TRUE.
             add=.FALSE.
-!$OMP PARALLEL
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL load_ADtoTL (ng, tile, Rold(ng), Rold(ng), add)
               CALL tl_convolution (ng, tile, Rold(ng), Lweak, 2)
               CALL tl_variability (ng, tile, Rold(ng), Lweak)
-# ifdef BALANCE_OPERATOR
+#  ifdef BALANCE_OPERATOR
               CALL tl_balance (ng, tile, Rini, Rold(ng))
-# endif
+#  endif
               CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
             END DO
-!$OMP END PARALLEL
 !
 !  Overwrite ADM(ng)%name history NetCDF file with final solution.
 !
             kstp(ng)=Rold(ng)
-# ifdef SOLVE3D
+#  ifdef SOLVE3D
             nstp(ng)=Rold(ng)
-# endif
+#  endif
             CALL ad_wrt_his (ng)
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
           END DO
           LwrtState2d(ng)=.FALSE.
           LwrtTime(ng)=.TRUE.
-# ifdef PROFILE
+#  ifdef PROFILE
           CALL wclock_off (ng, model, 82, __LINE__,                     &
      &                     __FILE__)
-# endif
+#  endif
         END IF
       END DO
 # endif
@@ -890,7 +858,6 @@
         CALL wclock_on (ng, iADM, 82, __LINE__,                         &
      &                  __FILE__)
 # endif
-!$OMP PARALLEL
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL load_TLtoAD (ng, tile, Rold(ng), Rold(ng), add)
 # ifdef BALANCE_OPERATOR
@@ -898,11 +865,10 @@
 # endif
           CALL ad_variability (ng, tile, Rold(ng), Lweak)
           CALL ad_convolution (ng, tile, Rold(ng), Lweak, 2)
-!AMM Important.
+! AMM Important.
           CALL initialize_ocean (ng, tile, iTLM)
           CALL initialize_forces (ng, tile, iTLM)
         END DO
-!$OMP END PARALLEL
 # ifdef PROFILE
         CALL wclock_off (ng, iADM, 82, __LINE__,                        &
      &                   __FILE__)
@@ -922,7 +888,6 @@
         CALL wclock_on (ng, iTLM, 82, __LINE__,                         &
      &                  __FILE__)
 # endif
-!$OMP PARALLEL
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL load_ADtoTL (ng, tile, Rold(ng), Rnew(ng), add)
           CALL tl_convolution (ng, tile, Rnew(ng), Lweak, 2)
@@ -931,7 +896,6 @@
           CALL tl_balance (ng, tile, Rini, Rnew(ng))
 # endif
         END DO
-!$OMP END PARALLEL
 # ifdef PROFILE
         CALL wclock_off (ng, iTLM, 82, __LINE__,                        &
      &                   __FILE__)
