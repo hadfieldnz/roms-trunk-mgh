@@ -926,7 +926,9 @@
 
         logical, allocatable :: LreadADM(:)      ! Read ADM multi-files
         logical, allocatable :: LreadBLK(:)      ! Read NLM bulk fluxes
-        logical, allocatable :: LreadFWD(:)      ! Read NLM trajectory
+        logical, allocatable :: LreadFRC(:)      ! Read FRC files
+        logical, allocatable :: LreadFWD(:)      ! Read FWD trajectory
+        logical, allocatable :: LreadQCK(:)      ! Read QCK trajectory
         logical, allocatable :: LreadTLM(:)      ! Read TLM multi-files
 
         logical, allocatable :: LwrtADJ(:)       ! Write adjoint file
@@ -2665,8 +2667,16 @@
         allocate ( LreadBLK(Ngrids) )
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
+      IF (.not.allocated(LreadFRC)) THEN
+        allocate ( LreadFRC(Ngrids) )
+        Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
+      END IF
       IF (.not.allocated(LreadFWD)) THEN
         allocate ( LreadFWD(Ngrids) )
+        Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
+      END IF
+      IF (.not.allocated(LreadQCK)) THEN
+        allocate ( LreadQCK(Ngrids) )
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
       IF (.not.allocated(LreadTLM)) THEN
@@ -3606,7 +3616,13 @@
 #endif
         LreadADM(ng)=.FALSE.
         LreadBLK(ng)=.FALSE.
+#ifdef FRC_FILE
+        LreadFRC(ng)=.TRUE.
+#else
+        LreadFRC(ng)=.FALSE.
+#endif
         LreadFWD(ng)=.FALSE.
+        LreadQCK(ng)=.FALSE.
         LreadTLM(ng)=.FALSE.
         LwrtADJ(ng)=.FALSE.
         LwrtAVG(ng)=.FALSE.

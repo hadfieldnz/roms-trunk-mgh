@@ -438,17 +438,22 @@
 #  else
             ObsVetting(iobs)=1.0_r8
 #  endif
+#  ifndef ALLOW_BOTTOM_OBS
 !
-!  Reject observations that lie in the lower most grid box (AMM).
+!  Reject observations that lie in the lower bottom grid cell (k=1) to
+!  avoid clustering due shallowing of bathymetry during smoothing and
+!  coarse level half-thickness (-h < Zobs < Adepth(:,:,1)) in deep
+!  water.
 !
             IF ((Zobs(iobs).gt.0.0_r8).and.(Zobs(iobs).le.1.0_r8)) THEN
               ObsVetting(iobs)=0.0_r8
             END IF
+#  endif
           END IF
         END IF
       END DO
+!
       RETURN
-
       END SUBROUTINE extract_obs3d
 # endif
 #endif

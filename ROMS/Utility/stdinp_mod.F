@@ -93,12 +93,19 @@
 !
 !  In distributed-memory configurations, the input physical parameters
 !  script is opened as a regular file.  It is read and processed by all
-!  parallel nodes.  This is to avoid a very complex broadcasting of the
+!  parallel nodes.  This is to avoid very complex broadcasting of the
 !  input parameters to all nodes.
+# ifdef MODEL_COUPLING
+!  However, in ESM coupling, the submission argument is 'coupling.in'
+!  and the Iname was read and processed in the coupling configuration
+!  elsewhere.
+# endif
 !
       InpUnit=1
+# ifndef MODEL_COUPLING
       IF (localPET.eq.0) CALL my_getarg (1, Iname)
       CALL mp_bcasts (1, 1, Iname)
+# endif
       OPEN (InpUnit, FILE=TRIM(Iname), FORM='formatted', STATUS='old',  &
      &      ERR=10)
       GotFile=.TRUE.
