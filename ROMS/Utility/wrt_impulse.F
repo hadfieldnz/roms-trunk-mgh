@@ -61,6 +61,9 @@
       integer :: INPncid, INPvid
       integer :: i, gtype, status, varid
       integer :: ibuffer(2), Vsize(4)
+# ifdef CHECKSUM
+      integer(i8b) :: Fhash
+# endif
 !
       real(r8) :: Fmin, Fmax
       real(dp) :: scale
@@ -99,6 +102,12 @@
         Vsize(i)=0
       END DO
 !
+# ifdef SP4DVAR
+      IF (Master)  WRITE (stdout,10) Nrec, TRIM(TLF(ng)%name)
+# else
+      IF (Master)  WRITE (stdout,10) Nrec-1, TRIM(TLF(ng)%name)
+# endif
+!
 !-----------------------------------------------------------------------
 !  Read adjoint solution and convert to impulse forcing.  Then, write
 !  impulse forcing into output NetCDF file.
@@ -109,7 +118,7 @@
       CALL netcdf_open (ng, model, INPncname, 0, INPncid)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) THEN
-        WRITE (stdout,10) TRIM(INPncname)
+        WRITE (stdout,20) TRIM(INPncname)
         RETURN
       END IF
 # ifdef SP4DVAR
@@ -152,7 +161,7 @@
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         ELSE
-          IF (Master) WRITE (stdout,20) TRIM(Vname(1,idtime)),          &
+          IF (Master) WRITE (stdout,30) TRIM(Vname(1,idtime)),          &
      &                                  TRIM(INPncname)
           exit_flag=2
         END IF
@@ -170,16 +179,30 @@
 # ifdef MASKING
      &                      GRID(ng) % rmask,                           &
 # endif
+# ifdef CHECKSUM
+     &                      OCEAN(ng) % ad_zeta(:,:,Iinp),              &
+     &                      checksum = Fhash)
+# else
      &                      OCEAN(ng) % ad_zeta(:,:,Iinp))
+# endif
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,20) TRIM(Vname(1,idZtlf)), Irec,            &
+              WRITE (stdout,40) TRIM(Vname(1,idZtlf)), Irec,            &
      &                          TRIM(INPncname)
             END IF
             exit_flag=2
             ioerror=status
             RETURN
+          ELSE
+            IF (Master) THEN
+              WRITE (stdout,50) TRIM(Vname(1,idZtlf)), Irec,            &
+# ifdef CHECKSUM
+     &                          Fmin, Fmax, Fhash
+# else
+     &                          Fmin, Fmax
+# endif
+            END IF
           END IF
 !
           MyType=gtype
@@ -194,7 +217,7 @@
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,30) TRIM(Vname(1,idZtlf)), Irec,            &
+              WRITE (stdout,60) TRIM(Vname(1,idZtlf)), Irec,            &
      &                          TRIM(TLF(ng)%name)
             END IF
             exit_flag=3
@@ -202,7 +225,7 @@
             RETURN
           END IF
         ELSE
-          IF (Master) WRITE (stdout,40) TRIM(Vname(1,idZtlf)),          &
+          IF (Master) WRITE (stdout,30) TRIM(Vname(1,idZtlf)),          &
      &                                  TRIM(INPncname)
           exit_flag=2
           RETURN
@@ -223,16 +246,30 @@
 #  ifdef MASKING
      &                      GRID(ng) % umask_full,                      &
 #  endif
+#  ifdef CHECKSUM
+     &                      OCEAN(ng) % ad_ubar(:,:,Iinp),              &
+     &                      checksum = Fhash)
+#  else
      &                      OCEAN(ng) % ad_ubar(:,:,Iinp))
+#  endif
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,20) TRIM(Vname(1,idUbtf)), Irec,            &
+              WRITE (stdout,40) TRIM(Vname(1,idUbtf)), Irec,            &
      &                          TRIM(INPncname)
             END IF
             exit_flag=2
             ioerror=status
             RETURN
+          ELSE
+            IF (Master) THEN
+              WRITE (stdout,50) TRIM(Vname(1,idUbtf)), Irec,            &
+#  ifdef CHECKSUM
+     &                          Fmin, Fmax, Fhash
+#  else
+     &                          Fmin, Fmax
+#  endif
+            END IF
           END IF
 !
           MyType=gtype
@@ -247,7 +284,7 @@
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,30) TRIM(Vname(1,idUbtf)), Irec,            &
+              WRITE (stdout,60) TRIM(Vname(1,idUbtf)), Irec,            &
      &                          TRIM(TLF(ng)%name)
             END IF
             exit_flag=3
@@ -255,7 +292,7 @@
             RETURN
           END IF
         ELSE
-          IF (Master) WRITE (stdout,20) TRIM(Vname(1,idUbtf)),          &
+          IF (Master) WRITE (stdout,30) TRIM(Vname(1,idUbtf)),          &
      &                                  TRIM(INPncname)
           exit_flag=2
           RETURN
@@ -274,16 +311,30 @@
 #  ifdef MASKING
      &                      GRID(ng) % vmask_full,                      &
 #  endif
+#  ifdef CHECKSUM
+     &                      OCEAN(ng) % ad_vbar(:,:,Iinp),              &
+     &                      checksum = Fhash)
+#  else
      &                      OCEAN(ng) % ad_vbar(:,:,Iinp))
+#  endif
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,20) TRIM(Vname(1,idVbtf)), Irec,            &
+              WRITE (stdout,40) TRIM(Vname(1,idVbtf)), Irec,            &
      &                          TRIM(INPncname)
             END IF
             exit_flag=2
             ioerror=status
             RETURN
+          ELSE
+            IF (Master) THEN
+              WRITE (stdout,50) TRIM(Vname(1,idVbtf)), Irec,            &
+#  ifdef CHECKSUM
+     &                          Fmin, Fmax, Fhash
+#  else
+     &                          Fmin, Fmax
+#  endif
+            END IF
           END IF
 !
           MyType=gtype
@@ -298,7 +349,7 @@
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,30) TRIM(Vname(1,idVbtf)), Irec,            &
+              WRITE (stdout,60) TRIM(Vname(1,idVbtf)), Irec,            &
      &                          TRIM(TLF(ng)%name)
             END IF
             exit_flag=3
@@ -306,7 +357,7 @@
             RETURN
           END IF
         ELSE
-          IF (Master) WRITE (stdout,40) TRIM(Vname(1,idVbtf)),          &
+          IF (Master) WRITE (stdout,30) TRIM(Vname(1,idVbtf)),          &
      &                                  TRIM(INPncname)
           exit_flag=2
           RETURN
@@ -327,16 +378,30 @@
 #  ifdef MASKING
      &                      GRID(ng) % umask_full,                      &
 #  endif
+#  ifdef CHECKSUM
+     &                      OCEAN(ng) % ad_u(:,:,:,Iinp),               &
+     &                      checksum = Fhash)
+#  else
      &                      OCEAN(ng) % ad_u(:,:,:,Iinp))
+#  endif
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,20) TRIM(Vname(1,idUtlf)), Irec,            &
+              WRITE (stdout,40) TRIM(Vname(1,idUtlf)), Irec,            &
      &                          TRIM(INPncname)
             END IF
             exit_flag=2
             ioerror=status
             RETURN
+          ELSE
+            IF (Master) THEN
+              WRITE (stdout,50) TRIM(Vname(1,idUtlf)), Irec,            &
+#  ifdef CHECKSUM
+     &                          Fmin, Fmax, Fhash
+#  else
+     &                          Fmin, Fmax
+#  endif
+            END IF
           END IF
 !
           status=nf_fwrite3d(ng, model, TLF(ng)%ncid,                   &
@@ -350,7 +415,7 @@
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,30) TRIM(Vname(1,idUtlf)), Irec,            &
+              WRITE (stdout,60) TRIM(Vname(1,idUtlf)), Irec,            &
      &                          TRIM(TLF(ng)%name)
             END IF
             exit_flag=3
@@ -358,7 +423,7 @@
             RETURN
           END IF
         ELSE
-          IF (Master) WRITE (stdout,40) TRIM(Vname(1,idUtlf)),          &
+          IF (Master) WRITE (stdout,30) TRIM(Vname(1,idUtlf)),          &
      &                                  TRIM(INPncname)
           exit_flag=2
           RETURN
@@ -377,16 +442,30 @@
 #  ifdef MASKING
      &                      GRID(ng) % vmask_full,                      &
 #  endif
+#  ifdef CHECKSUM
+     &                      OCEAN(ng) % ad_v(:,:,:,Iinp),               &
+     &                      checksum = Fhash)
+#  else
      &                      OCEAN(ng) % ad_v(:,:,:,Iinp))
+#  endif
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,20) TRIM(Vname(1,idVtlf)), Irec,            &
+              WRITE (stdout,40) TRIM(Vname(1,idVtlf)), Irec,            &
      &                          TRIM(INPncname)
             END IF
             exit_flag=2
             ioerror=status
             RETURN
+          ELSE
+            IF (Master) THEN
+              WRITE (stdout,50) TRIM(Vname(1,idVtlf)), Irec,            &
+#  ifdef CHECKSUM
+     &                          Fmin, Fmax, Fhash
+#  else
+     &                          Fmin, Fmax
+#  endif
+            END IF
           END IF
 !
           status=nf_fwrite3d(ng, model, TLF(ng)%ncid,                   &
@@ -400,7 +479,7 @@
           IF (FoundError(status, nf90_noerr, __LINE__,                  &
      &                   __FILE__)) THEN
             IF (Master) THEN
-              WRITE (stdout,30) TRIM(Vname(1,idVtlf)), Irec,            &
+              WRITE (stdout,60) TRIM(Vname(1,idVtlf)), Irec,            &
      &                          TRIM(TLF(ng)%name)
             END IF
             exit_flag=3
@@ -408,7 +487,7 @@
             RETURN
           END IF
         ELSE
-          IF (Master) WRITE (stdout,40) TRIM(Vname(1,idVtlf)),          &
+          IF (Master) WRITE (stdout,30) TRIM(Vname(1,idVtlf)),          &
      &                                  TRIM(INPncname)
           exit_flag=2
           RETURN
@@ -429,16 +508,30 @@
 #  ifdef MASKING
      &                        GRID(ng) % rmask,                         &
 #  endif
+#  ifdef CHECKSUM
+     &                        OCEAN(ng) % ad_t(:,:,:,Iinp,i),           &
+     &                        checksum = Fhash)
+#  else
      &                        OCEAN(ng) % ad_t(:,:,:,Iinp,i))
+#  endif
             IF (FoundError(status, nf90_noerr, __LINE__,                &
      &                     __FILE__)) THEN
               IF (Master) THEN
-                WRITE (stdout,20) TRIM(Vname(1,idTtlf(i))), Irec,       &
+                WRITE (stdout,40) TRIM(Vname(1,idTtlf(i))), Irec,       &
      &                            TRIM(INPncname)
               END IF
               exit_flag=2
               ioerror=status
               RETURN
+            ELSE
+              IF (Master) THEN
+                WRITE (stdout,50) TRIM(Vname(1,idTtlf(i))), Irec,       &
+#  ifdef CHECKSUM
+     &                            Fmin, Fmax, Fhash
+#  else
+     &                            Fmin, Fmax
+#  endif
+              END IF
             END IF
 !
             status=nf_fwrite3d(ng, model, TLF(ng)%ncid, TLF(ng)%Tid(i), &
@@ -451,7 +544,7 @@
             IF (FoundError(status, nf90_noerr, __LINE__,                &
      &                     __FILE__)) THEN
               IF (Master) THEN
-                WRITE (stdout,30) TRIM(Vname(1,idTtlf(i))), Irec,       &
+                WRITE (stdout,60) TRIM(Vname(1,idTtlf(i))), Irec,       &
      &                            TRIM(TLF(ng)%name)
               END IF
               exit_flag=3
@@ -459,7 +552,7 @@
               RETURN
             END IF
           ELSE
-            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idTtlf(i))),     &
+            IF (Master) WRITE (stdout,30) TRIM(Vname(1,idTtlf(i))),     &
      &                                    TRIM(INPncname)
             exit_flag=2
             RETURN
@@ -473,7 +566,7 @@
       CALL netcdf_close (ng, model, INPncid, INPncname, .FALSE.)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) THEN
-        WRITE (stdout,50) TRIM(INPncname)
+        WRITE (stdout,70) TRIM(INPncname)
         RETURN
       END IF
 !
@@ -485,24 +578,25 @@
       CALL netcdf_sync (ng, model, INPncname, TLF(ng)%ncid)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
-
-# ifdef SP4DVAR
-      IF (Master)  WRITE (stdout,60) Nrec, TRIM(TLF(ng)%name)
-# else
-      IF (Master)  WRITE (stdout,60) Nrec-1, TRIM(TLF(ng)%name)
-# endif
 !
-  10  FORMAT (/,' WRT_IMPULSE - unable to open input NetCDF file: ',a)
-  20  FORMAT (/,' WRT_IMPULSE - error while reading variable: ',a,2x,   &
-     &        'at time record = ',i3,/,17x,'in input NetCDF file: ',a)
-  30  FORMAT (/,' WRT_IMPULSE - error while writing variable: ',a,2x,   &
-     &        'at time record = ',i3,/,17x,'into NetCDF file: ',a)
-  40  FORMAT (/,' WRT_IMPULSE - cannot find state variable: ',a,        &
+  10  FORMAT (4x,'WRT_IMPULSE - processing convolved adjoint ',         &
+     &           'impulses, records: 1 to ',i0,/,18x,'file: ',a)
+  20  FORMAT (/,' WRT_IMPULSE - unable to open input NetCDF file: ',a)
+  30  FORMAT (/,' WRT_IMPULSE - cannot find state variable: ',a,        &
      &        /,12x,'in input NetCDF file: ',a)
-  50  FORMAT (/,' WRT_IMPULSE - unable to close input NetCDF file: ',a)
-  60  FORMAT (4x,'WRT_IMPULSE - wrote convolved adjoint impulses, ',    &
-     &           'records: 1 to ',i0,/,18x,'file: ',a)
-
+  40  FORMAT (/,' WRT_IMPULSE - error while reading variable: ',a,2x,   &
+     &        'at time record = ',i0,/,17x,'in input NetCDF file: ',a)
+# ifdef CHECKSUM
+  50  FORMAT (16x,'- ',a,/,19x,'(Rec = ',i0,' Min = ',1p,e15.8,         &
+     &        ' Max = ',1p,e15.8,' CheckSum = ',i0,')')
+# else
+  50  FORMAT (16x,'- ',a,/,19x,'(Rec = ',i0,' Min = ',1p,e15.8,         &
+     &        ' Max = ',1p,e15.8,')')
+# endif
+  60  FORMAT (/,' WRT_IMPULSE - error while writing variable: ',a,2x,   &
+     &        'at time record = ',i0,/,17x,'into NetCDF file: ',a)
+  70  FORMAT (/,' WRT_IMPULSE - unable to close input NetCDF file: ',a)
+!
       RETURN
       END SUBROUTINE wrt_impulse
 #else

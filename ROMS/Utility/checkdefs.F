@@ -170,6 +170,15 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+8)=' ALBEDO,'
 #endif
+#if defined ALLOW_BOTTOM_OBS && \
+   (defined FOUR_DVAR        || \
+    defined VERIFICATION)    && defined OBSERVATIONS
+!
+      IF (Master) WRITE (stdout,20) 'ALLOW_BOTTOM_OBS',                 &
+     &   'Allow observations that lie in the lower bottom grid cell'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+18)=' ALLOW_BOTTOM_OBS,'
+#endif
 #if defined BIOLOGY && defined ANA_BIOLOGY
 !
       IF (Master) WRITE (stdout,20) 'ANA_BIOLOGY',                      &

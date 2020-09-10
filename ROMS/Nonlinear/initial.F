@@ -688,10 +688,7 @@
 !-----------------------------------------------------------------------
 !
       DO ng=1,Ngrids
-        DO tile=first_tile(ng),last_tile(ng),+1
-          CALL nesting (ng, iNLM, nmask)
-        END DO
-!$OMP BARRIER
+        CALL nesting (ng, iNLM, nmask)
       END DO
 #  endif
 !

@@ -130,7 +130,7 @@
       implicit none
 !
       PUBLIC  :: cgradient
-      PUBLIC  :: cg_read
+      PUBLIC  :: cg_read_cgradient
 !
       PRIVATE :: cgradient_tile
       PRIVATE :: cg_write
@@ -7615,8 +7615,8 @@
       RETURN
       END SUBROUTINE precond
 !
+!***********************************************************************
       SUBROUTINE cg_write (ng, model, innLoop, outLoop)
-!
 !***********************************************************************
 !                                                                      !
 !  This routine writes conjugate gradient vectors into 4DVAR NetCDF    !
@@ -7845,8 +7845,8 @@
       RETURN
       END SUBROUTINE cg_write
 !
-      SUBROUTINE cg_read (ng, model, outLoop)
-!
+!***********************************************************************
+      SUBROUTINE cg_read_cgradient (ng, model, outLoop)
 !***********************************************************************
 !                                                                      !
 !  If split 4D-Var and outer>1, this routine reads conjugate gradient  !
@@ -7887,7 +7887,7 @@
      &                 __FILE__)) RETURN
       END IF
 !
-!  Read in number of converget Ritz eigenvalues
+!  Read in number of converged Ritz eigenvalues
 !
       CALL netcdf_get_ivar (ng, model, DAV(ng)%name,                    &
      &                      'nConvRitz', nConvRitz,                     &
@@ -7897,7 +7897,7 @@
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 !
-!  Read in Ritz eigenvalues.
+!  Read in converged Ritz eigenvalues.
 !
       CALL netcdf_get_fvar (ng, model, DAV(ng)%name,                    &
      &                      'Ritz', Ritz,                               &
@@ -8008,6 +8008,6 @@
      &               __FILE__)) RETURN
 !
       RETURN
-      END SUBROUTINE cg_read
+      END SUBROUTINE cg_read_cgradient
 #endif
       END MODULE cgradient_mod

@@ -156,7 +156,7 @@ MY_CPP_FLAGS ?=
 #  Set directory for temporary objects.
 #--------------------------------------------------------------------------
 
-SCRATCH_DIR ?= Build
+SCRATCH_DIR ?= Build_roms
  clean_list := core *.ipo $(SCRATCH_DIR)
 
 ifeq "$(strip $(SCRATCH_DIR))" "."
@@ -289,15 +289,17 @@ endef
 #  Set ROMS/TOMS executable file name.
 #--------------------------------------------------------------------------
 
-BIN := $(BINDIR)/romsS
 ifdef USE_DEBUG
-  BIN := $(BINDIR)/romsG
+  BIN ?= $(BINDIR)/romsG
 else
  ifdef USE_MPI
-   BIN := $(BINDIR)/romsM
- endif
- ifdef USE_OpenMP
-   BIN := $(BINDIR)/romsO
+   BIN ?= $(BINDIR)/romsM
+ else
+  ifdef USE_OpenMP
+    BIN ?= $(BINDIR)/romsO
+  else
+    BIN ?= $(BINDIR)/romsS
+  endif
  endif
 endif
 

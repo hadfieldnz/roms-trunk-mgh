@@ -92,6 +92,28 @@
               BLK(ng)%files(1)=TRIM(HIS(ng)%name)
             END IF
 !
+!  Load QCK information into the BLK structure so it can be used to
+!  process the NLM background surface forcing to be read and processed
+!  by the TLM, RPM, and ADM kernels.
+!
+          CASE ('QCK2BLK')
+            IF (ndefQCK(ng).gt.0) THEN
+              IF (QCK(ng)%ncid.ne.-1) THEN
+                CALL netcdf_close (ng, iNLM, QCK(ng)%ncid)
+              END IF
+              Nfiles=ntimes(ng)/ndefQCK(ng)
+              IF (nQCK(ng).eq.ndefQCK(ng)) Nfiles=Nfiles+1
+              CALL edit_file_struct (ng, Nfiles, BLK)
+              DO ifile=1,Nfiles
+                BLK(ng)%files(ifile)=TRIM(QCK(ng)%files(ifile))
+              END DO
+              BLK(ng)%name=TRIM(BLK(ng)%files(1))
+            ELSE
+              BLK(ng)%ncid=-1
+              BLK(ng)%name=TRIM(QCK(ng)%name)
+              BLK(ng)%files(1)=TRIM(QCK(ng)%name)
+            END IF
+!
 !  Load FWD information into the BLK structure so it can be used to
 !  process the NLM background surface forcing to be read and processd
 !  by the ADM and TLM kernels.
