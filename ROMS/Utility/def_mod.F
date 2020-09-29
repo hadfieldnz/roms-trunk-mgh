@@ -109,43 +109,44 @@
         Aval(i)=0.0_r8
       END DO
 !
-!  Open input observations NetCDF.
-!
-      IF (OBS(ng)%ncid.eq.-1) THEN
-        CALL netcdf_open (ng, iNLM, OBS(ng)%name, 0, OBSncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) THEN
-          WRITE (stdout,30) TRIM(OBS(ng)%name)
-          RETURN
-        END IF
-        OBS(ng)%ncid=OBSncid
-      ELSE
-        OBSncid=OBS(ng)%ncid
-      END IF
-!
-!  Inquire about input observations variables.
-!
-      CALL netcdf_inq_var (ng, iNLM, OBS(ng)%name,                      &
-     &                     ncid = OBSncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
-!
-!  Inquire if the 'state_variables' and 'obs_provenance' attributes
-!  are available in the observations file.
-!
-      AttName(1)='state_variables'
-      AttName(2)='obs_provenance'
-!
-      CALL netcdf_get_satt (ng, iNLM, OBS(ng)%name, nf90_global,        &
-     &                      AttName, AttValue, foundAtt,                &
-     &                      ncid = OBSncid)
-!
 !=======================================================================
 !  Create a new model/observation file.
 !=======================================================================
 !
       DEFINE : IF (LdefMOD(ng)) THEN
-
+!
+!  Open input observations NetCDF.
+!
+        IF (OBS(ng)%ncid.eq.-1) THEN
+          CALL netcdf_open (ng, iNLM, OBS(ng)%name, 1, OBSncid)
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) THEN
+            WRITE (stdout,30) TRIM(OBS(ng)%name)
+            RETURN
+          END IF
+        ELSE
+          OBSncid=OBS(ng)%ncid
+        END IF
+!
+!  Inquire about input observations variables.
+!
+        CALL netcdf_inq_var (ng, iNLM, OBS(ng)%name,                    &
+     &                       ncid = OBSncid)
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
+!
+!  Inquire if the 'state_variables' and 'obs_provenance' attributes
+!  are available in the observations file.
+!
+        AttName(1)='state_variables'
+        AttName(2)='obs_provenance'
+!
+        CALL netcdf_get_satt (ng, iNLM, OBS(ng)%name, nf90_global,      &
+     &                        AttName, AttValue, foundAtt,              &
+     &                        ncid = OBSncid)
+!
+!  Create model/observation (DAV) file
+!
         CALL netcdf_create (ng, iNLM, TRIM(ncname), DAV(ng)%ncid)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) THEN
@@ -2049,6 +2050,14 @@
         CALL netcdf_enddef (ng, iNLM, ncname, DAV(ng)%ncid)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
+!
+!  Close observations NetCDF.
+!
+        IF (OBS(ng)%ncid.eq.-1) THEN
+          CALL netcdf_close (ng, iNLM, OBSncid, OBS(ng)%name, .FALSE.)
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                 __FILE__)) RETURN
+        END IF
       END IF DEFINE
 !
 !=======================================================================

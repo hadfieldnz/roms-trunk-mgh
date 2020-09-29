@@ -102,6 +102,15 @@
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 
+      Vinfo( 1)='K_PO4'
+      Vinfo( 2)='inverse half-saturation for phytoplankton PO4 uptake'
+      Vinfo( 3)='meter3 millimole_P-1'
+      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+     &               1, (/0/), Aval, Vinfo, ncname,                     &
+     &               SetParAccess = .FALSE.)
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
+
       Vinfo( 1)='K_Phy'
       Vinfo( 2)='zooplankton half-saturation constant for ingestion'
       Vinfo( 3)='day-1'
@@ -132,6 +141,15 @@
       Vinfo( 1)='PhyCN'
       Vinfo( 2)='phytoplankton Carbon:Nitrogen ratio'
       Vinfo( 3)='mole_C mole_N-1'
+      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+     &               1, (/0/), Aval, Vinfo, ncname,                     &
+     &               SetParAccess = .FALSE.)
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
+
+      Vinfo( 1)='R_P2N'
+      Vinfo( 2)='phytoplankton Phosphate:Nitrogen ratio'
+      Vinfo( 3)='mole_P mole_N-1'
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
@@ -274,6 +292,24 @@
 
       Vinfo( 1)='SDeRRC'
       Vinfo( 2)='remineralization rate for small detritus carbon'
+      Vinfo( 3)='day-1'
+      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+     &               1, (/0/), Aval, Vinfo, ncname,                     &
+     &               SetParAccess = .FALSE.)
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
+
+      Vinfo( 1)='RDeRRN'
+      Vinfo( 2)='remineralization rate for river detritus nitrogen'
+      Vinfo( 3)='day-1'
+      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+     &               1, (/0/), Aval, Vinfo, ncname,                     &
+     &               SetParAccess = .FALSE.)
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
+
+      Vinfo( 1)='RDeRRC'
+      Vinfo( 2)='remineralization rate for river detritus carbon'
       Vinfo( 3)='day-1'
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &

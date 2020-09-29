@@ -910,6 +910,7 @@
       defined LMD_SKPP     && !defined ANA_SRFLUX)   || \
     (!defined FRC_COUPLING && \
       defined RED_TIDE)    || \
+    (!defined ANA_BSFLUX   && defined SALINITY)      || \
     (!defined FRC_COUPLING && \
       defined SALINITY     && !defined ANA_SSFLUX    && \
      (defined BULK_FLUXES  && !defined EMINUSP))     || \

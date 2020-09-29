@@ -126,8 +126,11 @@
 !  Allocate module variables.
 !-----------------------------------------------------------------------
 !
-      IF (ng.eq.1) THEN
+      IF (.not.allocated(Msrc)) THEN
         allocate ( Msrc(Ngrids) )
+      END IF
+
+      IF (.not.allocated(Nsrc)) THEN
         allocate ( Nsrc(Ngrids) )
       END IF
 

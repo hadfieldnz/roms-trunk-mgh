@@ -290,7 +290,7 @@
               ELSE
                 lstr=SCAN(ncfile,'/',BACK=.TRUE.)+1
                 lend=LEN_TRIM(ncfile)
-                lvar=MIN(43,LEN_TRIM(Vname(2,ifield)))
+                lvar=MIN(46,LEN_TRIM(Vname(2,ifield)))
                 Tsec=Tval*day2sec
                 CALL time_string (Tsec, t_code)
                 WRITE (stdout,60) Vname(2,ifield)(1:lvar), t_code,      &

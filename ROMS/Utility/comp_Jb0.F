@@ -163,10 +163,7 @@
       USE mod_fourdvar
       USE mod_iounits
       USE mod_netcdf
-# if defined ADJUST_STFLUX   || defined ADJUST_WSTRESS || \
-     defined ADJUST_BOUNDARY
       USE mod_scalars
-# endif
 # ifdef ADJUST_BOUNDARY
       USE mod_boundary
 # endif

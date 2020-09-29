@@ -35,7 +35,7 @@
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional -w              # -w turns of warnings
            INCDIR := /usr/include /usr/local/bin
-            SLIBS := -L/usr/local/lib -L/usr/lib
+            SLIBS := -L/usr/local/lib -L/usr/lib -L/usr/lib64
             ULIBS :=
              LIBS := $(SCRATCH_DIR)/libNLM.a         # cyclic dependencies
        MOD_SUFFIX := mod
@@ -56,7 +56,7 @@
 
 ifdef USE_ROMS
  ifdef USE_DEBUG
-           FFLAGS += -g
+           FFLAGS += -g -O0
            FFLAGS += -fbounds-check
            FFLAGS += -fbacktrace
            FFLAGS += -fcheck=all
@@ -159,8 +159,10 @@ else
 endif
 
 ifdef USE_HDF5
-      HDF5_INCDIR ?= /opt/gfortransoft/serial/hdf5/include
-      HDF5_LIBDIR ?= /opt/gfortransoft/serial/hdf5/lib
+#     HDF5_INCDIR ?= /opt/gfortransoft/serial/hdf5/include
+#     HDF5_LIBDIR ?= /opt/gfortransoft/serial/hdf5/lib
+      HDF5_INCDIR ?= $(HDF5_INC)
+      HDF5_LIBDIR ?= $(HDF5_LIBDIR)
         HDF5_LIBS ?= -lhdf5_fortran -lhdf5hl_fortran -lhdf5 -lz
              LIBS += -L$(HDF5_LIBDIR) $(HDF5_LIBS)
            INCDIR += $(HDF5_INCDIR)
