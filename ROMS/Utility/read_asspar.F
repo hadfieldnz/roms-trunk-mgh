@@ -1274,9 +1274,11 @@
         defined SENSITIVITY_4DVAR || defined SP4DVAR         || \
         defined TL_RBL4DVAR       || defined TL_R4DVAR
           fname=STD(2,ng)%name
-          IF (.not.find_file(ng, fname, 'STDnameM')) GO TO 30
-          WRITE (out,160) '                   Model STD File:  ',       &
-     &                    TRIM(fname)
+          IF (NSA.eq.2) THEN
+            IF (.not.find_file(ng, fname, 'STDnameM')) GO TO 30
+            WRITE (out,160) '                   Model STD File:  ',     &
+     &                      TRIM(fname)
+          END IF
 #    endif
           fname=STD(1,ng)%name
           IF (.not.find_file(ng, fname, 'STDnameI')) GO TO 30

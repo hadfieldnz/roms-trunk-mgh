@@ -90,6 +90,7 @@
   10      FORMAT (' Found Error: ', i2.2, t20, 'Line: ', i0,            &
      &            t35, 'Source: ', a)
         END IF
+        CALL my_flush (stdout)
       END IF
 
       RETURN
@@ -184,6 +185,7 @@
   10      FORMAT (' Found Error: ', i2.2, t20, 'Line: ', i0,            &
      &            t35, 'Source: ', a)
         END IF
+        CALL my_flush (stdout)
       END IF
 
       RETURN
@@ -283,6 +285,7 @@
   10      FORMAT (' Found Error: ', i2.2, t20, 'Line: ', i0,            &
      &            t35, 'Source: ', a)
         END IF
+        CALL my_flush (stdout)
       END IF
 
       RETURN

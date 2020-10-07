@@ -85,6 +85,8 @@
               Npts=load_r(Nval, Rval, Ngrids, K_NO3)
             CASE ('K_NH4')
               Npts=load_r(Nval, Rval, Ngrids, K_NH4)
+            CASE ('K_PO4')
+              Npts=load_r(Nval, Rval, Ngrids, K_PO4)
             CASE ('K_Phy')
               Npts=load_r(Nval, Rval, Ngrids, K_Phy)
             CASE ('Chl2C_m')
@@ -93,6 +95,8 @@
               Npts=load_r(Nval, Rval, Ngrids, ChlMin)
             CASE ('PhyCN')
               Npts=load_r(Nval, Rval, Ngrids, PhyCN)
+            CASE ('R_P2N')
+              Npts=load_r(Nval, Rval, Ngrids, R_P2N)
             CASE ('PhyIP')
               Npts=load_r(Nval, Rval, Ngrids, PhyIP)
             CASE ('PhyIS')
@@ -125,6 +129,10 @@
               Npts=load_r(Nval, Rval, Ngrids, SDeRRN)
             CASE ('SDeRRC')
               Npts=load_r(Nval, Rval, Ngrids, SDeRRC)
+            CASE ('RDeRRN')
+              Npts=load_r(Nval, Rval, Ngrids, RDeRRN)
+            CASE ('RDeRRC')
+              Npts=load_r(Nval, Rval, Ngrids, RDeRRC)
             CASE ('wPhy')
               Npts=load_r(Nval, Rval, Ngrids, wPhy)
             CASE ('wLDet')
@@ -564,6 +572,17 @@
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
+            CASE ('Dout(iNifx)')
+              IF (iDbio3(iNifx).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iNifx)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iNifx)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
 #endif
           END SELECT
         END IF
@@ -605,6 +624,9 @@
             WRITE (out,90) K_NH4(ng), 'K_NH4',                          &
      &            'Inverse half-saturation for phytoplankton NH4',      &
      &            'uptake (1/(mmol_N m-3)).'
+            WRITE (out,90) K_PO4(ng), 'K_PO4',                          &
+     &            'Inverse half-saturation for phytoplankton PO4',      &
+     &            'uptake (1/(mmol_P m-3)).'
             WRITE (out,90) K_Phy(ng), 'K_Phy',                          &
      &            'Zooplankton half-saturation constant for ingestion', &
      &            '(mmol_N m-3)^2.'
@@ -614,6 +636,8 @@
      &            'Chlorophyll minimum threshold (mg_Chl/m3).'
             WRITE (out,80) PhyCN(ng), 'PhyCN',                          &
      &            'Phytoplankton Carbon:Nitrogen ratio (mol_C/mol_N).'
+            WRITE (out,80) R_P2N(ng), 'R_P2N',                          &
+     &            'Phytoplankton P:N ratio (mol_P/mol_N).'
             WRITE (out,80) PhyIP(ng), 'PhyIP',                          &
      &            'Phytoplankton NH4 inhibition parameter (1/mmol_N).'
             WRITE (out,90) PhyIS(ng), 'PhyIS',                          &
@@ -648,6 +672,10 @@
      &            'Remineralization rate for small detritus N (day-1).'
             WRITE (out,80) SDeRRC(ng), 'SDeRRC',                        &
      &            'Remineralization rate for small detritus C (day-1).'
+            WRITE (out,80) RDeRRN(ng), 'RDeRRN',                        &
+     &            'Remineralization rate for river detritus N (day-1).'
+            WRITE (out,80) RDeRRC(ng), 'RDeRRC',                        &
+     &            'Remineralization rate for river detritus C (day-1).'
             WRITE (out,80) wPhy(ng), 'wPhy',                            &
      &            'Phytoplankton sinking velocity (m/day).'
             WRITE (out,80) wLDet(ng), 'wLDet',                          &
