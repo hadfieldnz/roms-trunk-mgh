@@ -1572,7 +1572,6 @@
       END IF
 #  endif
 # endif
-# if (defined BULK_FLUXES && defined EMINUSP) || defined ATM_COUPLING
 !
 !  Write out E-P (m/s).
 !
@@ -1582,10 +1581,10 @@
         status=nf_fwrite2d(ng, iNLM, HIS(ng)%ncid, HIS(ng)%Vid(idEmPf), &
      &                     HIS(ng)%Rindex, gtype,                       &
      &                     LBi, UBi, LBj, UBj, scale,                   &
-#  ifdef MASKING
+# ifdef MASKING
      &                     GRID(ng) % rmask,                            &
-#  endif
-     &                     FORCES(ng) % EminusP)
+# endif
+     &                     FORCES(ng) % stflux(:,:,isalt))
         IF (FoundError(status, nf90_noerr, __LINE__,                    &
      &                 __FILE__)) THEN
           IF (Master) THEN
@@ -1596,7 +1595,6 @@
           RETURN
         END IF
       END IF
-# endif
 # ifdef SHORTWAVE
 !
 !  Write out shortwave radiation flux.

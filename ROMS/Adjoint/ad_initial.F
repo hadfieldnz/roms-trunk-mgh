@@ -428,7 +428,7 @@
 !-----------------------------------------------------------------------
 !
 # ifdef RBL4DVAR_FCT_SENSITIVITY
-      IF (.not.LsenPSAS(ng).and.LsenFCT(ng)) THEN
+      IF (.not.Lsen4DVAR(ng).and.LsenFCT(ng)) THEN
 #  ifdef OBS_SPACE
         IF (Lobspace(ng)) THEN
 #  endif
@@ -568,7 +568,7 @@
 !-----------------------------------------------------------------------
 !
 #  ifdef SENSITIVITY_4DVAR
-      IF (LsenPSAS(ng)) THEN
+      IF (Lsen4DVAR(ng)) THEN
 #  endif
 #  if !defined AD_IMPULSE
         DO tile=first_tile(ng),last_tile(ng),+1

@@ -101,12 +101,8 @@
      &                      FORCES(ng) % ad_bvstr,                      &
      &                      FORCES(ng) % ad_bvstr_sol,                  &
 #  endif
-#  if defined BULK_FLUXES || defined ATM_COUPLING
-     &                      FORCES(ng) % snhflx,                        &
-#  endif
-#  if (defined BULK_FLUXES && defined EMINUSP) || defined ATM_COUPLING
-     &                      FORCES(ng) % EminusP,                       &
-#  endif
+     &                      FORCES(ng) % stflux,                        &
+     &                      FORCES(ng) % btflux,                        &
 #  if defined QCORRECTION || defined SALINITY
      &                      FORCES(ng) % stflx,                         &
      &                      FORCES(ng) % ad_stflx,                      &
@@ -119,6 +115,7 @@
 #  ifdef PROFILE
       CALL wclock_off (ng, iADM, 6, __LINE__, __FILE__)
 #  endif
+!
       RETURN
       END SUBROUTINE ad_set_vbc
 !
@@ -166,12 +163,7 @@
      &                            ad_bustr, ad_bustr_sol,               &
      &                            ad_bvstr, ad_bvstr_sol,               &
 #  endif
-#  if defined BULK_FLUXES || defined ATM_COUPLING
-     &                            snhflx,                               &
-#  endif
-#  if (defined BULK_FLUXES && defined EMINUSP) || defined ATM_COUPLING
-     &                            EminusP,                              &
-#  endif
+     &                            stflux, btflux,                       &
 #  if defined QCORRECTION || defined SALINITY
      &                            stflx, ad_stflx,                      &
 #  endif
@@ -234,12 +226,8 @@
 #   if defined SCORRECTION || defined SRELAXATION
       real(r8), intent(in) :: sss(LBi:,LBj:)
 #   endif
-#   if defined BULK_FLUXES || defined ATM_COUPLING
-      real(r8), intent(in) :: snhflx(LBi:,LBj:)
-#   endif
-#   if (defined BULK_FLUXES && defined EMINUSP) || defined ATM_COUPLING
-      real(r8), intent(in) :: EminusP(LBi:,LBj:)
-#   endif
+      real(r8), intent(in) :: stflux(LBi:,LBj:,:)
+      real(r8), intent(in) :: btflux(LBi:,LBj:,:)
 #   if defined SCORRECTION || defined SRELAXATION
       real(r8), intent(inout) :: ad_Hz(LBi:,LBj:,:)
 #   endif
@@ -313,12 +301,8 @@
 #   if defined SCORRECTION || defined SRELAXATION
       real(r8), intent(in) :: sss(LBi:UBi,LBj:UBj)
 #   endif
-#   if defined BULK_FLUXES || defined ATM_COUPLING
-      real(r8), intent(in) :: snhflx(LBi:UBi,LBj:UBj)
-#   endif
-#   if (defined BULK_FLUXES && defined EMINUSP) || defined ATM_COUPLING
-      real(r8), intent(in) :: EminusP(LBi:UBi,LBj:UBj)
-#   endif
+      real(r8), intent(in) :: stflx(LBi:UBi,LBj:UBj,NT(ng))
+      real(r8), intent(in) :: btflx(LBi:UBi,LBj:UBj,NT(ng))
 #   if defined SCORRECTION || defined SRELAXATION
       real(r8), intent(inout) :: ad_Hz(LBi:UBi,LBj:UBj,N(ng))
 #   endif
@@ -359,11 +343,11 @@
 !  Local variable declarations.
 !
       integer :: i, j, itrc
-
+!
       real(r8) :: EmP, ad_EmP
       real(r8) :: cff1, cff2, cff3
       real(r8) :: ad_cff1, ad_cff2, ad_cff3, adfac, adfac1, adfac2
-
+!
 #  if (!defined BBL_MODEL_NOT_YET || defined ICESHELF) && \
         defined UV_LOGDRAG
       real(r8), dimension(IminS:ImaxS,JminS:JmaxS) :: wrk
@@ -442,7 +426,6 @@
 !-----------------------------------------------------------------------
 !  Set kinematic bottom momentum flux (m2/s2).
 !-----------------------------------------------------------------------
-!
 #   if defined UV_LOGDRAG
 !
 !  Set logarithmic bottom stress.
@@ -1043,6 +1026,23 @@
       END DO
 #  endif
 
+#  if defined BIOLOGY || defined SEDIMENT || defined T_PASSIVE
+!
+!-----------------------------------------------------------------------
+!  Load surface and bottom passive tracer fluxes (T m/s).
+!-----------------------------------------------------------------------
+!
+      DO itrc=NAT+1,NT(ng)
+        DO j=JstrR,JendR
+          DO i=IstrR,IendR
+!>          tl_stflx(i,j,itrc)=0.0_r8
+!>
+            ad_stflx(i,j,itrc)=0.0_r8
+          END DO
+        END DO
+      END DO
+#  endif
+
 #  ifdef SALINITY
 !
 !-----------------------------------------------------------------------
@@ -1051,11 +1051,7 @@
 !
       DO j=JstrR,JendR
         DO i=IstrR,IendR
-#   if (defined BULK_FLUXES && defined EMINUSP) || defined ATM_COUPLING
-          EmP=EminusP(i,j)
-#   else
-          EmP=stflx(i,j,isalt)
-#   endif
+          EmP=stflux(i,j,isalt)
 !>        tl_btflx(i,j,isalt)=btflx(i,j,isalt)*                         &
 !>   &                        tl_t(i,j,1,nrhs,isalt)
 !>
@@ -1119,16 +1115,9 @@
           ad_stflx(i,j,isalt)=0.0_r8
 #    endif
 #   endif
-#   if (defined BULK_FLUXES && defined EMINUSP) || defined ATM_COUPLING
 !>        tl_EmP=0.0_r8
 !>
           ad_EmP=0.0_r8
-#   else
-!>        tl_EmP=tl_stflx(i,j,isalt)
-!>
-          ad_stflx(i,j,isalt)=ad_stflx(i,j,isalt)+ad_EmP
-          ad_EmP=0.0_r8
-#   endif
         END DO
       END DO
 #  endif
@@ -1198,25 +1187,32 @@
         END DO
       END DO
 #  endif
-#  if defined BULK_FLUXES || defined ATM_COUPLING
 !
 !-----------------------------------------------------------------------
-!  If air-sea parameterization and or atmospheric coupling, assign
-!  surface net heat flux (degC m/s).  During model coupling, we need
-!  to make sure that this forcing is unaltered during the coupling
-!  interval when ROMS timestep size is smaller. Notice that further
-!  manipulations to state variable stflx(:,:,itemp)are allowed below.
+!  Adjoint of loading surface and bottom net heat flux (degC m/s) into
+!  state variables "stflx" and "btflx".
+!
+!  Notice that the forcing net heat flux stflux(:,:,itemp) is processed
+!  elsewhere from data, coupling, bulk flux parameterization,
+!  or analytical formulas.
+!
+!  During model coupling, we need to make sure that this forcing is
+!  unaltered during the coupling interval when ROMS timestep size is
+!  smaller. Notice that further manipulations to state variable
+!  stflx(:,:,itemp) are allowed below.
 !-----------------------------------------------------------------------
 !
       DO j=JstrR,JendR
         DO i=IstrR,IendR
-!>        tl_stflx(i,j,itemp)=0.0_r8      ! not needed in TLM
+!>        tl_btflx(i,j,itemp)=0.0_r8                ! not needed in TLM
 !>
-!!        ad_stflx(i,j,itemp)=0.0_r8      ! not needed in ADM
+!!        ad_stflx(i,j,itemp)=0.0_r8                ! not needed in ADM
+!>        tl_stflx(i,j,itemp)=0.0_r8                ! not needed in TLM
+!>
+!!        ad_stflx(i,j,itemp)=0.0_r8                ! not needed in ADM
         END DO
       END DO
-#  endif
-
+!
       RETURN
       END SUBROUTINE ad_set_vbc_tile
 
@@ -1264,6 +1260,7 @@
 #  ifdef PROFILE
       CALL wclock_off (ng, iADM, 6, __LINE__, __FILE__)
 #  endif
+!
       RETURN
       END SUBROUTINE ad_set_vbc
 !
@@ -1331,7 +1328,7 @@
 !  Local variable declarations.
 !
       integer :: i, j
-
+!
       real(r8) :: cff1, cff2
       real(r8) :: ad_cff1, ad_cff2
       real(r8) :: adfac
@@ -1505,6 +1502,7 @@
         END DO
       END DO
 #  endif
+!
       RETURN
       END SUBROUTINE ad_set_vbc_tile
 

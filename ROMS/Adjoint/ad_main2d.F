@@ -94,13 +94,14 @@
 !  Local variable declarations.
 !
       logical:: backward = .TRUE.
-
+!
       integer :: ng, tile
       integer :: next_indx1
 # ifdef FLOATS_NOT_YET
       integer :: Lend, Lstr, chunk_size
 # endif
       integer :: ksav, ktmp
+!
       real(r8) :: HalfDT, MaxDT, my_StepTime
 !
 !=======================================================================
@@ -118,23 +119,17 @@
 !
         DO ng=1,Ngrids
           iic(ng)=iic(ng)-1
-!$OMP MASTER
           time(ng)=time(ng)-dt(ng)
           tdays(ng)=time(ng)*sec2day
           CALL time_string (time(ng), time_code(ng))
-!$OMP END MASTER
         END DO
-!$OMP BARRIER
 !
 !-----------------------------------------------------------------------
 !  Read in required data, if any, from input NetCDF files.
 !-----------------------------------------------------------------------
 !
         DO ng=1,Ngrids
-!$OMP MASTER
           CALL ad_get_data (ng)
-!$OMP END MASTER
-!$OMP BARRIER
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -155,7 +150,6 @@
 # endif
             CALL ad_diag (ng, tile)
           END DO
-!$OMP BARRIER
         END DO
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
@@ -170,9 +164,8 @@
 !
         DO ng=1,Ngrids
 #  ifdef SENSITIVITY_4DVAR
-          IF (.not.LsenPSAS(ng)) THEN
+          IF (.not.Lsen4DVAR(ng)) THEN
 #  endif
-!$OMP MASTER
             HalfDT=0.5_r8*dt(ng)
             IF (((time(ng)-HalfDT).le.ObsTime(ng)).and.                 &
      &          (ObsTime(ng).lt.(time(ng)+HalfDT))) THEN
@@ -183,8 +176,6 @@
             ELSE
               ProcessObs(ng)=.FALSE.
             END IF
-!$OMP END MASTER
-!$OMP BARRIER
 !
 #  ifdef SP4DVAR
 !
@@ -199,7 +190,6 @@
               CALL ad_misfit (ng, tile, iADM)
 #  endif
             END DO
-!$OMP BARRIER
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
 #  ifdef SENSITIVITY_4DVAR
@@ -223,7 +213,6 @@
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_forcing (ng, tile, knew(ng), nnew(ng))
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -257,7 +246,6 @@
               Lend=Nfloats(ng)
 #  endif
               CALL ad_step_floats (ng, Lstr, Lend)
-!$OMP BARRIER
             END IF
           END DO
 # endif
@@ -278,7 +266,6 @@
               DO tile=first_tile(ng),last_tile(ng),+1
                 CALL ad_step2d (ng, tile)
               END DO
-!$OMP BARRIER
             END IF
 !
 !  Set time indices for corrector step.
@@ -301,7 +288,6 @@
             DO tile=last_tile(ng),first_tile(ng),-1
               CALL ad_step2d (ng, tile)
             END DO
-!$OMP BARRIER
 !
 !  Set time indices for predictor step. The PREDICTOR_2D_STEP switch
 !  it is assumed to be false before the first time-step.
@@ -332,7 +318,6 @@
               CALL ad_pack (ng, tile, Nstr(ng), Nend(ng),               &
      &                      STORAGE(ng)%so_state(:,SOrec(ng)))
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -348,7 +333,6 @@
 # endif
             CALL ad_set_vbc (ng, tile)
           END DO
-!$OMP BARRIER
         END DO
 
 # ifdef NEARSHORE_MELLOR_NOT_YET
@@ -361,7 +345,6 @@
           DO tile=last_tile(ng),first_tile(ng),-1
             CALL ad_radiation_stress (ng, tile)
           END DO
-!$OMP BARRIER
         END DO
 # endif
 
@@ -378,7 +361,6 @@
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL waves_coupling (ng, tile)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -396,7 +378,6 @@
             DO tile=last_tile(ng),first_tile(ng),-1
               CALL atmos_coupling (ng, tile)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -411,11 +392,9 @@
             DO tile=last_tile(ng),first_tile(ng),-1
               CALL ad_out_fields (ng, tile, iADM)
             END DO
-!$OMP BARRIER
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_out_zeta (ng, tile, iADM)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -433,16 +412,15 @@
             DO tile=last_tile(ng),first_tile(ng),-1
               CALL ad_ini_fields (ng, tile, iADM)
             END DO
-!$OMP BARRIER
 !
 !  Initialize free-surface.
 !
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_ini_zeta (ng, tile, iADM)
             END DO
-!$OMP BARRIER
           END IF
         END DO
+
 # ifdef FORCING_SV
 !
 !-----------------------------------------------------------------------
@@ -454,14 +432,12 @@
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_forcing (ng, tile, kstp(ng), knew(ng), nstp(ng))
             END DO
-!$OMP BARRIER
           END DO
         ELSE
           DO ng=1,Ngrids
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_forcing (ng, tile, kstp(ng), krhs(ng), nstp(ng))
             END DO
-!$OMP BARRIER
           END DO
         END IF
 # endif
@@ -473,14 +449,25 @@
 !  Skip first timestep.
 !-----------------------------------------------------------------------
 !
+#  ifdef RBL4DVAR_FCT_SENSITIVITY
+        DO ng=1,Ngrids
+          IF (.not.Lsen4DVAR(ng)) THEN     ! ignore in forecast interval
+            IF (iic(ng).ne.ntstart(ng)) THEN
+              DO tile=first_tile(ng),last_tile(ng),+1
+                CALL ad_frc_adjust (ng, tile, Lfout(ng))
+              END DO
+            END IF
+          END IF
+        END DO
+#  else
         DO ng=1,Ngrids
           IF (iic(ng).ne.ntstart(ng)) THEN
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_frc_adjust (ng, tile, Lfout(ng))
             END DO
-!$OMP BARRIER
           END IF
         END DO
+#  endif
 # endif
 
 # ifdef ADJUST_BOUNDARY
@@ -490,14 +477,25 @@
 !  Skip first timestep.
 !-----------------------------------------------------------------------
 !
+#  ifdef RBL4DVAR_FCT_SENSITIVITY
+        DO ng=1,Ngrids
+          IF (.not.Lsen4DVAR(ng)) THEN     ! ignore in forecast interval
+            IF (iic(ng).ne.ntstart(ng)) THEN
+              DO tile=first_tile(ng),last_tile(ng),+1
+                CALL ad_obc_adjust (ng, tile, Lbout(ng))
+              END DO
+            END IF
+          END IF
+        END DO
+#  else
         DO ng=1,Ngrids
           IF (iic(ng).ne.ntstart(ng)) THEN
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_obc_adjust (ng, tile, Lbout(ng))
             END DO
-!$OMP BARRIER
           END IF
         END DO
+#  endif
 # endif
 
 # if defined WEAK_CONSTRAINT && !defined SP4DVAR
@@ -511,7 +509,6 @@
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL frc_ADgather (ng, tile)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -521,10 +518,7 @@
 !-----------------------------------------------------------------------
 !
         DO ng=1,Ngrids
-!$OMP MASTER
           CALL ad_output (ng)
-!$OMP END MASTER
-!$OMP BARRIER
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -540,7 +534,6 @@
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL frc_clear (ng, tile)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -555,7 +548,7 @@
 !
         DO ng=1,Ngrids
 #  ifdef SENSITIVITY_4DVAR
-          IF (LsenPSAS(ng)) THEN
+          IF (Lsen4DVAR(ng)) THEN
 #  endif
 #  if !defined AD_IMPULSE
             IF ((DendS(ng).ge.tdays(ng)).and.                           &
@@ -564,7 +557,6 @@
               DO tile=first_tile(ng),last_tile(ng),+1
                 CALL adsen_force (ng, tile)
               END DO
-!$OMP BARRIER
 #  if !defined AD_IMPULSE
             END IF
 #  endif
@@ -574,7 +566,7 @@
         END DO
 # endif
       END DO STEP_LOOP
-
+!
       RETURN
       END SUBROUTINE ad_main2d
 #else

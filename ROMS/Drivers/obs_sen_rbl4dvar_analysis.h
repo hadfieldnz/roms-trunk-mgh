@@ -55,14 +55,14 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
       PUBLIC  :: ROMS_initialize
       PUBLIC  :: ROMS_run
       PUBLIC  :: ROMS_finalize
-
+!
       CONTAINS
-
+!
       SUBROUTINE ROMS_initialize (first, mpiCOMM)
 !
 !=======================================================================
@@ -96,13 +96,13 @@
 !  Imported variable declarations.
 !
       logical, intent(inout) :: first
-
+!
       integer, intent(in), optional :: mpiCOMM
 !
 !  Local variable declarations.
 !
       logical :: allocate_vars = .TRUE.
-
+!
 #ifdef DISTRIBUTE
       integer :: MyError, MySize
 #endif
@@ -154,7 +154,6 @@
 !  computed only once since the "first_tile" and "last_tile" values
 !  are private for each parallel thread/node.
 !
-!$OMP PARALLEL
 #if defined _OPENMP
       MyThread=my_threadnum()
 #elif defined DISTRIBUTE
@@ -167,7 +166,6 @@
         first_tile(ng)=MyThread*chunk_size
         last_tile (ng)=first_tile(ng)+chunk_size-1
       END DO
-!$OMP END PARALLEL
 !
 !  Initialize internal wall clocks. Notice that the timings does not
 !  includes processing standard input because several parameters are
@@ -179,18 +177,14 @@
         END IF
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO thread=THREAD_RANGE
             CALL wclock_on (ng, iNLM, 0, __LINE__, __FILE__)
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Allocate and initialize modules variables.
 !
-!$OMP PARALLEL
         CALL mod_arrays (allocate_vars)
-!$OMP END PARALLEL
 !
 !  Allocate and initialize observation arrays.
 !
@@ -352,10 +346,10 @@
      &                 __FILE__)) RETURN
       END DO
 #endif
-
+!
       RETURN
       END SUBROUTINE ROMS_initialize
-
+!
       SUBROUTINE ROMS_run (RunInterval)
 !
 !=======================================================================
@@ -399,7 +393,7 @@
 !  Local variable declarations.
 !
       logical :: Lcgini, Linner, Lposterior
-
+!
       integer :: my_inner, my_outer
       integer :: Lbck, Lini, Rec1, Rec2
       integer :: i, lstr, ng, status, tile
@@ -407,9 +401,9 @@
 
       integer, dimension(Ngrids) :: indxSave
       integer, dimension(Ngrids) :: Nrec
-
+!
       real(r8) :: str_day, end_day
-
+!
       character (len=25) :: driver
       character (len=20) :: string
 !
@@ -459,10 +453,8 @@
         wrtRPmod(ng)=.FALSE.
         wrtTLmod(ng)=.FALSE.
       END DO
-
-!$OMP PARALLEL
+!
       CALL initial
-!$OMP END PARALLEL
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 !
@@ -525,11 +517,9 @@
      &                   __FILE__)) RETURN
 #endif
 
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL normalization (ng, tile, 2)
           END DO
-!$OMP END PARALLEL
           LdefNRM(1:4,ng)=.FALSE.
           LwrtNRM(1:4,ng)=.FALSE.
         ELSE
@@ -570,12 +560,10 @@
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
 !
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL balance_ref (ng, tile, Lini)
             CALL biconj (ng, tile, iNLM, Lini)
           END DO
-!$OMP END PARALLEL
           wrtZetaRef(ng)=.TRUE.
         END DO
       END IF
@@ -609,6 +597,21 @@
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
       END DO
+
+#ifdef SKIP_NLM
+!
+!  If skipping NLM, write out screening flag to 4DVAR NetCDF file.
+!
+      DO ng=1,Ngrids
+        CALL netcdf_put_fvar (ng, iTLM, DAV(ng)%name,                   &
+     &                        Vname(1,idObsS), ObsScale,                &
+     &                        (/1/), (/Ndatum(ng)/),                    &
+     &                        ncid = DAV(ng)%ncid,                      &
+     &                        varid = DAV(ng)%Vid(idObsS))
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
+      END DO
+#endif
 !
 !  Write out outer loop beeing processed.
 !
@@ -638,17 +641,15 @@
           WRITE (stdout,20) 'NL', ng, ntstart(ng), ntend(ng)
         END IF
       END DO
-
-!$OMP PARALLEL
+!
 # ifdef SOLVE3D
       CALL main3d (RunInterval)
 # else
       CALL main2d (RunInterval)
 # endif
-!$OMP END PARALLEL
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
-
+!
       DO ng=1,Ngrids
         wrtNLmod(ng)=.FALSE.
         wrtObsScale(ng)=.FALSE.
@@ -703,19 +704,27 @@
         LreadFWD(ng)=.TRUE.
       END DO
 
-#if defined BULK_FLUXES && defined NL_BULK_FLUXES
+#ifdef FORWARD_FLUXES
 !
-!  Set structure for the nonlinear surface fluxes to be processed by
-!  by the tangent linear and adjoint models. Also, set switches to
-!  process the BLK structure in routine "check_multifile".  Notice that
-!  it is possible to split solution into multiple NetCDF files to reduce
-!  their size.
+!  Set the BLK structure to contain the nonlinear model surface fluxes
+!  needed by the tangent linear and adjoint models. Also, set switches
+!  to process that structure in routine "check_multifile". Notice that
+!  it is possible to split the solution into multiple NetCDF files to
+!  reduce their size.
 !
-      CALL edit_multifile ('HIS2BLK')
+!  The switch LreadFRC is deactivated because all the atmospheric
+!  forcing, including shortwave radiation, is read from the NLM
+!  surface fluxes or is assigned during ESM coupling.  Such fluxes
+!  are available from the QCK structure. There is no need for reading
+!  and processing from the FRC structure input forcing-files.
+!
+      CALL edit_multifile ('QCK2BLK')
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
       DO ng=1,Ngrids
         LreadBLK(ng)=.TRUE.
+        LreadFRC(ng)=.FALSE.
+        LreadQCK(ng)=.FALSE.
       END DO
 #endif
 
@@ -776,14 +785,12 @@
 !  be zero when running the tangent linear model.
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_forces (ng, tile, iTLM)
 # ifdef ADJUST_BOUNDARY
             CALL initialize_boundary (ng, tile, iTLM)
 # endif
           END DO
-!$OMP END PARALLEL
         END DO
 
 # if defined BALANCE_OPERATOR && defined ZETA_ELLIPTIC
@@ -797,12 +804,10 @@
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
 !
-!$OMP PARALLEL
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL balance_ref (ng, tile, Lini)
               CALL biconj (ng, tile, iNLM, Lini)
             END DO
-!$OMP END PARALLEL
             wrtZetaRef(ng)=.TRUE.
           END DO
         END IF
@@ -842,10 +847,8 @@
 !  Initialize the adjoint model from rest.
 !
             DO ng=1,Ngrids
-              LsenPSAS(ng)=.FALSE.
-!$OMP PARALLEL
+              Lsen4DVAR(ng)=.FALSE.
               CALL ad_initial (ng)
-!$OMP END PARALLEL
               IF (FoundError(exit_flag, NoError, __LINE__,              &
      &                       __FILE__)) RETURN
               wrtMisfit(ng)=.FALSE.
@@ -869,14 +872,12 @@
                 WRITE (stdout,20) 'AD', ng, ntstart(ng), ntend(ng)
               END IF
             END DO
-
-!$OMP PARALLEL
+!
 # ifdef SOLVE3D
             CALL ad_main3d (RunInterval)
 # else
             CALL ad_main2d (RunInterval)
 # endif
-!$OMP END PARALLEL
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
 !
@@ -957,9 +958,7 @@
 !
             DO ng=1,Ngrids
               ITL(ng)%Rindex=Rec1
-!$OMP PARALLEL
               CALL tl_initial (ng)
-!$OMP END PARALLEL
               IF (FoundError(exit_flag, NoError, __LINE__,              &
      &                       __FILE__)) RETURN
             END DO
@@ -982,14 +981,12 @@
                 WRITE (stdout,20) 'TL', ng, ntstart(ng), ntend(ng)
               END IF
             END DO
-
-!$OMP PARALLEL
+!
 # ifdef SOLVE3D
             CALL tl_main3d (RunInterval)
 # else
             CALL tl_main2d (RunInterval)
 # endif
-!$OMP END PARALLEL
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
 
@@ -1025,10 +1022,8 @@
 !  Initialize the adjoint model always from rest.
 !
         DO ng=1,Ngrids
-          LsenPSAS(ng)=.FALSE.
-!$OMP PARALLEL
+          Lsen4DVAR(ng)=.FALSE.
           CALL ad_initial (ng)
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -1052,14 +1047,12 @@
             WRITE (stdout,20) 'AD', ng, ntstart(ng), ntend(ng)
           END IF
         END DO
-
-!$OMP PARALLEL
+!
 # ifdef SOLVE3D
         CALL ad_main3d (RunInterval)
 # else
         CALL ad_main2d (RunInterval)
 # endif
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
 !
@@ -1142,7 +1135,6 @@
 !  Clear tangent arrays before running nonlinear model (important).
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_ocean (ng, tile, iTLM)
             CALL initialize_forces (ng, tile, iTLM)
@@ -1150,7 +1142,6 @@
             CALL initialize_boundary (ng, tile, iTLM)
 # endif
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Initialize nonlinear model INI(ng)%name file, record outer+2.
@@ -1161,13 +1152,11 @@
           indxSave(ng)=INI(ng)%Rindex
           INI(ng)%Rindex=outer+2
         END DO
-
-!$OMP PARALLEL
+!
         CALL initial
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
-
+!
         DO ng=1,Ngrids
           INI(ng)%Rindex=indxSave(ng)
         END DO
@@ -1189,17 +1178,15 @@
             WRITE (stdout,20) 'NL', ng, ntstart(ng), ntend(ng)
           END IF
         END DO
-
-!$OMP PARALLEL
+!
 # ifdef SOLVE3D
         CALL main3d (RunInterval)
 # else
         CALL main2d (RunInterval)
 # endif
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
-
+!
         DO ng=1,Ngrids
           wrtNLmod(ng)=.FALSE.
           wrtTLmod(ng)=.FALSE.
@@ -1268,11 +1255,9 @@
 !!   &                 __FILE__)) RETURN
 !!    END DO
 !
-!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !  Adjoint of RBL4D-Var to compute the observation sensitivity.
-!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !
 !  Reset the start and end times for the adjoint forcing.
 !
@@ -1323,10 +1308,8 @@
 !
         DO ng=1,Ngrids
           Lstiffness=.FALSE.
-          LsenPSAS(ng)=.TRUE.
-!$OMP PARALLEL
+          Lsen4DVAR(ng)=.TRUE.
           CALL ad_initial (ng)
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -1350,14 +1333,12 @@
             WRITE (stdout,20) 'AD', ng, ntstart(ng), ntend(ng)
           END IF
         END DO
-
-!$OMP PARALLEL
+!
 #ifdef SOLVE3D
         CALL ad_main3d (RunInterval)
 #else
         CALL ad_main2d (RunInterval)
 #endif
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
 !
@@ -1428,14 +1409,12 @@
 !  This is very important.
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_forces (ng, tile, iTLM)
 #ifdef ADJUST_BOUNDARY
             CALL initialize_boundary (ng, tile, iTLM)
 #endif
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Set basic state trajectory.
@@ -1459,9 +1438,7 @@
 !
         DO ng=1,Ngrids
           ITL(ng)%Rindex=Rec1
-!$OMP PARALLEL
           CALL tl_initial (ng)
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -1475,17 +1452,15 @@
             WRITE (stdout,20) 'TL', ng, ntstart(ng), ntend(ng)
           END IF
         END DO
-
-!$OMP PARALLEL
+!
 #ifdef SOLVE3D
         CALL tl_main3d (RunInterval)
 #else
         CALL tl_main2d (RunInterval)
 #endif
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
-
+!
         DO ng=1,Ngrids
           wrtNLmod(ng)=.FALSE.
           wrtTLmod(ng)=.FALSE.
@@ -1515,14 +1490,12 @@
 !  Clear tangent linear forcing arrays before entering inner-loop.
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_forces (ng, tile, iTLM)
 # ifdef ADJUST_BOUNDARY
             CALL initialize_boundary (ng, tile, iTLM)
 # endif
           END DO
-!$OMP END PARALLEL
         END DO
 !
 # ifdef RPCG
@@ -1573,10 +1546,8 @@
 !  Initialize the adjoint model from rest.
 !
           DO ng=1,Ngrids
-            LsenPSAS(ng)=.FALSE.
-!$OMP PARALLEL
+            Lsen4DVAR(ng)=.FALSE.
             CALL ad_initial (ng)
-!$OMP END PARALLEL
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
             wrtMisfit(ng)=.FALSE.
@@ -1600,14 +1571,12 @@
               WRITE (stdout,20) 'AD', ng, ntstart(ng), ntend(ng)
             END IF
           END DO
-
-!$OMP PARALLEL
+!
 # ifdef SOLVE3D
           CALL ad_main3d (RunInterval)
 # else
           CALL ad_main2d (RunInterval)
 # endif
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
 !
@@ -1689,9 +1658,7 @@
 !
           DO ng=1,Ngrids
             ITL(ng)%Rindex=Rec1
-!$OMP PARALLEL
             CALL tl_initial (ng)
-!$OMP END PARALLEL
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
           END DO
@@ -1715,17 +1682,15 @@
               WRITE (stdout,20) 'TL', ng, ntstart(ng), ntend(ng)
             END IF
           END DO
-
-!$OMP PARALLEL
+!
 # ifdef SOLVE3D
           CALL tl_main3d (RunInterval)
 # else
           CALL tl_main2d (RunInterval)
 # endif
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
-
+!
           DO ng=1,Ngrids
             wrtNLmod(ng)=.FALSE.
             wrtTLmod(ng)=.FALSE.
@@ -1825,14 +1790,12 @@
 !  tangent linear model.
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_forces (ng, tile, iTLM)
 # ifdef ADJUST_BOUNDARY
             CALL initialize_boundary (ng, tile, iTLM)
 # endif
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Set basic state trajectory.
@@ -1856,9 +1819,7 @@
 !
         DO ng=1,Ngrids
           ITL(ng)%Rindex=Rec1
-!$OMP PARALLEL
           CALL tl_initial (ng)
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -1867,14 +1828,12 @@
 !  before the obs impact initial condition calculation.
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_forces (ng, tile, iTLM)
 # ifdef ADJUST_BOUNDARY
             CALL initialize_boundary (ng, tile, iTLM)
 # endif
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Run tangent linear model forward and force with convolved adjoint
@@ -1886,17 +1845,15 @@
             WRITE (stdout,20) 'TL', ng, ntstart(ng), ntend(ng)
           END IF
         END DO
-
-!$OMP PARALLEL
+!
 # ifdef SOLVE3D
         CALL tl_main3d (RunInterval)
 # else
         CALL tl_main2d (RunInterval)
 # endif
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
-
+!
         DO ng=1,Ngrids
           wrtNLmod(ng)=.FALSE.
           wrtTLmod(ng)=.FALSE.
@@ -1952,14 +1909,12 @@
 !  tangent linear model.
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_forces (ng, tile, iTLM)
 #  ifdef ADJUST_BOUNDARY
             CALL initialize_boundary (ng, tile, iTLM)
 #  endif
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Set basic state trajectory.
@@ -1983,9 +1938,7 @@
 !
         DO ng=1,Ngrids
           ITL(ng)%Rindex=Rec1
-!$OMP PARALLEL
           CALL tl_initial (ng)
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -1994,14 +1947,12 @@
 !  before the obs impact initial condition calculation.
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_ocean (ng, tile, iTLM)
 #  ifdef ADJUST_BOUNDARY
             CALL initialize_boundary (ng, tile, iTLM)
 #  endif
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Run tangent linear model forward and force with convolved adjoint
@@ -2013,17 +1964,15 @@
             WRITE (stdout,20) 'TL', ng, ntstart(ng), ntend(ng)
           END IF
         END DO
-
-!$OMP PARALLEL
+!
 #  ifdef SOLVE3D
         CALL tl_main3d (RunInterval)
 #  else
         CALL tl_main2d (RunInterval)
 #  endif
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
-
+!
         DO ng=1,Ngrids
           wrtNLmod(ng)=.FALSE.
           wrtTLmod(ng)=.FALSE.
@@ -2080,14 +2029,12 @@
 !  tangent linear model.
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_forces (ng, tile, iTLM)
 #  ifdef ADJUST_BOUNDARY
             CALL initialize_boundary (ng, tile, iTLM)
 #  endif
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Set basic state trajectory.
@@ -2111,9 +2058,7 @@
 !
         DO ng=1,Ngrids
           ITL(ng)%Rindex=Rec1
-!$OMP PARALLEL
           CALL tl_initial (ng)
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -2122,12 +2067,10 @@
 !  before the obs impact initial condition calculation.
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL initialize_ocean (ng, tile, iTLM)
             CALL initialize_forces (ng, tile, iTLM)
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Run tangent linear model forward and force with convolved adjoint
@@ -2139,17 +2082,15 @@
             WRITE (stdout,20) 'TL', ng, ntstart(ng), ntend(ng)
           END IF
         END DO
-
-!$OMP PARALLEL
+!
 #  ifdef SOLVE3D
         CALL tl_main3d (RunInterval)
 #  else
         CALL tl_main2d (RunInterval)
 #  endif
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
-
+!
         DO ng=1,Ngrids
           wrtNLmod(ng)=.FALSE.
           wrtTLmod(ng)=.FALSE.
@@ -2212,10 +2153,10 @@
      &          ' Inner = ',i3.3,/)
  70   FORMAT (/,1x,a,1x,'ROMS/TOMS: adjoint forcing time range: ',      &
      &        f12.4,' - ',f12.4 ,/)
-
+!
       RETURN
       END SUBROUTINE ROMS_run
-
+!
       SUBROUTINE ROMS_finalize
 !
 !=======================================================================
@@ -2234,6 +2175,14 @@
 !  Local variable declarations.
 !
       integer :: Fcount, ng, thread
+!
+!-----------------------------------------------------------------------
+!  Read and write observation variables for completeness.
+!-----------------------------------------------------------------------
+!
+      DO ng=1,Ngrids
+        CALL stats_modobs (ng)
+      END DO
 !
 !-----------------------------------------------------------------------
 !  If blowing-up, save latest model state into RESTART NetCDF file.
@@ -2272,18 +2221,14 @@
       END IF
 !
       DO ng=1,Ngrids
-!$OMP PARALLEL
         DO thread=THREAD_RANGE
           CALL wclock_off (ng, iNLM, 0, __LINE__, __FILE__)
         END DO
-!$OMP END PARALLEL
       END DO
 !
 !  Report dynamic memory and automatic memory requirements.
 !
-!$OMP PARALLEL
       CALL memory
-!$OMP END PARALLEL
 !
 !  Close IO files.
 !
@@ -2291,7 +2236,7 @@
         CALL close_inp (ng, iNLM)
       END DO
       CALL close_out
-
+!
       RETURN
       END SUBROUTINE ROMS_finalize
 

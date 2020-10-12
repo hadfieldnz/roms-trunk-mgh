@@ -7,13 +7,34 @@
 !    See License_ROMS.txt                                              !
 !=======================================================================
 !                                                                      !
-!  ROMS Strong/Weak Constraint 4-Dimensional Variational Data          !
+!  ROMS Strong/Weak Constraint Split 4-Dimensional Variational Data    !
 !            Assimilation Driver: Indirect Representer Approach        !
 !                                 (R4D-Var).                           !
 !                                                                      !
 !  This driver is used for the dual formulation (observation space),   !
 !  strong or weak constraint 4D-Var where errors may be considered     !
 !  in both model and observations.                                     !
+!                                                                      !
+!  The R4D-Var algorithm is split into multiple executables to         !
+!  facilitate various configurations:                                  !
+!                                                                      !
+!    (1) Executable A computes ROMS nonlinear trajectory used to       !
+!        linearize the tangent linear and adjoint models used in       !
+!        the iterations of the inner loop for the minimization of      !
+!        the cost function. It allows the nonlinear trajectory to      !
+!        be part of a coupling system and or include nested grids.     !
+!        It calls either the RBL4D-Var "background" or "analysis"      !
+!        routines.                                                     !
+!                                                                      !
+!    (2) Executable B calls either R4D-Var "increment" or              !
+!        "posterior_error". The R4D-Var increment is obtained by       !
+!        minimizing the cost function over Ninner loops. It is         !
+!        possible to use a coarser grid resolution in the inner        !
+!        loop.  If so, the finer background trajectory needs to        !
+!        be interpolated into the coarser grid. Then, at the end       !
+!        of inner loops, the coarse grid increment needs to be         !
+!        interpolated to the finer grid.  The increment phase          !
+!        may be run at a lower precision.                              !
 !                                                                      !
 !  The routines in this driver control the initialization,  time-      !
 !  stepping, and finalization of ROMS model following ESMF/NUOPC       !
@@ -74,7 +95,8 @@
 # endif
 #endif
       USE r4dvar_mod,        ONLY : prior_error
-      USE strings_mod,       ONLY : FoundError
+      USE stdinp_mod,        ONLY : getpar_s
+      USE strings_mod,       ONLY : FoundError, uppercase
 !
 !  Imported variable declarations.
 !
@@ -123,6 +145,26 @@
 !  independent from standard input parameters.
 !
         CALL initialize_parallel
+!
+!  Get 4D-Var phase from APARNAM input script file.
+!
+        CALL getpar_s (MyRank, aparnam, 'APARNAM')
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
+!
+        CALL getpar_s (MyRank, Phase4DVAR, 'Phase4DVAR', aparnam)
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
+!
+!  Determine ROMS standard output append switch. It is only relevant
+!  "ROMS_STDINP" is activated. The standard output is created in the
+!  "background" phase and open to append in the other phases.
+!
+        IF (INDEX(TRIM(uppercase(Phase4DVAR)),'BACKG').ne.0) THEN
+          Lappend=.FALSE.
+        ELSE
+          Lappend=.TRUE.
+        END IF
 !
 !  Read in model tunable parameters from standard input. Allocate and
 !  initialize variables in several modules after the number of nested
@@ -193,7 +235,7 @@
 !
 !-----------------------------------------------------------------------
 !  Set application grid, metrics, and associated variables. Then,
-!  Proccess background and model prior error covariance standard
+!  proccess background and mode prior error covariance standard
 !  deviations and normalization coefficients.
 !-----------------------------------------------------------------------
 !
@@ -223,16 +265,18 @@
 !=======================================================================
 !
       USE mod_param
+      USE mod_parallel
+      USE mod_iounits
       USE mod_scalars
       USE mod_stepping
 !
-      USE r4dvar_mod,  ONLY : background, increment, analysis
+      USE r4dvar_mod
 
 #if defined POSTERIOR_ERROR_I || defined POSTERIOR_ERROR_F || \
     defined POSTERIOR_EOFS
       USE r4dvar_mod,  ONLY : posterior_error
 #endif
-      USE strings_mod, ONLY : FoundError
+      USE strings_mod, ONLY : FoundError, uppercase
 !
 !  Imported variable declarations
 !
@@ -243,7 +287,7 @@
       integer :: my_outer, ng
 !
 !=======================================================================
-!  Run R4D-Var Data Assimilation algorithm.
+!  Run Split R4D-Var Data Assimilation algorithm.
 !=======================================================================
 !
 !  Initialize several global parameters.
@@ -261,11 +305,15 @@
         Lnew(ng)=2          ! new minimization time index
       END DO
 !
+      Ldone=.FALSE.         ! 4D-Var cycle finish switch
       Nrun=1                ! run counter
-      outer=0               ! outer-loop counter
-      inner=0               ! inner-loop counter
       ERstr=1               ! ensemble start counter
       ERend=Nouter          ! ensemble end counter
+!
+!  Select R4D-Var phase to execute.
+!
+      SELECT CASE (uppercase(Phase4DVAR(1:6)))
+
 !
 !  Compute nonlinear background state trajectory, Xb(t)|n-1. Interpolate
 !  the background at the observation locations, and compute the quality
@@ -273,42 +321,83 @@
 !  to linearize the tangent linear and adjoint models during the
 !  minimization.
 !
-      CALL background (outer, RunInterval)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
-!
-!  Start outer loop iterations.
-!
-      OUTER_LOOP : DO my_outer=1,Nouter
-        outer=my_outer
-        inner=0
+        CASE ('BACKGR')
+
+          my_outer=0
+          outer=0
+          inner=0
+
+          CALL background (outer, RunInterval)
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) RETURN
 !
 !  Compute 4D-Var data assimilation increment, dXa, by iterating over
 !  the inner loops, and minimizing the cost function.
 !
-        CALL increment (my_outer, RunInterval)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        CASE ('INCREM')
+
+          my_outer=OuterLoop
+          outer=OuterLoop
+          inner=0
+
+          CALL increment (my_outer, RunInterval)
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) RETURN
 !
 !  Compute 4D-Var data assimilation analysis, Xa = Xb + dXa.  Set
 !  nonlinear model initial conditions for next outer loop.
 !
-        CALL analysis (my_outer, RunInterval)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        CASE ('ANALYS')
 
-      END DO OUTER_LOOP
+          my_outer=OuterLoop
+          outer=OuterLoop
+          inner=Ninner
 
-#if defined POSTERIOR_ERROR_I || defined POSTERIOR_ERROR_F || \
+          CALL analysis (my_outer, RunInterval)
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) RETURN
+
+
+#if defined POSTERIOR_ERROR_I || \
+    defined POSTERIOR_ERROR_F || \
     defined POSTERIOR_EOFS
 !
 !  Compute full (diagonal) posterior analysis error covariance matrix.
 !  (NOTE: Currently, this code only works for a single outer-loop).
 !
-      CALL posterior_error (RunInterval)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+        CASE ('POST_E')
+
+          CALL posterior_error (RunInterval)
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) RETURN
 #endif
+!
+!  Issue an error if incorrect 4D-Var phase.
+!
+        CASE DEFAULT
+
+          IF (Master) THEN
+            WRITE (stdout,10) TRIM(Phase4DVAR)
+ 10         FORMAT (' ROMS_run - illegal 4D-Var phase: ''',a,'''')
+          END IF
+          exit_flag=5
+          RETURN
+
+      END SELECT
+!
+!  Set finish R4D-Var cycle switch.
+!
+      IF ((OuterLoop.eq.Nouter).and.                                   &
+#if defined POSTERIOR_ERROR_I || \
+    defined POSTERIOR_ERROR_F || \
+    defined POSTERIOR_EOFS
+     &    (INDEX(TRIM(uppercase(Phase4DVAR)),'POST_E').ne.0)) THEN
+        Ldone=.TRUE.
+#else
+     &    (INDEX(TRIM(uppercase(Phase4DVAR)),'ANALYS').ne.0)) THEN
+        Ldone=.TRUE.
+#endif
+      END IF
 !
       RETURN
       END SUBROUTINE ROMS_run
@@ -329,6 +418,7 @@
       USE mod_scalars
       USE mod_stepping
 !
+      USE r4dvar_mod,  ONLY : Ldone
       USE strings_mod, ONLY : FoundError
 !
 !  Local variable declarations.
@@ -350,7 +440,7 @@
       tile=-1
 #endif
 !
-      IF (exit_flag.eq.NoError) THEN
+      IF (Ldone.and.(exit_flag.eq.NoError)) THEN
         DO ng=1,Ngrids
           LdefDAI(ng)=.TRUE.
           CALL def_dai (ng)
@@ -394,9 +484,11 @@
 !  Compute and report model-observation comparison statistics.
 !-----------------------------------------------------------------------
 !
-      DO ng=1,Ngrids
-        CALL stats_modobs (ng)
-      END DO
+      IF (Ldone.or.(exit_flag.eq.1)) THEN
+        DO ng=1,Ngrids
+          CALL stats_modobs (ng)
+        END DO
+      END IF
 !
 !-----------------------------------------------------------------------
 !  If blowing-up, save latest model state into RESTART NetCDF file.

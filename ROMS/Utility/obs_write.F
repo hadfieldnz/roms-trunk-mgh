@@ -60,7 +60,8 @@
 # ifdef BGQC
       real(r8) :: df1, df2, Thresh
 # endif
-      real(r8) :: misfit(Mobs), uradial(Mobs), vradial(Mobs)
+      real(r8) :: misfit(Mobs), unvetted(Mobs)
+      real(r8) :: uradial(Mobs), vradial(Mobs)
 # ifndef VERIFICATION
       real(r8) :: uBgErr(Mobs), vBgErr(Mobs)
 # endif
@@ -105,6 +106,7 @@
 !  Initialize observation reject/accept processing flag.
 !
         DO iobs=Mstr,Mend
+          unvetted(iobs)=IniVal
           ObsVetting(iobs)=IniVal
         END DO
 
@@ -939,11 +941,15 @@
 # endif
 !
 !-----------------------------------------------------------------------
-!  Scale extracted data at observations location.
+!  Scale extracted data at observations location.  Save NLM unvetted
+!  values before they are rejected by quality control.  The unvetted
+!  vector is used only for output purposes to analyze why a datum was
+!  rejected.
 !-----------------------------------------------------------------------
 !
         IF (wrtNLmod(ng)) THEN
           DO iobs=Mstr,Mend
+            unvetted(iobs)=NLmodVal(iobs)
             NLmodVal(iobs)=ObsScale(iobs)*NLmodVal(iobs)
           END DO
         END IF
@@ -973,6 +979,12 @@
      &                     NLmodVal(Mstr:))
 #   else
      &                     NLmodVal)
+#   endif
+          CALL mp_collect (ng, model, Ncollect, IniVal,                 &
+#   if defined WEAK_CONSTRAINT
+     &                     unvetted(Mstr:))
+#   else
+     &                     unvetted)
 #   endif
         END IF
 #   ifndef VERIFICATION
@@ -1034,6 +1046,14 @@
 #  endif
           END DO
           IF (Nrun.eq.1) THEN
+            CALL netcdf_put_fvar (ng, model, DAV(ng)%name,              &
+     &                            Vname(1,idNLmp), unvetted(Mstr:),     &
+     &                            (/NstrObs(ng)/), (/Nobs(ng)/),        &
+     &                            ncid = DAV(ng)%ncid,                  &
+     &                            varid = DAV(ng)%Vid(idNLmu))
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
+     &                     __FILE__)) RETURN
+
             CALL netcdf_put_fvar (ng, model, DAV(ng)%name,              &
      &                            Vname(1,idNLmi), NLmodVal(Mstr:),     &
      &                            (/NstrObs(ng)/), (/Nobs(ng)/),        &
@@ -1099,7 +1119,8 @@
 !
           IF (Nrun.eq.1) THEN
             DO iobs=Mstr,Mend
-              innovation(iobs)=ObsVal(iobs)-NLmodVal(iobs)
+              innovation(iobs)=ObsScale(iobs)*                          &
+     &                         (ObsVal(iobs)-NLmodVal(iobs))
               NLincrement(iobs)=NLmodVal(iobs)
             END DO
             CALL netcdf_put_fvar (ng, model, DAV(ng)%name,              &
@@ -1116,8 +1137,10 @@
 !
           IF (outer.eq.Nouter) THEN
             DO iobs=Mstr,Mend
-              NLincrement(iobs)=NLmodVal(iobs)-NLincrement(iobs)
-              residual(iobs)=ObsVal(iobs)-NLmodVal(iobs)
+              NLincrement(iobs)=ObsScale(iobs)*                         &
+     &                          (NLmodVal(iobs)-NLincrement(iobs))
+              residual(iobs)=ObsScale(iobs)*                            &
+     &                       (ObsVal(iobs)-NLmodVal(iobs))
             END DO
             CALL netcdf_put_fvar (ng, model, DAV(ng)%name,              &
      &                            Vname(1,idIncr), NLincrement(Mstr:),  &
@@ -1193,6 +1216,14 @@
         END IF
 #  else
         IF (wrtNLmod(ng).and.outer.gt.0) THEN
+          CALL netcdf_put_fvar (ng, model, DAV(ng)%name,                &
+     &                          Vname(1,idNLmu), unvetted(Mstr:),       &
+     &                          (/NstrObs(ng),outer/), (/Nobs(ng),1/),  &
+     &                          ncid = DAV(ng)%ncid,                    &
+     &                          varid = DAV(ng)%Vid(idNLmu))
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
+     &                   __FILE__)) RETURN
+!
           CALL netcdf_put_fvar (ng, model, DAV(ng)%name,                &
      &                          Vname(1,idNLmo), NLmodVal(Mstr:),       &
      &                          (/NstrObs(ng),outer/), (/Nobs(ng),1/),  &

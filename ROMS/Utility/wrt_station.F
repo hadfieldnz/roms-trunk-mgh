@@ -755,7 +755,7 @@
         scale=1.0_dp
         CALL extract_sta2d (ng, iNLM, Cgrid, idEmPf, r2dvar,            &
      &                      LBi, UBi, LBj, UBj,                         &
-     &                      scale, FORCES(ng)%EminusP,                  &
+     &                      scale, FORCES(ng)%stflux(:,:,isalt),        &
      &                      Nstation(ng), Xpos, Ypos, psta)
         CALL netcdf_put_fvar (ng, iNLM, STA(ng)%name,                   &
      &                        TRIM(Vname(1,idEmPf)), psta,              &

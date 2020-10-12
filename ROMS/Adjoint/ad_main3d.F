@@ -47,7 +47,7 @@
 # ifdef BBL_MODEL_NOT_YET
 !!    USE ad_bbl_mod,              ONLY : ad_bblm
 # endif
-# if defined BULK_FLUXES_NOT_YET && !defined NL_BULK_FLUXES
+# if defined BULK_FLUXES_NOT_YET && !defined PRIOR_BULK_FLUXES
 !!    USE ad_bulk_flux_mod,        ONLY : ad_bulk_flux
 # endif
 # ifdef BVF_MIXING_NOT_YET
@@ -120,7 +120,7 @@
 # ifdef FLOATS_NOT_YET
 !!    USE ad_step_floats_mod,      ONLY : ad_step_floats
 # endif
-# if defined BULK_FLUXES && !defined NL_BULK_FLUXES
+# if defined BULK_FLUXES && !defined PRIOR_BULK_FLUXES
       USE bulk_flux_mod,           ONLY : bulk_flux
 # endif
       USE dateclock_mod,           ONLY : time_string
@@ -154,14 +154,14 @@
 !  Local variable declarations.
 !
       logical :: backward = .TRUE.
-
+!
       integer :: ng, tile
       integer :: my_iif, next_indx1
 # ifdef FLOATS_NOT_YET
       integer :: Lend, Lstr, chunk_size
 # endif
       integer :: ks, kt
-
+!
       real(r8) :: HalfDT, MaxDT, my_StepTime
 !
 !=======================================================================
@@ -179,23 +179,17 @@
 !
         DO ng=1,Ngrids
           iic(ng)=iic(ng)-1
-!$OMP MASTER
           time(ng)=time(ng)-dt(ng)
           tdays(ng)=time(ng)*sec2day
           CALL time_string (time(ng), time_code(ng))
-!$OMP END MASTER
         END DO
-!$OMP BARRIER
 !
 !-----------------------------------------------------------------------
 !  Read in required data, if any, from input NetCDF files.
 !-----------------------------------------------------------------------
 !
         DO ng=1,Ngrids
-!$OMP MASTER
           CALL ad_get_data (ng)
-!$OMP END MASTER
-!$OMP BARRIER
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -211,7 +205,6 @@
             CALL set_depth (ng, tile, iADM)
 # endif
           END DO
-!$OMP BARRIER
         END DO
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
@@ -226,11 +219,10 @@
           DO tile=last_tile(ng),first_tile(ng),-1
             CALL set_massflux (ng, tile, iADM)
             CALL rho_eos (ng, tile, iADM)
-#  if defined BULK_FLUXES && !defined NL_BULK_FLUXES
-            CALL bulk_flux (ng, tile)
+#  if defined BULK_FLUXES && !defined PRIOR_BULK_FLUXES
+!!          CALL bulk_flux (ng, tile)
 #  endif
           END DO
-!$OMP BARRIER
         END DO
 # endif
 !
@@ -267,7 +259,6 @@
               Lend=Nfloats(ng)
 #  endif
               CALL ad_step_floats (ng, Lstr, Lend)
-!$OMP BARRIER
             END IF
           END DO
 # endif
@@ -286,7 +277,6 @@
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL reset_massflux (ng, tile, iADM) ! intermediate fluxes
             END DO
-!$OMP BARRIER
           END DO
 !
 !  Compute basic STATE omega vertical velocity with intermediate mass
@@ -297,7 +287,6 @@
               CALL omega (ng, tile, iADM)       ! BASIC STATE w-velocity
               CALL ad_step3d_t (ng, tile)
             END DO
-!$OMP BARRIER
           END DO
 # endif
 !
@@ -323,7 +312,6 @@
               CALL ad_omega (ng, tile, iADM)
               CALL set_massflux (ng, tile, iADM)    ! BASIC STATE
             END DO                                  ! mass fluxes
-!$OMP BARRIER
           END DO
 !
 !-----------------------------------------------------------------------
@@ -339,7 +327,6 @@
               CALL omega (ng, tile, iADM)       ! BASIC STATE w-velocity
               CALL ad_step3d_uv (ng, tile)
             END DO
-!$OMP BARRIER
           END DO
 !
 !-----------------------------------------------------------------------
@@ -351,7 +338,6 @@
             DO tile=last_tile(ng),first_tile(ng),-1
               CALL ad_set_depth (ng, tile, iADM)
             END DO
-!$OMP BARRIER
           END DO
 !
 !-----------------------------------------------------------------------
@@ -371,7 +357,6 @@
                 DO tile=first_tile(ng),last_tile(ng),+1
                   CALL ad_step2d (ng, tile)
                 END DO
-!$OMP BARRIER
               END IF
 !
 !  Set time indices for adjoint predictor step.
@@ -403,7 +388,6 @@
                 DO tile=last_tile(ng),first_tile(ng),-1
                   CALL ad_step2d (ng, tile)
                 END DO
-!$OMP BARRIER
               END IF
 !
 !  Set time indices for next adjoint corrector step. The
@@ -442,12 +426,11 @@
         DO ng=1,Ngrids
 #  ifdef SENSITIVITY_4DVAR
 #   ifdef RBL4DVAR_FCT_SENSITIVITY
-          IF (.not.LsenPSAS(ng).and.LsenFCT(ng)) THEN
+          IF (.not.Lsen4DVAR(ng).and.LsenFCT(ng)) THEN
 #   else
-          IF (.not.LsenPSAS(ng)) THEN
+          IF (.not.Lsen4DVAR(ng)) THEN
 #   endif
 #  endif
-!$OMP MASTER
             HalfDT=0.5_r8*dt(ng)
             IF (((time(ng)-HalfDT).le.ObsTime(ng)).and.                 &
      &          (ObsTime(ng).lt.(time(ng)+HalfDT))) THEN
@@ -456,8 +439,6 @@
             ELSE
               ProcessObs(ng)=.FALSE.
             END IF
-!$OMP END MASTER
-!$OMP BARRIER
 !
 #  ifdef SP4DVAR
 !
@@ -472,7 +453,6 @@
               CALL ad_misfit (ng, tile, iADM)
 #  endif
             END DO
-!$OMP BARRIER
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
 #  ifdef SENSITIVITY_4DVAR
@@ -496,7 +476,6 @@
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_force_dual (ng, tile, kstp(ng), nstp(ng))
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -515,7 +494,6 @@
 # endif
             CALL ad_rhs3d (ng, tile)
           END DO
-!$OMP BARRIER
         END DO
 !
 !-----------------------------------------------------------------------
@@ -529,7 +507,6 @@
 #  endif
             CALL ad_set_zeta (ng, tile)
           END DO
-!$OMP BARRIER
         END DO
 !
 !-----------------------------------------------------------------------
@@ -554,7 +531,6 @@
             CALL ad_bvf_mix (ng, tile)
 # endif
           END DO
-!$OMP BARRIER
         END DO
 
 # ifdef SO_SEMI
@@ -572,7 +548,6 @@
               CALL ad_pack (ng, tile, Nstr(ng), Nend(ng),               &
      &                      STORAGE(ng)%so_state(:,SOrec(ng)))
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -591,11 +566,10 @@
 # ifdef BBL_MODEL_NOT_YET
             CALL ad_bblm (ng, tile)
 # endif
-# if defined BULK_FLUXES_NOT_YET && !defined NL_BULK_FLUXES
+# if defined BULK_FLUXES_NOT_YET && !defined PRIOR_BULK_FLUXES
             CALL ad_bulk_flux (ng, tile)
 # endif
           END DO
-!$OMP BARRIER
         END DO
 
 # ifdef NEARSHORE_MELLOR_NOT_YET
@@ -609,7 +583,6 @@
             CALL ad_radiation_stress (ng, tile)
           END DO
         END DO
-!$OMP BARRIER
 # endif
 
 # if defined WAV_COUPLING_NOT_YET && defined MCT_LIB
@@ -625,7 +598,6 @@
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL waves_coupling (ng, tile)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -643,7 +615,6 @@
             DO tile=last_tile(ng),first_tile(ng),-1
               CALL atmos_coupling (ng, tile)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -666,7 +637,6 @@
             CALL ad_set_avg (ng, tile)
 # endif
           END DO
-!$OMP BARRIER
         END DO
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
@@ -682,7 +652,6 @@
             CALL ad_set_depth (ng, tile, iADM)
             CALL ad_forcing (ng, tile, kstp(ng), nstp(ng))
           END DO
-!$OMP BARRIER
         END DO
 # endif
 !
@@ -734,12 +703,10 @@
             DO tile=last_tile(ng),first_tile(ng),-1
               CALL ad_out_fields (ng, tile, iADM)
             END DO
-!$OMP BARRIER
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_set_depth (ng, tile, iADM)
               CALL ad_out_zeta (ng, tile, iADM)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -758,7 +725,6 @@
             DO tile=last_tile(ng),first_tile(ng),-1
               CALL ad_ini_fields (ng, tile, iADM)
             END DO
-!$OMP BARRIER
 !
 !  Adjoint of initialize free-surface and compute initial level
 !  thicknesses and depths.
@@ -767,7 +733,6 @@
               CALL ad_set_depth (ng, tile, iADM)
               CALL ad_ini_zeta (ng, tile, iADM)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -779,14 +744,25 @@
 !  Skip first timestep.
 !-----------------------------------------------------------------------
 !
+#  ifdef RBL4DVAR_FCT_SENSITIVITY
+        DO ng=1,Ngrids
+          IF (.not.Lsen4DVAR(ng)) THEN     ! ignore in forecast interval
+            IF (iic(ng).ne.ntstart(ng)) THEN
+              DO tile=first_tile(ng),last_tile(ng),+1
+                CALL ad_frc_adjust (ng, tile, Lfout(ng))
+              END DO
+            END IF
+          END IF
+        END DO
+#  else
         DO ng=1,Ngrids
           IF (iic(ng).ne.ntstart(ng)) THEN
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL ad_frc_adjust (ng, tile, Lfout(ng))
             END DO
-!$OMP BARRIER
           END IF
         END DO
+#  endif
 # endif
 
 # ifdef ADJUST_BOUNDARY
@@ -796,6 +772,19 @@
 !  Skip first timestep.
 !-----------------------------------------------------------------------
 !
+#  ifdef RBL4DVAR_FCT_SENSITIVITY
+        DO ng=1,Ngrids
+          IF (.not.Lsen4DVAR(ng)) THEN     ! ignore in forecast interval
+            IF (iic(ng).ne.ntstart(ng)) THEN
+              DO tile=first_tile(ng),last_tile(ng),+1
+                CALL ad_obc2d_adjust (ng, tile, Lbout(ng))
+                CALL ad_set_depth_bry (ng, tile, iADM)
+                CALL ad_obc_adjust (ng, tile, Lbout(ng))
+              END DO
+            END IF
+          END IF
+        END DO
+#  else
         DO ng=1,Ngrids
           IF (iic(ng).ne.ntstart(ng)) THEN
             DO tile=first_tile(ng),last_tile(ng),+1
@@ -803,9 +792,9 @@
               CALL ad_set_depth_bry (ng, tile, iADM)
               CALL ad_obc_adjust (ng, tile, Lbout(ng))
             END DO
-!$OMP BARRIER
           END IF
         END DO
+#  endif
 # endif
 
 # if defined WEAK_CONSTRAINT && !defined SP4DVAR
@@ -820,7 +809,6 @@
               CALL ad_set_depth (ng, tile, iADM)
               CALL frc_ADgather (ng, tile)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -831,10 +819,7 @@
 !-----------------------------------------------------------------------
 !
         DO ng=1,Ngrids
-!$OMP MASTER
           CALL ad_output (ng)
-!$OMP END MASTER
-!$OMP BARRIER
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
@@ -850,7 +835,6 @@
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL frc_clear (ng, tile)
             END DO
-!$OMP BARRIER
           END IF
         END DO
 # endif
@@ -866,7 +850,7 @@
 !
         DO ng=1,Ngrids
 #  ifdef SENSITIVITY_4DVAR
-          IF (LsenPSAS(ng)) THEN
+          IF (Lsen4DVAR(ng)) THEN
 #  endif
 #  if !defined AD_IMPULSE
             IF ((DendS(ng).ge.tdays(ng)).and.                           &
@@ -875,7 +859,6 @@
               DO tile=first_tile(ng),last_tile(ng),+1
                 CALL adsen_force (ng, tile)
               END DO
-!$OMP BARRIER
 #  if !defined AD_IMPULSE
             END IF
 #  endif
@@ -885,7 +868,7 @@
         END DO
 # endif
       END DO STEP_LOOP
-
+!
       RETURN
       END SUBROUTINE ad_main3d
 #else

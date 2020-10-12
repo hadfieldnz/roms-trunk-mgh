@@ -121,7 +121,7 @@
 # endif
 
 # if !defined ANA_WINDS    && \
-     ((defined BULK_FLUXES && !defined NL_BULK_FLUXES) || \
+     ((defined BULK_FLUXES && !defined FORWARD_FLUXES) || \
       defined ECOSIM)
 !
 !-----------------------------------------------------------------------
@@ -151,10 +151,10 @@
 
 # ifndef FRC_COUPLING
 #  if !defined ANA_SMFLUX  && \
-      !defined BULK_FLUXES && !defined NL_BULK_FLUXES
+      !defined BULK_FLUXES && !defined FORWARD_FLUXES
 !
 !-----------------------------------------------------------------------
-!  Surface wind stress components.
+!  Surface wind stress components from input FRC file.
 !-----------------------------------------------------------------------
 !
       CALL get_2dfld (ng, iRPM, idUsms, ncFRCid(idUsms,ng),             &
@@ -177,19 +177,20 @@
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 #  endif
+# endif
 
-#  ifdef NL_BULK_FLUXES
+# if defined FORWARD_FLUXES || defined FRC_COUPLING
 !
 !-----------------------------------------------------------------------
-!  Surface wind stress components from NLM bulk flux computation.
+!  Surface wind stress components from NLM forward file.
 !-----------------------------------------------------------------------
 !
       CALL get_2dfld (ng, iRPM, idUsms, BLK(ng)%ncid,                   &
      &                1, BLK(ng), update(1),                            &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
-#   ifdef MASKING
+#  ifdef MASKING
      &                GRID(ng) % umask,                                 &
-#   endif
+#  endif
      &                FORCES(ng) % sustrG)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
@@ -197,38 +198,54 @@
       CALL get_2dfld (ng, iRPM, idVsms, BLK(ng)%ncid,                   &
      &                1, BLK(ng), update(1),                            &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
-#   ifdef MASKING
+#  ifdef MASKING
      &                GRID(ng) % vmask,                                 &
-#   endif
+#  endif
      &                FORCES(ng) % svstrG)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
-#  endif
 # endif
 
-# if !defined ANA_PAIR && \
-     ((defined BULK_FLUXES && !defined NL_BULK_FLUXES) || \
-      defined ECOSIM       || defined ATM_PRESS)
+# if !defined ANA_PAIR      && \
+     (defined ECOSIM        || defined ATM_PRESS)
+#  if !(defined BULK_FLUXES || defined FRC_COUPLING)
 !
 !-----------------------------------------------------------------------
-!  Surface air pressure.
+!  Surface air pressure from input FRC file.
 !-----------------------------------------------------------------------
 !
       CALL get_2dfld (ng, iRPM, idPair, ncFRCid(idPair,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
-#  ifdef MASKING
+#   ifdef MASKING
      &                GRID(ng) % rmask,                                 &
-#  endif
+#   endif
      &                FORCES(ng) % PairG)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
+
+#  elif defined BULK_FLUXES && defined FORWARD_FLUXES
+!
+!-----------------------------------------------------------------------
+!  Surface air pressure used in NLM forward file.
+!-----------------------------------------------------------------------
+!
+      CALL get_2dfld (ng, iTLM, idPair, BLK(ng)%ncid,                   &
+     &                1, BLK(ng), update(1),                            &
+     &                LBi, UBi, LBj, UBj, 2, 1,                         &
+#   ifdef MASKING
+     &                GRID(ng) % rmask,                                 &
+#   endif
+     &                FORCES(ng) % PairG)
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
+#  endif
 # endif
 
 # if !defined ANA_WWAVE && defined WAVE_DATA
 !
 !-----------------------------------------------------------------------
-!  Surface wind induced wave amplitude, direction and period.
+!  Surface wind induced wave properties.
 !-----------------------------------------------------------------------
 !
 #  ifdef WAVES_DIR
@@ -244,6 +261,7 @@
 #  endif
 
 #  ifdef WAVES_HEIGHT
+!
       CALL get_2dfld (ng, iRPM, idWamp, ncFRCid(idWamp,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -256,6 +274,7 @@
 #  endif
 
 #  ifdef WAVES_LENGTH
+!
       CALL get_2dfld (ng, iRPM, idWlen, ncFRCid(idWlen,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -268,6 +287,7 @@
 #  endif
 
 #  ifdef WAVES_TOP_PERIOD
+!
       CALL get_2dfld (ng, iRPM, idWptp, ncFRCid(idWptp,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -280,6 +300,7 @@
 #  endif
 
 #  ifdef WAVES_BOT_PERIOD
+!
       CALL get_2dfld (ng, iRPM, idWpbt, ncFRCid(idWpbt,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -292,6 +313,7 @@
 #  endif
 
 #  if defined WAVES_UB
+!
       CALL get_2dfld (ng, iRPM, idWorb, ncFRCid(idWorb,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -304,6 +326,7 @@
 #  endif
 
 #  if defined TKE_WAVEDISS
+!
       CALL get_2dfld (ng, iRPM, idWdis, ncFRCid(idWdis,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -316,6 +339,7 @@
 #  endif
 
 #  if defined SVENDSEN_ROLLER
+!
       CALL get_2dfld (ng, iRPM, idWbrk, ncFRCid(idWbrk,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -347,7 +371,26 @@
      &               __FILE__)) RETURN
 #  endif
 
-#  if !defined ANA_SRFLUX && defined SHORTWAVE
+#  if defined SHORTWAVE && !defined ANA_SRFLUX
+#   ifdef FORWARD_FLUXES
+!
+!-----------------------------------------------------------------------
+!  Surface solar shortwave radiation from NLM forward file.
+!-----------------------------------------------------------------------
+!
+      CALL get_2dfld (ng, iRPM, idSrad, BLK(ng)%ncid,                   &
+     &                1, BLK(ng), update(1),                            &
+     &                LBi, UBi, LBj, UBj, 2, 1,                         &
+#    ifdef MASKING
+     &                GRID(ng) % rmask,                                 &
+#    endif
+     &                FORCES(ng) % srflxG)
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
+     &               __FILE__)) RETURN
+
+#   else
+
+#    if !(defined BULK_FLUXES || defined FRC_COUPLING)
 !
 !-----------------------------------------------------------------------
 !  Surface solar shortwave radiation.
@@ -356,15 +399,18 @@
       CALL get_2dfld (ng, iRPM, idSrad, ncFRCid(idSrad,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
-#   ifdef MASKING
+#     ifdef MASKING
      &                GRID(ng) % rmask,                                 &
-#   endif
+#     endif
      &                FORCES(ng) % srflxG)
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
+#    endif
+
+#   endif
 #  endif
 
-#  if (defined BULK_FLUXES && !defined NL_BULK_FLUXES) && \
+#  if (defined BULK_FLUXES && !defined FORWARD_FLUXES) && \
       !defined LONGWAVE    && !defined LONGWAVE_OUT
 !
 !-----------------------------------------------------------------------
@@ -382,7 +428,7 @@
      &               __FILE__)) RETURN
 #  endif
 
-#  if (defined BULK_FLUXES && !defined NL_BULK_FLUXES) && \
+#  if (defined BULK_FLUXES && !defined FORWARD_FLUXES) && \
       defined LONGWAVE_OUT
 !
 !-----------------------------------------------------------------------
@@ -401,7 +447,7 @@
 #  endif
 
 #  if !defined ANA_TAIR && \
-     ((defined BULK_FLUXES && !defined NL_BULK_FLUXES) || \
+     ((defined BULK_FLUXES && !defined FORWARD_FLUXES) || \
       defined ECOSIM       || \
       (defined SHORTWAVE   && defined ANA_SRFLUX && defined ALBEDO))
 !
@@ -421,7 +467,7 @@
 #  endif
 
 #  if !defined ANA_HUMIDITY && \
-      ((defined BULK_FLUXES && !defined NL_BULK_FLUXES) || \
+      ((defined BULK_FLUXES && !defined FORWARD_FLUXES) || \
        defined ECOSIM)
 !
 !-----------------------------------------------------------------------
@@ -440,7 +486,7 @@
 #  endif
 
 #  if !defined ANA_RAIN    && \
-      (defined BULK_FLUXES && !defined NL_BULK_FLUXES)
+      (defined BULK_FLUXES && !defined FORWARD_FLUXES)
 !
 !-----------------------------------------------------------------------
 !  Rain fall rate.
@@ -457,40 +503,40 @@
      &               __FILE__)) RETURN
 #  endif
 
-#  if !defined ANA_STFLUX  && \
-      !defined BULK_FLUXES && !defined NL_BULK_FLUXES
+#  ifndef ANA_STFLUX
+#   if !(defined BULK_FLUXES || defined FORWARD_FLUXES)
 !
 !-----------------------------------------------------------------------
-!  Surface net heat flux.
+!  Surface net heat flux from input FRC file.
 !-----------------------------------------------------------------------
 !
       CALL get_2dfld (ng, iRPM, idTsur(itemp),                          &
      &                ncFRCid(idTsur(itemp),ng),                        &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
-#   ifdef MASKING
+#    ifdef MASKING
      &                GRID(ng) % rmask,                                 &
-#   endif
-     &                FORCES(ng) % stflxG(:,:,:,itemp))
+#    endif
+     &                FORCES(ng) % stfluxG(:,:,:,itemp))
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
-#  endif
 
-#  ifdef NL_BULK_FLUXES
+#   elif defined FORWARD_FLUXES
 !
 !-----------------------------------------------------------------------
-!  Surface net heat flux from NLM bulk flux computation.
+!  Surface net heat flux from NLM forward file.
 !-----------------------------------------------------------------------
 !
       CALL get_2dfld (ng, iRPM, idTsur(itemp), BLK(ng)%ncid,            &
      &                1, BLK(ng), update(1),                            &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
-#   ifdef MASKING
+#    ifdef MASKING
      &                GRID(ng) % rmask,                                 &
-#   endif
-     &                FORCES(ng) % stflxG(:,:,:,itemp))
+#    endif
+     &                FORCES(ng) % stfluxG(:,:,:,itemp))
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
+#   endif
 #  endif
 
 #  if !defined ANA_SST && defined QCORRECTION
@@ -542,16 +588,17 @@
 #   ifdef MASKING
      &                GRID(ng) % rmask,                                 &
 #   endif
-     &                FORCES(ng) % btflxG(:,:,:,itemp))
+     &                FORCES(ng) % btfluxG(:,:,:,itemp))
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 #  endif
 
-#  ifdef SALINITY
-#   if !(defined ANA_SSFLUX || defined EMINUSP || defined SRELAXATION)
+#  if defined SALINITY        && !defined ANA_SSFLUX
+#   if !(defined EMINUSP      || defined FORWARD_FLUXES || \
+         defined FRC_COUPLING || defined SRELAXATION)
 !
 !-----------------------------------------------------------------------
-!  Surface net freshwater flux: E-P.
+!  Surface net freshwater flux: E-P from FRC file.
 !-----------------------------------------------------------------------
 !
       CALL get_2dfld (ng, iRPM, idsfwf, ncFRCid(idsfwf,ng),             &
@@ -560,15 +607,15 @@
 #    ifdef MASKING
      &                GRID(ng) % rmask,                                 &
 #    endif
-     &                FORCES(ng) % stflxG(:,:,:,isalt))
+     &                FORCES(ng) % stfluxG(:,:,:,isalt))
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
-#   endif
 
-#   if defined EMINUSP && defined NL_BULK_FLUXES
+#   elif (defined EMINUSP      || defined FORWARD_FLUXES || \
+          defined FRC_COUPLING)
 !
 !-----------------------------------------------------------------------
-!  Surface net freshwater flux (E-P) from NLM bulk flux computation.
+!  Surface net freshwater flux (E-P) from NLM forward file.
 !-----------------------------------------------------------------------
 !
       CALL get_2dfld (ng, iRPM, idEmPf, BLK(ng)%ncid,                   &
@@ -577,7 +624,7 @@
 #    ifdef MASKING
      &                GRID(ng) % rmask,                                 &
 #    endif
-     &                FORCES(ng) % stflxG(:,:,:,isalt))
+     &                FORCES(ng) % stfluxG(:,:,:,isalt))
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 #   endif
@@ -612,7 +659,7 @@
 #    ifdef MASKING
      &                GRID(ng) % rmask,                                 &
 #    endif
-     &                FORCES(ng) % btflxG(:,:,:,isalt))
+     &                FORCES(ng) % btfluxG(:,:,:,isalt))
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 #   endif
@@ -632,7 +679,7 @@
 #    ifdef MASKING
      &                  GRID(ng) % rmask,                               &
 #    endif
-     &                  FORCES(ng) % stflxG(:,:,:,i))
+     &                  FORCES(ng) % stfluxG(:,:,:,i))
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
       END DO
@@ -651,7 +698,7 @@
 #    ifdef MASKING
      &                  GRID(ng) % rmask,                               &
 #    endif
-     &                  FORCES(ng) % btflxG(:,:,:,i))
+     &                  FORCES(ng) % btfluxG(:,:,:,i))
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
       END DO
@@ -1469,7 +1516,7 @@
 !
       CALL wclock_off (ng, iRPM, 3, __LINE__, __FILE__)
 # endif
-
+!
       RETURN
       END SUBROUTINE rp_get_data
 #else

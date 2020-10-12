@@ -726,7 +726,7 @@
           exit_flag=3
           RETURN
         END IF
-# ifdef ADJUST_BOUNDARY
+# if defined ADJUST_BOUNDARY && !defined RBL4DVAR_FCT_SENSITIVITY
         IF (.not.got_var(idSbry(isFsur)).and.                           &
      &      ANY(Lobc(:,isFsur,ng))) THEN
           IF (Master) WRITE (stdout,40) TRIM(Vname(1,idSbry(isFsur))),  &
@@ -776,7 +776,7 @@
           exit_flag=3
           RETURN
         END IF
-#  ifdef ADJUST_BOUNDARY
+#  if defined ADJUST_BOUNDARY && !defined RBL4DVAR_FCT_SENSITIVITY
         IF (.not.got_var(idSbry(isUvel)).and.                           &
      &      ANY(Lobc(:,isUvel,ng))) THEN
           IF (Master) WRITE (stdout,40) TRIM(Vname(1,idSbry(isUvel))),  &
@@ -799,7 +799,7 @@
             exit_flag=3
             RETURN
           END IF
-#  ifdef ADJUST_BOUNDARY
+#  if defined ADJUST_BOUNDARY && !defined RBL4DVAR_FCT_SENSITIVITY
           IF (.not.got_var(idSbry(isTvar(itrc))).and.                   &
      &        ANY(Lobc(:,isTvar(itrc),ng))) THEN
             IF (Master) WRITE (stdout,40)                               &

@@ -7,8 +7,9 @@
 !!   See License_ROMS.txt                                              !
 !=======================================================================
 !                                                                      !
-!  This routine sets kinematic surface flux of tracer type variables   !
-!  "stflx" (tracer units m/s) using analytical expressions.            !
+!  Sets surface flux of tracer type variables stflux(:,:,itrc) using   !
+!  analytical expressions (TracerUnits m/s).  The surface fluxes are   !
+!  processed and loaded to state variable "stflx" in "set_vbc".        !
 !                                                                      !
 !=======================================================================
 !
@@ -28,10 +29,7 @@
 #ifdef SHORTWAVE
      &                      FORCES(ng) % srflx,                         &
 #endif
-#ifdef TL_IOMS
-     &                      FORCES(ng) % tl_stflx,                      &
-#endif
-     &                      FORCES(ng) % stflx)
+     &                      FORCES(ng) % stflux)
 !
 ! Set analytical header file name used.
 !
@@ -42,7 +40,7 @@
 #endif
         ANANAME(31)=__FILE__
       END IF
-
+!
       RETURN
       END SUBROUTINE ana_stflux
 !
@@ -53,10 +51,7 @@
 #ifdef SHORTWAVE
      &                            srflx,                                &
 #endif
-#ifdef TL_IOMS
-     &                            tl_stflx,                             &
-#endif
-     &                            stflx)
+     &                            stflux)
 !***********************************************************************
 !
       USE mod_param
@@ -77,18 +72,12 @@
 # ifdef SHORTWAVE
       real(r8), intent(in) :: srflx(LBi:,LBj:)
 # endif
-      real(r8), intent(inout) :: stflx(LBi:,LBj:,:)
-# ifdef TL_IOMS
-      real(r8), intent(inout) :: tl_stflx(LBi:,LBj:,:)
-# endif
+      real(r8), intent(inout) :: stflux(LBi:,LBj:,:)
 #else
 # ifdef SHORTWAVE
       real(r8), intent(in) :: srflx(LBi:UBi,LBj:UBj)
 # endif
-      real(r8), intent(inout) :: stflx(LBi:UBi,LBj:UBj,NT(ng))
-# ifdef TL_IOMS
-      real(r8), intent(inout) :: tl_stflx(LBi:UBi,LBj:UBj,NT(ng))
-# endif
+      real(r8), intent(inout) :: stflux(LBi:UBi,LBj:UBj,NT(ng))
 #endif
 !
 !  Local variable declarations.
@@ -98,53 +87,41 @@
 #include "set_bounds.h"
 !
 !-----------------------------------------------------------------------
-!  Set kinematic surface heat flux (degC m/s) at horizontal
-!  RHO-points.
+!  Set surface net heat flux (degC m/s) at horizontal RHO-points.
 !-----------------------------------------------------------------------
 !
       IF (itrc.eq.itemp) THEN
         DO j=JstrT,JendT
           DO i=IstrT,IendT
 #ifdef BL_TEST
-            stflx(i,j,itrc)=srflx(i,j)
-# ifdef TL_IOMS
-            tl_stflx(i,j,itrc)=srflx(i,j)
-# endif
+            stflux(i,j,itrc)=srflx(i,j)
 #else
-            stflx(i,j,itrc)=0.0_r8
-# ifdef TL_IOMS
-            tl_stflx(i,j,itrc)=0.0_r8
-# endif
+            stflux(i,j,itrc)=0.0_r8
 #endif
           END DO
         END DO
 !
 !-----------------------------------------------------------------------
-!  Set kinematic surface freshwater flux (m/s) at horizontal
-!  RHO-points, scaling by surface salinity is done in STEP3D.
+!  Set surface freshwater flux (m/s) at horizontal RHO-points. The
+!  scaling by surface salinity is done in "set_vbc".
 !-----------------------------------------------------------------------
 !
       ELSE IF (itrc.eq.isalt) THEN
         DO j=JstrT,JendT
           DO i=IstrT,IendT
-            stflx(i,j,itrc)=0.0_r8
-#ifdef TL_IOMS
-            tl_stflx(i,j,itrc)=0.0_r8
-#endif
+            stflux(i,j,itrc)=0.0_r8
           END DO
         END DO
 !
 !-----------------------------------------------------------------------
-!  Set kinematic surface flux (T m/s) of passive tracers, if any.
+!  Set surface flux (Tunits m/s) of passive tracers at RHO-points,
+!  if any.
 !-----------------------------------------------------------------------
 !
       ELSE
         DO j=JstrT,JendT
           DO i=IstrT,IendT
-            stflx(i,j,itrc)=0.0_r8
-#ifdef TL_IOMS
-            tl_stflx(i,j,itrc)=0.0_r8
-#endif
+            stflux(i,j,itrc)=0.0_r8
           END DO
         END DO
       END IF
@@ -154,28 +131,17 @@
       IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
         CALL exchange_r2d_tile (ng, tile,                               &
      &                          LBi, UBi, LBj, UBj,                     &
-     &                          stflx(:,:,itrc))
-#ifdef TL_IOMS
-        CALL exchange_r2d_tile (ng, tile,                               &
-     &                          LBi, UBi, LBj, UBj,                     &
-     &                          tl_stflx(:,:,itrc))
-#endif
+     &                          stflux(:,:,itrc))
       END IF
 
 #ifdef DISTRIBUTE
+!
       CALL mp_exchange2d (ng, tile, model, 1,                           &
      &                    LBi, UBi, LBj, UBj,                           &
      &                    NghostPoints,                                 &
      &                    EWperiodic(ng), NSperiodic(ng),               &
-     &                    stflx(:,:,itrc))
-# ifdef TL_IOMS
-      CALL mp_exchange2d (ng, tile, model, 1,                           &
-     &                    LBi, UBi, LBj, UBj,                           &
-     &                    NghostPoints,                                 &
-     &                    EWperiodic(ng), NSperiodic(ng),               &
-     &                    tl_stflx(:,:,itrc))
-# endif
+     &                    stflux(:,:,itrc))
 #endif
-
+!
       RETURN
       END SUBROUTINE ana_stflux_tile

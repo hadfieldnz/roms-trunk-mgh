@@ -375,7 +375,7 @@
               ng=GridNumber(ig,nl)
               DO tile=first_tile(ng),last_tile(ng),+1
 # ifdef BULK_FLUXES
-#  if defined FOUR_DVAR && defined NL_BULK_FLUXES
+#  if defined FOUR_DVAR && defined PRIOR_BULK_FLUXES
                 IF (Nrun.eq.1) CALL bulk_flux (ng, tile)
 #  else
                 CALL bulk_flux (ng, tile)
