@@ -45,7 +45,7 @@
 !  Local variable declarations.
 !
       logical, save :: FirstPass = .TRUE.
-
+!
       integer :: ng, tile
 !
 !=======================================================================
@@ -54,13 +54,10 @@
 !  the first iteration.
 !=======================================================================
 !
-!$OMP MASTER
       Nrun=Nrun+1
       DO ng=1,Ngrids
         SOrec(ng)=0
       END DO
-!$OMP END MASTER
-!$OMP BARRIER
 !
       FIRST_PASS : IF (FirstPass) THEN
         FirstPass=.FALSE.
@@ -69,14 +66,12 @@
 !
         DO ng=1,Ngrids
           CALL ad_initial (ng)
-!$OMP BARRIER
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         END DO
 !
 !  Activate adjoint output.
 !
-!$OMP MASTER
         DO ng=1,Ngrids
           LdefADJ(ng)=.TRUE.
           LwrtADJ(ng)=.TRUE.
@@ -93,15 +88,12 @@
           DstrS(ng)=tdays(ng)
           DendS(ng)=DstrS(ng)
         END DO
-!$OMP END MASTER
-!$OMP BARRIER
 
 #ifdef SOLVE3D
         CALL ad_main3d (RunInterval)
 #else
         CALL ad_main2d (RunInterval)
 #endif
-!$OMP BARRIER
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
 
@@ -124,14 +116,12 @@
      &                      ad_state(ng)%vector)
 # endif
         END DO
-!$OMP BARRIER
       END DO
 !
 !-----------------------------------------------------------------------
 !  Report iteration and trace or stochastic optimals matrix.
 !-----------------------------------------------------------------------
 !
-!$OMP MASTER
       IF (Master) THEN
         DO ng=1,Ngrids
           WRITE (stdout,20) ' PROPAGATOR - Grid: ', ng,                 &
@@ -140,11 +130,10 @@
      &                      Nconv(ng), 'TRnorm = ', TRnorm(ng)
         END DO
       END IF
-!$OMP END MASTER
-
+!
  10   FORMAT (/,1x,a,1x,'ROMS/TOMS: started time-stepping:',            &
      &        ' (Grid: ',i2.2,' TimeSteps: ',i8.8,' - ',i8.8,')')
  20   FORMAT (/,a,i2.2,a,i3.3,a,i3.3,/,42x,a,1p,e15.8)
-
+!
       RETURN
       END SUBROUTINE propagator

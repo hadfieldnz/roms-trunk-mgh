@@ -596,7 +596,8 @@
               EXIT
             END IF
 #endif
-#ifdef ADJUST_BOUNDARY
+#ifndef RBL4DVAR_FCT_SENSITIVITY
+# ifdef ADJUST_BOUNDARY
           CASE ('obc_adjust')
             IF (dim_size(i).ne.Nbrec(ng)) THEN
               IF (Master) WRITE (stdout,10) TRIM(dim_name(i)),          &
@@ -605,8 +606,8 @@
               exit_flag=2
               EXIT
             END IF
-#endif
-#if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
+# endif
+# if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
           CASE ('frc_adjust')
             IF (dim_size(i).ne.Nfrec(ng)) THEN
               IF (Master) WRITE (stdout,10) TRIM(dim_name(i)),          &
@@ -615,6 +616,7 @@
               exit_flag=2
               EXIT
             END IF
+# endif
 #endif
         END SELECT
       END DO

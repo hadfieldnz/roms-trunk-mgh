@@ -392,9 +392,10 @@
       lstr=SCAN(ncname,'/',BACK=.TRUE.)+1
       lend=LEN_TRIM(ncname)
       IF (Master) THEN
-        CALL time_string (INPtime, t_code)
         IF ((10.le.model).and.(model.le.17)) THEN
           t_code=' '              ! time is meaningless for these fields
+        ELSE
+          CALL time_string (INPtime, t_code)
         END IF
         WRITE (Tstring,'(f15.4)') tdays(ng)
 #if defined I4DVAR          || defined I4DVAR_ANA_SENSITIVITY || \

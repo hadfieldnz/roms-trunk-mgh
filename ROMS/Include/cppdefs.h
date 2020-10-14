@@ -391,6 +391,7 @@
 ** CLIPPING_SPLIT          to separate analysis due to IC, forcing, and OBC  **
 ** DATALESS_LOOPS          if testing convergence of Picard iterations       **
 ** ENKF_RESTART            if writting restart fields for EnKF               **
+** FORWARD_FLUXES          if using NLM trajectory surface fluxes            **
 ** FORWARD_MIXING          if processing forward vertical mixing coefficient **
 ** FORWARD_WRITE           if writing out forward solution, basic state      **
 ** FORWARD_READ            if reading in  forward solution, basic state      **
@@ -407,6 +408,7 @@
 ** POSTERIOR_EOFS          if posterior analysis error covariance EOFS       **
 ** POSTERIOR_ERROR_F       if final posterior analysis error covariance      **
 ** POSTERIOR_ERROR_I       if initial posterior analysis error covariance    **
+** PRIOR_BULK_FLUXES       if imposing prior NLM surface fluxes              **
 ** RECOMPUTE_4DVAR         if recomputing 4DVar in analysis algorithms       **
 ** RPCG                    if Restricted B-preconditioned Lanczos solver     **
 ** RPM_RELAXATION          if Picard iterations, Diffusive Relaxation of RPM **

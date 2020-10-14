@@ -48,7 +48,7 @@
 # ifdef BBL_MODEL_NOT_YET
 !!    USE rp_bbl_mod,              ONLY : rp_bblm
 # endif
-# if defined BULK_FLUXES && !defined NL_BULK_FLUXES
+# if defined BULK_FLUXES_NOT_YET && !defined PRIOR_BULK_FLUXES
       USE rp_bulk_flux_mod,        ONLY : rp_bulk_flux
 # endif
 # ifdef BVF_MIXING_NOT_YET
@@ -318,7 +318,7 @@
 !
         DO ng=1,Ngrids
           DO tile=first_tile(ng),last_tile(ng),+1
-# if defined BULK_FLUXES && !defined NL_BULK_FLUXES
+# if defined BULK_FLUXES_NOT_YET && !defined PRIOR_BULK_FLUXES
             CALL rp_bulk_flux (ng, tile)
 # endif
 # ifdef BBL_MODEL_NOT_YET

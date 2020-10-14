@@ -13,13 +13,13 @@
 !                                                                      !
 !  Routines:                                                           !
 !                                                                      !
-!    shapirp2d_tile       Shapiro filter for 2D fields.                !
-!    shapirp3d_tile       Shapiro filter for 3D fields.                !
+!    shapiro2d_tile       Shapiro filter for 2D fields.                !
+!    shapiro3d_tile       Shapiro filter for 3D fields.                !
 !                                                                      !
 !=======================================================================
 !
       implicit none
-
+!
       CONTAINS
 !
 !***********************************************************************
@@ -55,7 +55,7 @@
 !  Local variable declarations.
 !
       integer :: i, j
-
+!
       real(r8), dimension(IminS:ImaxS,JminS:JmaxS) :: Awrk1
       real(r8), dimension(IminS:ImaxS,JminS:JmaxS) :: Awrk2
 
@@ -119,7 +119,7 @@
           A(i,j)=Awrk2(i,j)+Awrk1(i,j)
         END DO
       END DO
-
+!
       RETURN
       END SUBROUTINE shapiro2d_tile
 
@@ -158,7 +158,7 @@
 !  Local variable declarations.
 !
       integer :: i, j, k
-
+!
       real(r8), dimension(IminS:ImaxS,JminS:JmaxS) :: Awrk1
       real(r8), dimension(IminS:ImaxS,JminS:JmaxS) :: Awrk2
 
@@ -224,7 +224,7 @@
           END DO
         END DO
       END DO
-
+!
       RETURN
       END SUBROUTINE shapiro3d_tile
 #endif

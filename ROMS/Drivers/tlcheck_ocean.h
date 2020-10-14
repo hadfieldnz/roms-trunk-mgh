@@ -23,14 +23,14 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
       PUBLIC  :: ROMS_initialize
       PUBLIC  :: ROMS_run
       PUBLIC  :: ROMS_finalize
-
+!
       CONTAINS
-
+!
       SUBROUTINE ROMS_initialize (first, mpiCOMM)
 !
 !=======================================================================
@@ -60,13 +60,13 @@
 !  Imported variable declarations.
 !
       logical, intent(inout) :: first
-
+!
       integer, intent(in), optional :: mpiCOMM
 !
 !  Local variable declarations.
 !
       logical :: allocate_vars = .TRUE.
-
+!
 #ifdef DISTRIBUTE
       integer :: MyError, MySize
 #endif
@@ -114,7 +114,6 @@
 !  computed only once since the "first_tile" and "last_tile" values
 !  are private for each parallel thread/node.
 !
-!$OMP PARALLEL
 #if defined _OPENMP
       MyThread=my_threadnum()
 #elif defined DISTRIBUTE
@@ -127,7 +126,6 @@
         first_tile(ng)=MyThread*chunk_size
         last_tile (ng)=first_tile(ng)+chunk_size-1
       END DO
-!$OMP END PARALLEL
 !
 !  Initialize internal wall clocks. Notice that the timings does not
 !  includes processing standard input because several parameters are
@@ -139,18 +137,14 @@
         END IF
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO thread=THREAD_RANGE
             CALL wclock_on (ng, iNLM, 0, __LINE__, __FILE__)
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Allocate and initialize modules variables.
 !
-!$OMP PARALLEL
         CALL mod_arrays (allocate_vars)
-!$OMP END PARALLEL
 !
 !  Allocate and initialize observation arrays.
 !
@@ -173,10 +167,10 @@
 # endif
       END DO
 #endif
-
+!
       RETURN
       END SUBROUTINE ROMS_initialize
-
+!
       SUBROUTINE ROMS_run (RunInterval)
 !
 !=======================================================================
@@ -206,7 +200,7 @@
 !
       integer :: IniRec, i, ng, status
       integer :: tile
-
+!
       real(r8) :: gp, hp, p
 !
 !-----------------------------------------------------------------------
@@ -228,7 +222,7 @@
         Lold(ng)=1
         Lnew(ng)=1
         nTLM(ng)=nHIS(ng)                      ! to allow IO comparison
-#if defined BULK_FLUXES && defined NL_BULK_FLUXES
+#ifdef FORWARD_FLUXES
         LreadBLK(ng)=.FALSE.
 #endif
         LreadFWD(ng)=.FALSE.
@@ -244,9 +238,7 @@
 !
 !  Initialize nonlinear model with first guess initial conditions.
 !
-!$OMP PARALLEL
       CALL initial
-!$OMP END PARALLEL
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 !
@@ -260,14 +252,12 @@
         wrtNLmod(ng)=.TRUE.
         wrtTLmod(ng)=.FALSE.
       END DO
-
-!$OMP PARALLEL
+!
 #ifdef SOLVE3D
       CALL main3d (RunInterval)
 #else
       CALL main2d (RunInterval)
 #endif
-!$OMP END PARALLEL
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 
@@ -289,7 +279,7 @@
         LreadFWD(ng)=.TRUE.
       END DO
 
-#if defined BULK_FLUXES && defined NL_BULK_FLUXES
+#ifdef FORWARD_FLUXES
 !
 !  Set structure for the nonlinear surface fluxes to be processed by
 !  by the tangent linear and adjoint models. Also, set switches to
@@ -297,11 +287,17 @@
 !  it is possible to split solution into multiple NetCDF files to reduce
 !  their size.
 !
-      CALL edit_multifile ('HIS2BLK')
+!  The switch LreadFRC is deactivated because all the atmospheric
+!  forcing, including shortwave radiation, is read from the NLM bulk
+!  flux formulation or is assigned during ESM coupling (BLK structure).
+!  There is no need for processing forcing from the FRC structure files.
+!
+      CALL edit_multifile ('QCK2BLK')
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
       DO ng=1,Ngrids
         LreadBLK(ng)=.TRUE.
+        LreadFRC(ng)=.FALSE.
       END DO
 #endif
 !
@@ -331,9 +327,7 @@
 !  Initialize the adjoint model from rest.
 !
       DO ng=1,Ngrids
-!$OMP PARALLEL
         CALL ad_initial (ng, .TRUE.)
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
       END DO
@@ -347,14 +341,12 @@
           WRITE (stdout,20) 'AD', ng, ntstart(ng), ntend(ng)
         END IF
       END DO
-
-!$OMP PARALLEL
+!
 #ifdef SOLVE3D
       CALL ad_main3d (RunInterval)
 #else
       CALL ad_main2d (RunInterval)
 #endif
-!$OMP END PARALLEL
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 !
@@ -376,11 +368,9 @@
 !  Compute adjoint solution dot product for scaling purposes.
 !
       DO ng=1,Ngrids
-!$OMP PARALLEL
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL ad_dotproduct (ng, tile, Lnew(ng))
         END DO
-!$OMP END PARALLEL
       END DO
 
 #ifdef SOLVE3D
@@ -415,9 +405,7 @@
 !  term is a function of the steepest descent direction defined
 !  by grad(J) times the perturbation amplitude "p".
 !
-!$OMP PARALLEL
           CALL initial (.FALSE.)
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
 
@@ -441,14 +429,12 @@
               WRITE (stdout,20) 'NL', ng, ntstart(ng), ntend(ng)
             END IF
           END DO
-
-!$OMP PARALLEL
+!
 #ifdef SOLVE3D
           CALL main3d (RunInterval)
 #else
           CALL main2d (RunInterval)
 #endif
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
 !
@@ -465,9 +451,7 @@
 !  (adjoint state, GRAD(J)) times the perturbation amplitude "p".
 !
           DO ng=1,Ngrids
-!$OMP PARALLEL
             CALL tl_initial (ng, .FALSE.)
-!$OMP END PARALLEL
             IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                     __FILE__)) RETURN
 
@@ -489,14 +473,12 @@
               WRITE (stdout,20) 'TL', ng, ntstart(ng), ntend(ng)
             END IF
           END DO
-
-!$OMP PARALLEL
+!
 #ifdef SOLVE3D
           CALL tl_main3d (RunInterval)
 #else
           CALL tl_main2d (RunInterval)
 #endif
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
 !
@@ -550,10 +532,10 @@
  90   FORMAT (i4,2x,1pe8.1,3(1x,1p,e20.12,0p))
 100   FORMAT (77('.'))
 110   FORMAT (77('-'))
-
+!
       RETURN
       END SUBROUTINE ROMS_run
-
+!
       SUBROUTINE ROMS_finalize
 !
 !=======================================================================
@@ -610,18 +592,14 @@
       END IF
 !
       DO ng=1,Ngrids
-!$OMP PARALLEL
         DO thread=THREAD_RANGE
           CALL wclock_off (ng, iNLM, 0, __LINE__, __FILE__)
         END DO
-!$OMP END PARALLEL
       END DO
 !
 !  Report dynamic memory and automatic memory requirements.
 !
-!$OMP PARALLEL
       CALL memory
-!$OMP END PARALLEL
 !
 !  Close IO files.
 !
@@ -629,7 +607,7 @@
         CALL close_inp (ng, iNLM)
       END DO
       CALL close_out
-
+!
       RETURN
       END SUBROUTINE ROMS_finalize
 

@@ -31,14 +31,14 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
       PUBLIC  :: ROMS_initialize
       PUBLIC  :: ROMS_run
       PUBLIC  :: ROMS_finalize
-
+!
       CONTAINS
-
+!
       SUBROUTINE ROMS_initialize (first, mpiCOMM)
 !
 !=======================================================================
@@ -68,13 +68,13 @@
 !  Imported variable declarations.
 !
       logical, intent(inout) :: first
-
+!
       integer, intent(in), optional :: mpiCOMM
 !
 !  Local variable declarations.
 !
       logical :: allocate_vars = .TRUE.
-
+!
 #ifdef DISTRIBUTE
       integer :: MyError, MySize
 #endif
@@ -125,7 +125,6 @@
 !  computed only once since the "first_tile" and "last_tile" values
 !  are private for each parallel thread/node.
 !
-!$OMP PARALLEL
 #if defined _OPENMP
       MyThread=my_threadnum()
 #elif defined DISTRIBUTE
@@ -138,7 +137,6 @@
         first_tile(ng)=MyThread*chunk_size
         last_tile (ng)=first_tile(ng)+chunk_size-1
       END DO
-!$OMP END PARALLEL
 !
 !  Initialize internal wall clocks. Notice that the timings does not
 !  includes processing standard input because several parameters are
@@ -150,18 +148,14 @@
         END IF
 !
         DO ng=1,Ngrids
-!$OMP PARALLEL
           DO thread=THREAD_RANGE
             CALL wclock_on (ng, iADM, 0, __LINE__, __FILE__)
           END DO
-!$OMP END PARALLEL
         END DO
 !
 !  Allocate and initialize all model state arrays.
 !
-!$OMP PARALLEL
         CALL mod_arrays (allocate_vars)
-!$OMP END PARALLEL
 
       END IF
 
@@ -186,19 +180,27 @@
 !  the size of the state vector, Nstate.  This size is computed in
 !  routine "wpoints".
 !-----------------------------------------------------------------------
+
+#ifdef FORWARD_FLUXES
 !
-#if defined BULK_FLUXES && defined NL_BULK_FLUXES
-!  Set structure for the nonlinear surface fluxes to be processed by
-!  by the tangent linear and adjoint models. Also, set switches to
-!  process the BLK structure in routine "check_multifile".  Notice that
-!  it is possible to split solution into multiple NetCDF files to reduce
-!  their size.
+!  Set the BLK structure to contain the nonlinear model surface fluxes
+!  needed by the tangent linear and adjoint models. Also, set switches
+!  to process that structure in routine "check_multifile". Notice that
+!  it is possible to split the solution into multiple NetCDF files to
+!  reduce their size.
 !
-      CALL edit_multifile ('FWD2BLK')
+!  The switch LreadFRC is deactivated because all the atmospheric
+!  forcing, including shortwave radiation, is read from the NLM
+!  surface fluxes or is assigned during ESM coupling.  Such fluxes
+!  are available from the QCK structure. There is no need for reading
+!  and processing from the FRC structure input forcing-files.
+!
+      CALL edit_multifile ('QCK2BLK')
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
       DO ng=1,Ngrids
         LreadBLK(ng)=.TRUE.
+        LreadFRC(ng)=.FALSE.
       END DO
 #endif
 !
@@ -206,9 +208,7 @@
 !
       DO ng=1,Ngrids
         LreadFWD(ng)=.TRUE
-!$OMP PARALLEL
         CALL ad_initial (ng)
-!$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
       END DO
@@ -287,10 +287,10 @@
      &                 __FILE__)) RETURN
       END DO
 #endif
-
+!
       RETURN
       END SUBROUTINE ROMS_initialize
-
+!
       SUBROUTINE ROMS_run (RunInterval)
 !
 !=======================================================================
@@ -340,16 +340,16 @@
 #ifdef CHECKPOINTING
       logical :: LwrtGST
 #endif
-
+!
       integer :: Fcount, Is, Ie
       integer :: i, iter, ng, tile
       integer :: NconvRitz(Ngrids)
-
+!
       real(r8) :: Enorm
-
+!
       TYPE (T_GST), allocatable :: ad_state(:)
       TYPE (T_GST), allocatable :: state(:)
-
+!
       character (len=55) :: string
 !
 !-----------------------------------------------------------------------
@@ -462,9 +462,7 @@
             ad_state(ng)%vector => STORAGE(ng)%SworkD(Is:Ie)
           END DO
 
-!$OMP PARALLEL
           CALL propagator (RunInterval, state, ad_state)
-!$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
         ELSE
@@ -549,11 +547,9 @@
 !  Clear forcing arrays.
 !
              DO ng=1,Ngrids
-!$OMP PARALLEL
                DO tile=first_tile(ng),last_tile(ng),+1
                  CALL initialize_forces (ng, tile, 0)
                END DO
-!$OMP END PARALLEL
              END DO
 !
 !  Activate writing of each eigenvector into tangent history NetCDF
@@ -601,9 +597,7 @@
                   ad_state(ng)%vector => SworkR(Is:Ie)
                 END DO
 
-!$OMP PARALLEL
                 CALL propagator (RunInterval, state, ad_state)
-!$OMP END PARALLEL
                 IF (FoundError(exit_flag, NoError, __LINE__,            &
      &                         __FILE__)) RETURN
 !
@@ -611,12 +605,10 @@
 !  nonlinear history file.
 !
                 DO ng=1,Ngrids
-!$OMP PARALLEL
                   DO tile=first_tile(ng),last_tile(ng),+1
                     CALL ad_unpack (ng, tile, Nstr(ng), Nend(ng),       &
      &                              state(ng)%vector)
                   END DO
-!$OMP END PARALLEL
                   CALL ad_wrt_his (ng)
                   IF (FoundError(exit_flag, NoError, __LINE__,          &
      &                           __FILE__)) RETURN
@@ -687,10 +679,10 @@
  30   FORMAT (a,'_',i3.3,'.nc')
  40   FORMAT (1x,i4.4,'-th residual',1p,e14.6,0p,                       &
      &        '  Ritz value',1pe14.6,0p,2x,i4.4)
-
+!
       RETURN
       END SUBROUTINE ROMS_run
-
+!
       SUBROUTINE ROMS_finalize
 !
 !=======================================================================
@@ -747,18 +739,14 @@
       END IF
 !
       DO ng=1,Ngrids
-!$OMP PARALLEL
         DO thread=THREAD_RANGE
           CALL wclock_off (ng, iADM, 0, __LINE__, __FILE__)
         END DO
-!$OMP END PARALLEL
       END DO
 !
 !  Report dynamic memory and automatic memory requirements.
 !
-!$OMP PARALLEL
       CALL memory
-!$OMP END PARALLEL
 !
 !  Close IO files.
 !
@@ -766,10 +754,10 @@
         CALL close_inp (ng, iADM)
       END DO
       CALL close_out
-
+!
       RETURN
       END SUBROUTINE ROMS_finalize
-
+!
       SUBROUTINE IRAM_error (info, string)
 !
 !=======================================================================
@@ -780,11 +768,10 @@
 !                                                                      !
 !=======================================================================
 !
-!
 !  imported variable declarations.
 !
       integer, intent(in) :: info
-
+!
       character (len=*), intent(out) :: string
 !
 !-----------------------------------------------------------------------
@@ -834,7 +821,7 @@
       ELSE IF (info.eq.-9999) THEN
         string='Could not build and Arnoldi factorization              '
       END IF
-
+!
       RETURN
       END SUBROUTINE IRAM_error
 

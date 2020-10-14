@@ -218,6 +218,8 @@
         integer  :: idNLmf        ! final NLM at observation locations
         integer  :: idNLmi        ! initial NLM at observation locations
         integer  :: idNLmo        ! NLM at observations locations
+        integer  :: idNLmp        ! unvetted prior NLM at obs locations
+        integer  :: idNLmu        ! unvetted NLM at obs locations
         integer  :: idNobs        ! number of observations
         integer  :: idObsD        ! observations depth
         integer  :: idObsS        ! observations screening scale
@@ -1836,6 +1838,10 @@
               idNLmi=varid
             CASE ('idNLmo')
               idNLmo=varid
+            CASE ('idNLmp')
+              idNLmp=varid
+            CASE ('idNLmu')
+              idNLmu=varid
             CASE ('idNobs')
               idNobs=varid
             CASE ('idObsD')

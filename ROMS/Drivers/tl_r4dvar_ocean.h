@@ -379,7 +379,7 @@
         WRITE (HIS(ng)%name,10) TRIM(FWD(ng)%base), outer
       END DO
 
-#if defined BULK_FLUXES && defined NL_BULK_FLUXES
+#ifdef FORWARD_FLUXES
 !
 !  Set file name containing the nonlinear model bulk fluxes to be read
 !  and processed by other algorithms.

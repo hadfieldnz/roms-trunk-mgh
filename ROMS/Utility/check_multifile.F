@@ -150,7 +150,7 @@
       END IF
 #endif
 
-#if defined BULK_FLUXES && defined NL_BULK_FLUXES
+#ifdef FORWARD_FLUXES
 !
 !-----------------------------------------------------------------------
 !  Nonlinear model surface fluxes data.
@@ -183,12 +183,14 @@
 !  Input forcing data.
 !-----------------------------------------------------------------------
 !
-      file_type='Forcing'
-      max_files=MAXVAL(nFfiles)
-      CALL multifile_info_s2d (ng, model, file_type, nFfiles,           &
-     &                         max_files, FRC)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (LreadFRC(ng)) THEN
+        file_type='Forcing'
+        max_files=MAXVAL(nFfiles)
+        CALL multifile_info_s2d (ng, model, file_type, nFfiles,         &
+     &                           max_files, FRC)
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
+     &                 __FILE__)) RETURN
+      END IF
 #endif
 !
       RETURN
@@ -256,7 +258,7 @@
 !
       Nfiles=S(ng)%Nfiles
       DO ifile=1,Nfiles
-        ncname=S(ng)%files(ifile)
+        ncname=TRIM(S(ng)%files(ifile))
         foundit=check_file(ng, model, Nfiles, ncname,                   &
      &                     Tmin, Tmax, Tscale,  Lcheck)
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
@@ -425,7 +427,7 @@
       DO i=1,InpFiles(ng)
         Nfiles=S(i,ng)%Nfiles
         DO ifile=1,Nfiles
-          ncname=S(i,ng)%files(ifile)
+          ncname=TRIM(S(i,ng)%files(ifile))
           foundit=check_file(ng, model, Nfiles, ncname,                 &
      &                       Tmin, Tmax, Tscale, Lcheck)
           IF (FoundError(exit_flag, NoError, __LINE__,                  &
