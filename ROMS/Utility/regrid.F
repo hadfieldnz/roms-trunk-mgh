@@ -94,7 +94,9 @@
 
       real(r8), intent(inout) :: MyXout(LBi:UBi,LBj:UBj)
 
+#ifdef MASKING
       real(r8), intent(in) :: MyMask(LBi:UBi,LBj:UBj)
+#endif
       real(r8), intent(in) :: Xout(LBi:UBi,LBj:UBj)
       real(r8), intent(in) :: Yout(LBi:UBi,LBj:UBj)
 

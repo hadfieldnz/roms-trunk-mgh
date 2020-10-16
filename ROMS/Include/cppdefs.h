@@ -105,7 +105,6 @@
 **   sea surface temperature; (3) provide net longwave radiation (default).  **
 **                                                                           **
 ** BULK_FLUXES             if bulk fluxes computation                        **
-** NL_BULK_FLUXES          if bulk fluxes computed by nonlinear model        **
 ** COOL_SKIN               if cool skin correction                           **
 ** LONGWAVE                if computing net longwave radiation               **
 ** LONGWAVE_OUT            if computing outgoing longwave radiation          **
@@ -562,6 +561,7 @@
 ** PNETCDF                 if parallel I/O with pnetcdf (classic format)     **
 ** POSITIVE_ZERO           to impose positive zero in ouput data             **
 ** READ_WATER              if only reading water points data                 **
+** REGRID_SHAPIRO          to apply Shapiro Filter to regridded data         **
 ** WRITE_WATER             if only writing water points data                 **
 ** RST_SINGLE              if writing single precision restart fields        **
 ** OUT_DOUBLE              if writing double precision output fields         **
