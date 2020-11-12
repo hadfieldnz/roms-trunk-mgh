@@ -410,7 +410,7 @@
  20   FORMAT (t26,i2,t31,a,t50,a)
  30   FORMAT (1x,a,t13,a)
  40   FORMAT (/,'TADV_REPORT - Illegal tracer advection scheme for ''', &
-    &         a,''' in grid: ',i0,/,14x,'''',a,'''',1x,a,'.',/)
+     &        a,''' in grid: ',i0,/,14x,'''',a,'''',1x,a,'.',/)
 !
       RETURN
       END SUBROUTINE tadv_report

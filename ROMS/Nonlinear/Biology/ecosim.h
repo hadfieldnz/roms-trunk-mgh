@@ -784,11 +784,11 @@
                     s_phy(i,k,iband)=s_phy(i,k,iband)+par_s
                     b_phy(i,k,iband)=b_phy(i,k,iband)+par_b
                     DiaBio4d(i,j,k,iband,idsPHY)=DiaBio4d(i,j,k,iband,  &
-    &                                                     idsPHY)+      &
-    &                                            s_phy(i,k,iband)
+     &                                                    idsPHY)+      &
+     &                                           s_phy(i,k,iband)
                     DiaBio4d(i,j,k,iband,idbPHY)=DiaBio4d(i,j,k,iband,  &
-    &                                                     idbPHY)+      &
-    &                                            b_phy(i,k,iband)
+     &                                                    idbPHY)+      &
+     &                                           b_phy(i,k,iband)
 #endif
 !
 !  However, for omega0 calculation, "par_s" must be spectral, so use

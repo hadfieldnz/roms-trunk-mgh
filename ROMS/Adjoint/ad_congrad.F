@@ -863,7 +863,7 @@
               END DO
             END DO
 !
-            CALL ad_sqlq (innLoop, ztriT, ad_ztriT, tau, ad_tau,       &
+            CALL ad_sqlq (innLoop, ztriT, ad_ztriT, tau, ad_tau,        &
      &                    zwork1, ad_zwork1)
 !
             DO i=2,innLoop

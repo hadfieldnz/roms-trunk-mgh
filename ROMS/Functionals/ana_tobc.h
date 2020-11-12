@@ -172,7 +172,7 @@
         END DO
       END IF
 
-      IF (ANY(LBC(isouth,isTvar(:),ng)%acquire).and.                     &
+      IF (ANY(LBC(isouth,isTvar(:),ng)%acquire).and.                    &
      &    DOMAIN(ng)%Southern_Edge(tile)) THEN
         DO k=1,N(ng)
           DO i=IstrT,IendT

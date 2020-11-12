@@ -2457,7 +2457,7 @@
       real(r8), intent(inout) :: tl_zeta(LBi:UBi,LBj:UBj,3)
 #  ifdef ADJUST_BOUNDARY
 #   ifdef SOLVE3D
-      real(r8), intent(inout) :: t_obc(LBij:UBij,N(ng),4,            &
+      real(r8), intent(inout) :: t_obc(LBij:UBij,N(ng),4,               &
      &                                    Nbrec(ng),2,NT(ng))
       real(r8), intent(inout) :: u_obc(LBij:UBij,N(ng),4,Nbrec(ng),2)
       real(r8), intent(inout) :: v_obc(LBij:UBij,N(ng),4,Nbrec(ng),2)
@@ -2471,7 +2471,7 @@
       real(r8), intent(inout) :: vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 #  endif
 #  if defined ADJUST_STFLUX && defined SOLVE3D
-      real(r8), intent(inout) :: tflux(LBi:UBi,LBj:UBj,              &
+      real(r8), intent(inout) :: tflux(LBi:UBi,LBj:UBj,                 &
      &                                    Nfrec(ng),2,NT(ng))
 #  endif
 #  ifdef SOLVE3D

@@ -164,15 +164,6 @@
         END DO
       END DO
 # endif
-
-# if defined MODEL_COUPLING && defined ESMF_LIB
-!
-!  Initialize several global parameters.
-!
-      Nrun=1                ! run counter
-      ERstr=1               ! ensemble start counter
-      ERend=Nouter          ! ensemble end counter
-# endif
 !
 !  Initialize the switch to gather weak constraint forcing.
 !

@@ -961,7 +961,7 @@
         DO j=Jstr,Jend
           DO i=Istr,Iend+1
 !>          FX(i,j)=cff*pmon_u(i,j)*(h(i,j)+h(i-1,j))*                  &
-!>  &               (r2d_in(i,j)-r2d_in(i-1,j))
+!>   &              (r2d_in(i,j)-r2d_in(i-1,j))
 !>
             fac=cff*pmon_u(i,j)*(h(i,j)+h(i-1,j))*FX(i,j)
 # ifdef MASKING

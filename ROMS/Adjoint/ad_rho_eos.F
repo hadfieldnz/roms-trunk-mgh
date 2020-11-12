@@ -12,7 +12,7 @@
 !                                                                      !
 !  This routine computes  "in situ" density and other associated       !
 !  quantitites as a function of potential temperature,  salinity,      !
-!  and pressure from a polynomial expression (Jackett & McDougall,     !
+!  and pressure from a polynomial expression (Jackett and McDougall,   !
 !  1992). The polynomial expression was found from fitting to 248      !
 !  values  in the  oceanographic  ranges of  salinity,  potential      !
 !  temperature,  and pressure.  It  assumes no pressure variation      !

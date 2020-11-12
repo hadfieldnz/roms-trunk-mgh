@@ -82,7 +82,7 @@
          DO ig=1,GridsInLayer(il)
            ng=GridNumber(ig,il)
            IF (Telescoping(ng).and.                                     &
-    &          (RefineStepsCounter(ng).lt.RefineSteps(ng))) THEN
+     &         (RefineStepsCounter(ng).lt.RefineSteps(ng))) THEN
              nl=il
            END IF
          END DO

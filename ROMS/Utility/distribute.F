@@ -1946,7 +1946,7 @@
 !  Structure Filenames.
 !
       Nchars=LEN(S(ng)%head)
-      CALL mpi_bcast (S(ng)%head, Nchars, MPI_BYTE, MyMaster,            &
+      CALL mpi_bcast (S(ng)%head, Nchars, MPI_BYTE, MyMaster,           &
      &                MyCOMM, MyError)
       IF (MyError.ne.MPI_SUCCESS) THEN
         CALL mpi_error_string (MyError, string, Lstr, Serror)
@@ -1957,7 +1957,7 @@
       END IF
 !
       Nchars=LEN(S(ng)%base)
-      CALL mpi_bcast (S(ng)%base, Nchars, MPI_BYTE, MyMaster,            &
+      CALL mpi_bcast (S(ng)%base, Nchars, MPI_BYTE, MyMaster,           &
      &                MyCOMM, MyError)
       IF (MyError.ne.MPI_SUCCESS) THEN
         CALL mpi_error_string (MyError, string, Lstr, Serror)
@@ -1968,7 +1968,7 @@
       END IF
 !
       Nchars=LEN(S(ng)%name)
-      CALL mpi_bcast (S(ng)%name, Nchars, MPI_BYTE, MyMaster,            &
+      CALL mpi_bcast (S(ng)%name, Nchars, MPI_BYTE, MyMaster,           &
      &                MyCOMM, MyError)
       IF (MyError.ne.MPI_SUCCESS) THEN
         CALL mpi_error_string (MyError, string, Lstr, Serror)
@@ -1979,7 +1979,7 @@
       END IF
 !
       Nchars=LEN(S(ng)%files(1))*S(ng)%Nfiles
-      CALL mpi_bcast (S(ng)%files, Nchars, MPI_BYTE, MyMaster,            &
+      CALL mpi_bcast (S(ng)%files, Nchars, MPI_BYTE, MyMaster,          &
      &                MyCOMM, MyError)
       IF (MyError.ne.MPI_SUCCESS) THEN
         CALL mpi_error_string (MyError, string, Lstr, Serror)

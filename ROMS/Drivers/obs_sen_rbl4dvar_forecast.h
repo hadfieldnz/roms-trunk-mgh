@@ -772,7 +772,7 @@
         CALL netcdf_close (ng, iADM, OBS(ng)%ncid, OBS(ng)%name)
 !
         CALL ad_initial (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                  &
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
       END DO
 !
@@ -800,7 +800,7 @@
 #else
       CALL ad_main2d (RunInterval)
 #endif
-      IF (FoundError(exit_flag, NoError, __LINE__,                    &
+      IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 !
 !  Write out last weak-constraint forcing (WRTforce is still .TRUE.)
@@ -809,7 +809,7 @@
 !
       DO ng=1,Ngrids
         CALL ad_wrt_his (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                  &
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
       END DO
 !
@@ -820,16 +820,16 @@
         WRTforce(ng)=.FALSE.
         LwrtState2d(ng)=.FALSE.
         CALL ad_wrt_his (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                  &
+        IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
       END DO
 !
 !   Retrieve adjoint solution into tl_var(1).
 !
       DO ng=1,Ngrids
-         CALL get_state (ng, iTLM, 4, ADM(ng)%name, ADM(ng)%Rindex,   &
+         CALL get_state (ng, iTLM, 4, ADM(ng)%name, ADM(ng)%Rindex,     &
      &                      Rec1)
-         IF (FoundError(exit_flag, NoError, __LINE__,                 &
+         IF (FoundError(exit_flag, NoError, __LINE__,                   &
      &                  __FILE__)) RETURN
 
       END DO

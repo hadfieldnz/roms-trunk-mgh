@@ -1248,7 +1248,7 @@
 !
       IF (LwSrc(ng)) THEN
         DO itrc=1,NT(ng)
-          IF (.not.((tl_Hadvection(itrc,ng)%MPDATA).and.                  &
+          IF (.not.((tl_Hadvection(itrc,ng)%MPDATA).and.                &
      &              (tl_Vadvection(itrc,ng)%MPDATA))) THEN
             DO is=1,Nsrc(ng)
               Isrc=SOURCES(ng)%Isrc(is)

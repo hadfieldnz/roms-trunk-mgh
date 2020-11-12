@@ -922,7 +922,7 @@
 !
           DO ng=1,Ngrids
             IF (Master) THEN
-              WRITE (stdout,20) 'AD', ng, my_outer, my_inner,            &
+              WRITE (stdout,20) 'AD', ng, my_outer, my_inner,           &
      &                          ntstart(ng), ntend(ng)
             END IF
           END DO

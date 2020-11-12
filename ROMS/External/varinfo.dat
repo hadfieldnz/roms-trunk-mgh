@@ -736,12 +736,12 @@
 
 'bwflux'                                           ! Input
   'bottom net freshwater flux'
-  'centimeter day-1'                               ! Input:  [m/s]
+  'meter second-1'                                 ! Input:  [m/s]
   'bottom water flux, scalar, series'              ! [PSS m/s]
   'bwf_time'
   'idTbot(isalt)'
   'r2dvar'
-  1.157407d-7                                      ! 0.01/86400
+  1.0d0
 
 !
 !------------------------------------------------------------------------------
@@ -5750,7 +5750,7 @@
   1.0d0
 
 'obs_scale'                                        ! Output
-  'observation screening/normalization scale'
+  'observation screening and quality control scale'
   'nondimensional'
   'nulvar'
   'datum'

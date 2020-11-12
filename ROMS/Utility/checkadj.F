@@ -525,6 +525,7 @@
      &                               'not allowed, FATAL ERROR'
       END IF
 !
+# if defined TANGENT || defined TL_IOMS
       IF (ANY(tl_Hadvection(:,:)%MPDATA).or.                            &
      &    ANY(tl_Vadvection(:,:)%MPDATA)) THEN
         string=uppercase('mpdata')
@@ -557,6 +558,7 @@
      &                                 'not coded, FATAL ERROR'
         END IF
       END IF
+# endif
 !
       string=uppercase('ts_smagorinsky')
       ifound=INDEX(TRIM(Coptions), TRIM(string))

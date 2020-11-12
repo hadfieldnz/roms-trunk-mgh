@@ -732,7 +732,7 @@
 #endif
 #ifdef COAMPS_COUPLING
 !
-      IF (Master) WRITE (stdout,20) 'COAMPS_COUPLING',                   &
+      IF (Master) WRITE (stdout,20) 'COAMPS_COUPLING',                  &
      &   'Atmosphere coupling with COAMPS'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+17)=' COAMPS_COUPLING,'
@@ -2602,6 +2602,13 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+11)=' TLM_CHECK,'
 #endif
+#if defined TRACING && define PROFILE
+!
+      IF (Master) WRITE (stdout,20) 'TRACING',                          &
+     &   'Tracing sequence of routine calls for debugging'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+9)=' TRACING,'
+#endif
 #ifdef SOLVE3D
 # if defined T_PASSIVE
 !
@@ -3188,8 +3195,8 @@
             EXIT
           END IF
         END DO
- 210    FORMAT (/,' CHECKDEFS - cannot activate option: ',a,           &
-     &          /,13x,'in serial with partitions or shared-memory...', &
+ 210    FORMAT (/,' CHECKDEFS - cannot activate option: ',a,            &
+     &          /,13x,'in serial with partitions or shared-memory...',  &
      &          /,13x,'Use distributed-memory (MPI) in parallel runs.')
       END IF
 #endif
@@ -3260,9 +3267,9 @@
             EXIT
           END IF
         END DO
- 260    FORMAT (/,' CHECKDEFS - cannot activate option: ',a,           &
-     &          /,13x,'in serial with partitions or shared-memory...', &
-     &          /,13x,'There bugs in shared-memory that need fixing.', &
+ 260    FORMAT (/,' CHECKDEFS - cannot activate option: ',a,            &
+     &          /,13x,'in serial with partitions or shared-memory...',  &
+     &          /,13x,'There bugs in shared-memory that need fixing.',  &
      &          /,13x,'Use distributed-memory (MPI) in parallel runs.')
       END IF
 #endif

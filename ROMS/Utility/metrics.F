@@ -1099,8 +1099,8 @@
         DO cr=1,Ncontact
           dg=donor_grid(cr)
           rg=receiver_grid(cr)
-          IF (RefinedGrid(rg).and.                                        &
-     &        (RefineScale(rg).gt.0).and.                                 &
+          IF (RefinedGrid(rg).and.                                      &
+     &        (RefineScale(rg).gt.0).and.                               &
      &         DXmax(dg).gt.DXmax(rg)) THEN
             CoarserDonor(rg)=dg
           END IF
@@ -1114,8 +1114,8 @@
         DO cr=1,Ncontact
           dg=donor_grid(cr)
           rg=receiver_grid(cr)
-          IF (RefinedGrid(dg).and.                                        &
-     &        (RefineScale(dg).gt.0).and.                                 &
+          IF (RefinedGrid(dg).and.                                      &
+     &        (RefineScale(dg).gt.0).and.                               &
      &        DXmax(dg).gt.DXmax(rg)) THEN
             FinerDonor(dg)=rg
           END IF

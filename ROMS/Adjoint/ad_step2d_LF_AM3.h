@@ -4444,8 +4444,8 @@
         DO j=Jstr,Jend
           DO i=Istr,Iend
 # if defined WET_DRY_NOT_YET && defined MASKING
-!>          tl_zeta(i,j,knew)=tl_zeta(i,j,knew)-                          &
-!>    &                       tl_h(i,j)*(1.0_r8-rmask(i,j))
+!>          tl_zeta(i,j,knew)=tl_zeta(i,j,knew)-                        &
+!>   &                        tl_h(i,j)*(1.0_r8-rmask(i,j))
 !>
             ad_h(i,j)=ad_h(i,j)+(1.0_r8-rmask(i,j))*ad_zeta(i,j,knew)
 # endif

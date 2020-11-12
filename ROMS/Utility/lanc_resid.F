@@ -290,7 +290,7 @@
 !
       DO j=JstrR,JendR
         DO i=IstrR,IendR
-          ad_zeta(i,j,Lout)=-tl_zeta(i,j,Linp)+                        &
+          ad_zeta(i,j,Lout)=-tl_zeta(i,j,Linp)+                         &
      &                      ad_zeta(i,j,Lout )
         END DO
       END DO
