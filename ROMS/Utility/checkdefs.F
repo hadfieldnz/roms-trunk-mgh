@@ -2602,7 +2602,7 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+11)=' TLM_CHECK,'
 #endif
-#if defined TRACING && define PROFILE
+#if defined TRACING && defined PROFILE
 !
       IF (Master) WRITE (stdout,20) 'TRACING',                          &
      &   'Tracing sequence of routine calls for debugging'
