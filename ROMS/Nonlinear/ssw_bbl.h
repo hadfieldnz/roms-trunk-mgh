@@ -414,8 +414,8 @@
           ELSE
 !
 !  Threshold of motion exceeded - calculate new zoST and zoBF
-!  Calculate saltation roughness according to Wiberg & Rubin (1989)
-!  (Eqn. 11 in Harris & Wiberg, 2001)
+!  Calculate saltation roughness according to Wiberg and Rubin (1989)
+!  (Eqn. 11 in Harris and Wiberg, 2001)
 !  (d50 is in m, but this formula needs cm)
 !
              coef_st=0.0204_r8*LOG(100.0_r8*d50)**2+                    &
@@ -431,7 +431,7 @@
              END IF
 !
 !  Calculate ripple height and wavelength.
-!  Use Malarkey & Davies (2003) explict version of Wiberg & Harris.
+!  Use Malarkey and Davies (2003) explict version of Wiberg and Harris.
 !
              coef_b1=1.0_r8/coef_a1
              coef_b2=0.5_r8*(1.0_r8 + coef_a2)*coef_b1

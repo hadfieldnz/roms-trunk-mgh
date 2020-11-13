@@ -311,7 +311,7 @@
         DO k=1,N(ng)
           DO j=JstrV-1,Jend+1
             DO i=Istr-1,Iend+1
-              GRID(ng)%z_v(i,j,k)=0.5_r8*(GRID(ng)%z_r(i,j-1,k)+       &
+              GRID(ng)%z_v(i,j,k)=0.5_r8*(GRID(ng)%z_r(i,j-1,k)+        &
      &                                    GRID(ng)%z_r(i,j  ,k))
             END DO
           END DO

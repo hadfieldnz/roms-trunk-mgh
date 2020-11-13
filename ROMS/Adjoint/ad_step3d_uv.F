@@ -683,20 +683,20 @@
                   ad_CFs(i,0)=ad_CFs(i,0)-ad_v_stokes(i,j,k)
 # endif
 # ifdef WET_DRY_NOT_YET
-!>                tl_v(i,j,k,nnew)=tl_v(i,j,k,nnew)*                     &
+!>                tl_v(i,j,k,nnew)=tl_v(i,j,k,nnew)*                    &
 !>   &                             vmask_wet(i,j)
 !>
-                  ad_v(i,j,k,nnew)=ad_v(i,j,k,nnew)*                     &
+                  ad_v(i,j,k,nnew)=ad_v(i,j,k,nnew)*                    &
      &                             vmask_wet(i,j)
 # endif
 # ifdef MASKING
-!>                tl_v(i,j,k,nnew)=tl_v(i,j,k,nnew)*                     &
+!>                tl_v(i,j,k,nnew)=tl_v(i,j,k,nnew)*                    &
 !>   &                             vmask(i,j)
 !>
-                  ad_v(i,j,k,nnew)=ad_v(i,j,k,nnew)*                     &
+                  ad_v(i,j,k,nnew)=ad_v(i,j,k,nnew)*                    &
      &                             vmask(i,j)
 # endif
-!>                tl_v(i,j,k,nnew)=tl_v(i,j,k,nnew)-                     &
+!>                tl_v(i,j,k,nnew)=tl_v(i,j,k,nnew)-                    &
 !>   &                             tl_CF(i,0)
 !>
                   ad_CF(i,0)=ad_CF(i,0)-ad_v(i,j,k,nnew)

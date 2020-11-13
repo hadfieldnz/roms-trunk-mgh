@@ -730,9 +730,9 @@
 !>   &                             Akt(i,j,k-1,ltrc)*tl_oHz(i,j,k  ))
 !>
                 adfac=dt(ng)*ad_FC(i,k)
-                ad_oHz(i,j,k  )=ad_oHz(i,j,k  )-                          &
+                ad_oHz(i,j,k  )=ad_oHz(i,j,k  )-                        &
      &                          Akt(i,j,k-1,ltrc)*adfac
-                ad_Akt(i,j,k-1,ltrc)=ad_Akt(i,j,k-1,ltrc)-                &
+                ad_Akt(i,j,k-1,ltrc)=ad_Akt(i,j,k-1,ltrc)-              &
      &                               oHz(i,j,k  )*adfac
                 ad_Hz(i,j,k  )=ad_Hz(i,j,k  )+cff1*ad_FC(i,k)
                 ad_FC(i,k)=0.0_r8

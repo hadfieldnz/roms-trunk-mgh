@@ -569,7 +569,7 @@
             tl_DC(i,k)=tl_DC(i,k)*AK(i,k)+DC(i,k)*tl_AK(i,k)
 #  ifdef TL_IOMS
 !           tl_DC(i,k)=tl_DC(i,k)-                                      &
-!     &                DC(i,k)*AK(i,k)    ! needed if tl_AK is computed
+!    &                 DC(i,k)*AK(i,k)    ! needed if tl_AK is computed
 #  endif
             DC(i,k)=DC(i,k)*AK(i,k)
 !>          cff=dt(ng)*oHz(i,k)*(DC(i,k)-DC(i,k-1))

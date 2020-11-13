@@ -2912,8 +2912,8 @@
 #   endif
         DO j=JstrV-1,Jend
           DO i=Istr,Iend+1
-!>           tl_Huee(i,j)=tl_Huon(i,j-1,k)-2.0_r8*tl_Huon(i,j,k)+
-!>     &                  tl_Huon(i,j+1,k)
+!>           tl_Huee(i,j)=tl_Huon(i,j-1,k)-2.0_r8*tl_Huon(i,j,k)+       &
+!>   &                    tl_Huon(i,j+1,k)
 !>
             ad_Huon(i,j-1,k)=ad_Huon(i,j-1,k)+ad_Huee(i,j)
             ad_Huon(i,j  ,k)=ad_Huon(i,j  ,k)-2.0_r8*ad_Huee(i,j)

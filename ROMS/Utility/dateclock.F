@@ -1145,7 +1145,7 @@
       END SUBROUTINE ref_clock
 !
 !**********************************************************************
-      SUBROUTINE ROMS_clock (year, month, day, hour, minutes, seconds, &
+      SUBROUTINE ROMS_clock (year, month, day, hour, minutes, seconds,  &
      &                       ClockTime)
 !***********************************************************************
 !                                                                      !
@@ -1194,7 +1194,7 @@
 !
 !  Convert requested date into date number.
 !
-      CALL datenum (DateNumber, year, month, day,                      &
+      CALL datenum (DateNumber, year, month, day,                       &
      &              hour, minutes, seconds)
 !
 !  Compute ROMS clock elapsed time in seconds.

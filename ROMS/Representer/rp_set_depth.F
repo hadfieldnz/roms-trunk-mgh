@@ -882,7 +882,7 @@
           END DO
         END IF
 
-        IF (tl_LBC(inorth,isFsur,ng)%acquire.and.                        &
+        IF (tl_LBC(inorth,isFsur,ng)%acquire.and.                       &
      &      DOMAIN(ng)%Northern_Edge(tile)) THEN
           j=BOUNDS(ng)%edge(inorth,r2dvar)
           DO i=IstrT,IendT

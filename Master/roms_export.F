@@ -1,7 +1,7 @@
 #include "cppdefs.h"
       MODULE ROMS_export_mod
 
-#ifdef MODEL_COUPLING
+#if defined MODEL_COUPLING && defined MCT_LIB
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -30,8 +30,7 @@
      &                          LBi, UBi, LBj, UBj,                     &
      &                          InpField,                               &
      &                          OutFmin, OutFmax,                       &
-# if defined ESMF_LIB
-# elif defined MCT_LIB
+# if defined MCT_LIB
      &                          Npts, OutField,                         &
 # endif
      &                          status)
@@ -58,14 +57,12 @@
 
 # ifdef ASSUMED_SHAPE
       real(r8), intent(in)  :: InpField(LBi:,LBj:)
-#  if defined ESMF_LIB
-#  elif defined MCT_LIB
+#  if defined MCT_LIB
       real(r8), intent(out) :: OutField(:)
 #  endif
 # else
       real(r8), intent(in)  :: InpField(LBi:UBi,LBj:UBj)
-#  if defined ESMF_LIB
-#  elif defined MCT_LIB
+#  if defined MCT_LIB
       real(r8), intent(out) :: OutField(Npts)
 #  endif
 # endif
@@ -96,8 +93,7 @@
       range(1)= Large
       range(2)=-Large
 
-# if defined ESMF_LIB
-# elif defined MCT_LIB
+# if defined MCT_LIB
 !
 !  RHO-type variables.
 !

@@ -503,7 +503,7 @@
 !
       DO ng=1,Ngrids
         IF (Master) THEN
-                                                                                                                                                                                                                   WRITE (stdout,80)                                             &
+          WRITE (stdout,80)                                             &
      &      'TLM Test - Dot Products Summary: p, g1, g2, (g1-g2)/g1'
           inner=1
           DO i=1,MIN(ig1count,ig2count)

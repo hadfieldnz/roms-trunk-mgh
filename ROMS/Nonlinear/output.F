@@ -379,7 +379,7 @@
      &                   __FILE__)) RETURN
 #  if defined AVERAGES_DETIDE && (defined SSH_TIDES || defined UV_TIDES)
           CALL wrt_tides (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                   &
+          IF (FoundError(exit_flag, NoError, __LINE__,                  &
      &                   __FILE__)) RETURN
 #  endif
         END IF

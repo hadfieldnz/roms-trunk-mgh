@@ -530,7 +530,7 @@
 
 # if !defined ANA_SSFLUX     && defined SALINITY
 #  if !(defined BULK_FLUXES  || defined EMINUSP     || \
-        defined FRC_COUPLING || defined SRELAXATION)
+        defined FRC_COUPLING)
 !
 !  Surface net freshwater flux: E-P from NetCDF variable "swflux".
 !

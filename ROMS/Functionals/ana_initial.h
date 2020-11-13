@@ -557,7 +557,7 @@
         DO j=JstrT,JendT
           DO i=IstrT,IendT
             val1=(yr(i,j)-y0)/guscale
-            val2=-0.5_r8*u0*guscale*GRID(ng)%f(i,j)*SQRT(pi)/            &
+            val2=-0.5_r8*u0*guscale*GRID(ng)%f(i,j)*SQRT(pi)/           &
      &           (Tcoef(ng)*g*h(i,j))
             val3=(val2*ERF(val1)+T0(ng))*(1.0_r8+z_r(i,j,k)/h(i,j))
             t(i,j,k,1,itemp)=val3

@@ -1149,10 +1149,10 @@
             DO j=Jstr-1,Jend+1
               DO i=IstrU-1,Iend+1
                 cff=1.0_r8/(z_r(i,j,k+1)-z_r(i,j,k))
-!>              dAdz(i,j,k2)=cff*(Awrk(i,j,k+1,Nold)-                  &
+!>              dAdz(i,j,k2)=cff*(Awrk(i,j,k+1,Nold)-                   &
 !>   &                            Awrk(i,j,k  ,Nold))
 !>
-                tl_dAdz(i,j,k2)=cff*(tl_Awrk(i,j,k+1,Nold)-            &
+                tl_dAdz(i,j,k2)=cff*(tl_Awrk(i,j,k+1,Nold)-             &
      &                               tl_Awrk(i,j,k  ,Nold))
 #  ifdef MASKING
 !>              dAdz(i,j,k2)=dAdz(i,j,k2)*umask(i,j)
@@ -1964,10 +1964,10 @@
             DO j=JstrV-1,Jend+1
               DO i=Istr-1,Iend+1
                 cff=1.0_r8/(z_r(i,j,k+1)-z_r(i,j,k))
-!>              dAdz(i,j,k2)=cff*(Awrk(i,j,k+1,Nold)-                  &
+!>              dAdz(i,j,k2)=cff*(Awrk(i,j,k+1,Nold)-                   &
 !>   &                            Awrk(i,j,k  ,Nold))
 !>
-                tl_dAdz(i,j,k2)=cff*(tl_Awrk(i,j,k+1,Nold)-            &
+                tl_dAdz(i,j,k2)=cff*(tl_Awrk(i,j,k+1,Nold)-             &
      &                               tl_Awrk(i,j,k  ,Nold))
 #  ifdef MASKING
 !>              dAdz(i,j,k2)=dAdz(i,j,k2)*vmask(i,j)

@@ -137,6 +137,13 @@
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
      &                 __FILE__)) RETURN
 !
+!  Initialize counters. The 'Nrun' counter will be recomputed in the
+!  RBL4D-Var phases to process the obervation operator correctly.
+!
+        Nrun=1                ! run counter
+        ERstr=1               ! ensemble start counter
+        ERend=Nouter          ! ensemble end counter
+!
 !  Set domain decomposition tile partition range.  This range is
 !  computed only once since the "first_tile" and "last_tile" values
 !  are private for each parallel thread/node.
@@ -269,10 +276,7 @@
         Lnew(ng)=2          ! new minimization time index
       END DO
 !
-      Nrun=1                ! run counter
       outer=0               ! outer-loop counter
-      ERstr=1               ! ensemble start counter
-      ERend=Nouter          ! ensemble end counter
 !
 !  Compute nonlinear background state trajectory, Xb(t)|n-1. Interpolate
 !  the background at the observation locations, and compute the quality

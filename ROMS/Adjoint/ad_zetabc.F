@@ -702,10 +702,10 @@
           DO i=Istr,Iend
             IF (LBC_apply(ng)%south(i)) THEN
 # ifdef MASKING
-!>            tl_zeta(i,Jstr-1,kout)=tl_zeta(i,Jstr-1,kout)*              &
+!>            tl_zeta(i,Jstr-1,kout)=tl_zeta(i,Jstr-1,kout)*            &
 !>   &                               GRID(ng)%rmask(i,Jstr-1)
 !>
-              ad_zeta(i,Jstr-1,kout)=ad_zeta(i,Jstr-1,kout)*              &
+              ad_zeta(i,Jstr-1,kout)=ad_zeta(i,Jstr-1,kout)*            &
      &                               GRID(ng)%rmask(i,Jstr-1)
 # endif
 # ifdef ADJUST_BOUNDARY
@@ -984,15 +984,15 @@
           DO j=Jstr,Jend
             IF (LBC_apply(ng)%east(j)) THEN
 # ifdef MASKING
-!>            tl_zeta(Iend+1,j,kout)=tl_zeta(Iend+1,j,kout)*              &
+!>            tl_zeta(Iend+1,j,kout)=tl_zeta(Iend+1,j,kout)*            &
 !>   &                               GRID(ng)%rmask(Iend+1,j)
 !>
-              ad_zeta(Iend+1,j,kout)=ad_zeta(Iend+1,j,kout)*              &
+              ad_zeta(Iend+1,j,kout)=ad_zeta(Iend+1,j,kout)*            &
      &                               GRID(ng)%rmask(Iend+1,j)
 # endif
 !>            tl_zeta(Iend+1,j,kout)=tl_zeta(Iend,j,kout)
 !>
-              ad_zeta(Iend  ,j,kout)=ad_zeta(Iend  ,j,kout)+              &
+              ad_zeta(Iend  ,j,kout)=ad_zeta(Iend  ,j,kout)+            &
      &                               ad_zeta(Iend+1,j,kout)
               ad_zeta(Iend+1,j,kout)=0.0_r8
             END IF

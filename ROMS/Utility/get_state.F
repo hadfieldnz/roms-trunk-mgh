@@ -3021,7 +3021,7 @@
 !
         DO itrc=1,NT(ng)
           IF (get_var(idTsur(itrc)).and.get_adjust.and.                 &
-    &        Lstflux(itrc,ng)) THEN
+     &        Lstflux(itrc,ng)) THEN
             foundit=find_string(var_name, n_var,                        &
      &                          TRIM(Vname(1,idTsur(itrc))), varid)
             IF (foundit) THEN

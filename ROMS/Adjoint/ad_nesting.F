@@ -2010,11 +2010,11 @@
      &                            CLIMA(ngc)%Tnudgcof(Ibc,Jbc,k,itrc))
               END IF
 !>            tl_Tvalue=(0.5_r8-                                        &
-!>     &                 SIGN(0.5_r8,                                   &
-!>     &                      -(OCEAN(ngc)%t(Ibc,Jbc,k,Tindex,itrc)-    &
-!>     &                      cff*(TFF-TFC))))*                         &
-!>     &                 (OCEAN(ngc)%tl_t(Ibc,Jbc,k,Tindex,itrc)-       &
-!>     &                 tl_cff*(TFF-TFC)-cff*(tl_TFF-tl_TFC))
+!>   &                   SIGN(0.5_r8,                                   &
+!>   &                        -(OCEAN(ngc)%t(Ibc,Jbc,k,Tindex,itrc)-    &
+!>   &                        cff*(TFF-TFC))))*                         &
+!>   &                   (OCEAN(ngc)%tl_t(Ibc,Jbc,k,Tindex,itrc)-       &
+!>   &                   tl_cff*(TFF-TFC)-cff*(tl_TFF-tl_TFC))
 !>
               adfac=(0.5_r8-                                            &
      &               SIGN(0.5_r8,                                       &
@@ -3858,7 +3858,7 @@
 !>              OCEAN(ng)%tl_vbar(i,j,irec)=tl_my_value
 !>
                 ad_my_value=ad_my_value+                                &
-    &                       OCEAN(ng)%ad_vbar(i,j,irec)
+     &                      OCEAN(ng)%ad_vbar(i,j,irec)
                 OCEAN(ng)%ad_vbar(i,j,irec)=0.0_r8
 !!            ELSE                                   ! for debugging
 !!              OCEAN(ng)%vbar(i,j,irec)=0.0_r8      ! purposes
@@ -3867,7 +3867,7 @@
 !>            OCEAN(ng)%tl_vbar(i,j,irec)=tl_my_value
 !>
               ad_my_value=ad_my_value+                                  &
-    &                     OCEAN(ng)%ad_vbar(i,j,irec)
+     &                    OCEAN(ng)%ad_vbar(i,j,irec)
               OCEAN(ng)%ad_vbar(i,j,irec)=0.0_r8
 # endif
             END DO
@@ -5190,12 +5190,12 @@
           Nzpts=4*Nkpts
 
 !>        CALL _mp_assemble (rg, model, Nwpts, spv,                     &
-!>    &                      Rcontact(cr)Vweight)
+!>   &                       Rcontact(cr)Vweight)
 !>
 !!        CALL ad_mp_assemble (rg, model, Nwpts, spv,                   &
-!!    &                        Rcontact(cr)%ad_Vweight)
+!!   &                         Rcontact(cr)%ad_Vweight)
 !!        IF (FoundError(exit_flag, NoError, __LINE__,                  &
-!!    &                  __FILE__)) RETURN
+!!   &                   __FILE__)) RETURN
 #  endif
 !
 !-----------------------------------------------------------------------
@@ -7931,17 +7931,17 @@
 !
 !  Collect data from all nodes.
 !
-!>          CALL mp_assemble (dg, model, NptsWE, spv,                      &
-!>     &                      BRY_CONTACT(iwest ,cjcr)%tl_Mflux(JLB:))
+!>        CALL mp_assemble (dg, model, NptsWE, spv,                     &
+!>   &                      BRY_CONTACT(iwest ,cjcr)%tl_Mflux(JLB:))
 !>
-!>          CALL mp_assemble (dg, model, NptsWE, spv,                      &
-!>     &                      BRY_CONTACT(ieast ,cjcr)%tl_Mflux(JLB:))
+!>        CALL mp_assemble (dg, model, NptsWE, spv,                     &
+!>   &                      BRY_CONTACT(ieast ,cjcr)%tl_Mflux(JLB:))
 !>
-!>          CALL mp_assemble (dg, model, NptsSN, spv,                      &
-!>     &                      BRY_CONTACT(isouth,cjcr)%tl_Mflux(ILB:))
+!>        CALL mp_assemble (dg, model, NptsSN, spv,                     &
+!>   &                      BRY_CONTACT(isouth,cjcr)%tl_Mflux(ILB:))
 !>
-!>          CALL mp_assemble (dg, model, NptsSN, spv,                      &
-!>     &                      BRY_CONTACT(inorth,cjcr)%tl_Mflux(ILB:))
+!>        CALL mp_assemble (dg, model, NptsSN, spv,                     &
+!>   &                      BRY_CONTACT(inorth,cjcr)%tl_Mflux(ILB:))
 !>
 # endif
         END IF

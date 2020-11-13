@@ -440,8 +440,8 @@ HdecayF(isTsur) == 100.0d+3  100.0d+3             ! 1:NT surface tracers flux
 ! impacts during the analysis-forecast cycle when the forecast is initialized
 ! with the 4D-Var analysis (OIFnameA) or the 4D-Var background (OIFnameB).
 
-      OIFnameA == roms_oif_a.nc
-      OIFnameB == roms_oif_b.nc
+       OIFnameA == roms_oif_a.nc
+       OIFnameB == roms_oif_b.nc
 
 !
 !  GLOSSARY:

@@ -1291,7 +1291,7 @@
           DO j=JstrR,JendR
             DO i=IstrR,IendR
               AVERAGE(ng)%avgstf(i,j)=rfac(i,j)*                        &
-    &                                 AVERAGE(ng)%avgstf(i,j)
+     &                                AVERAGE(ng)%avgstf(i,j)
             END DO
           END DO
         END IF
@@ -1312,7 +1312,7 @@
           DO j=JstrR,JendR
             DO i=IstrR,IendR
               AVERAGE(ng)%avgsrf(i,j)=rfac(i,j)*                        &
-    &                                 AVERAGE(ng)%avgsrf(i,j)
+     &                                AVERAGE(ng)%avgsrf(i,j)
             END DO
           END DO
         END IF

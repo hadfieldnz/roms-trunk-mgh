@@ -479,7 +479,7 @@
 #   else
 
 #    if !(defined BULK_FLUXES  || defined EMINUSP      || \
-          defined FRC_COUPLING || defined SRELAXATION)
+          defined FRC_COUPLING)
 !
 !  Surface freshwater (E-P) flux (m/s) from NetCDF variable "swflux".
 !

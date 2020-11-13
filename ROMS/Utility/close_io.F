@@ -85,9 +85,9 @@
         DO i=1,nCLMfiles(ng)
           IF ((CLM(i,ng)%Nfiles.gt.0).and.(CLM(i,ng)%ncid.ne.-1)) THEN
             Fcount=CLM(i,ng)%Fcount
-            CALL netcdf_close (ng, model, CLM(i,ng)%ncid,                 &
+            CALL netcdf_close (ng, model, CLM(i,ng)%ncid,               &
      &                         CLM(i,ng)%files(Fcount),  .FALSE.)
-            IF (FoundError(exit_flag, NoError, __LINE__,                  &
+            IF (FoundError(exit_flag, NoError, __LINE__,                &
      &                   __FILE__)) RETURN
             CLMids=-1
             ncCLMid=-1
@@ -147,7 +147,7 @@
         END IF
 #endif
 #if defined FORWARD_READ || defined FORWARD_WRITE
-        IF ((FWD(ng)%ncid.ne.-1).and.                                  &
+        IF ((FWD(ng)%ncid.ne.-1).and.                                   &
      &      (FWD(ng)%ncid.eq.HIS(ng)%ncid)) THEN
           FWD(ng)%ncid=-1
         END IF

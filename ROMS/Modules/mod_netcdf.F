@@ -1460,22 +1460,22 @@
           DO i=1,MIN(Matts,n_gatt)
             att_id=i
             status=nf90_inq_attname(my_ncid, nf90_global, att_id,       &
-      &                             att_name(i))
+     &                              att_name(i))
             IF (status.eq.nf90_noerr) THEN
               status=nf90_inquire_attribute(my_ncid, nf90_global,       &
-      &                                     TRIM(att_name(i)),          &
-      &                                     xtype = att_kind(i),        &
-      &                                     attnum = att_id)
+     &                                      TRIM(att_name(i)),          &
+     &                                      xtype = att_kind(i),        &
+     &                                      attnum = att_id)
               IF (status.ne.nf90_noerr) THEN
                 WRITE (stdout,5) i, TRIM(ncname), TRIM(SourceFile),     &
-      &                          nf90_strerror(status)
+     &                           nf90_strerror(status)
                 exit_flag=2
                 ioerror=status
                 EXIT
               END IF
             ELSE
               WRITE (stdout,5) i, TRIM(ncname), TRIM(SourceFile),       &
-      &                        nf90_strerror(status)
+     &                         nf90_strerror(status)
               exit_flag=2
               ioerror=status
               EXIT

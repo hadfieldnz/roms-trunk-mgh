@@ -2798,7 +2798,7 @@
 !>
                 ad_dAdz(i,j,k2)=ad_dAdz(i,j,k2)*vmask(i,j)
 #  endif
-!>              tl_dAdz(i,j,k2)=cff*(tl_Awrk(i,j,k+1,Nold)-            &
+!>              tl_dAdz(i,j,k2)=cff*(tl_Awrk(i,j,k+1,Nold)-             &
 !>   &                               tl_Awrk(i,j,k  ,Nold))
 !>
                 adfac=cff*ad_dAdz(i,j,k2)

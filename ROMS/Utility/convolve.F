@@ -243,7 +243,7 @@
  10       FORMAT (/,' Convolving Adjoint Trajectory...')
         ELSE
           WRITE (stdout,20) outLoop, innLoop
- 20       FORMAT (/,' Convolving Adjoint Trajectory: Outer = ',i3.3,     &
+ 20       FORMAT (/,' Convolving Adjoint Trajectory: Outer = ',i3.3,    &
      &            ' Inner = ',i3.3)
         END IF
       END IF

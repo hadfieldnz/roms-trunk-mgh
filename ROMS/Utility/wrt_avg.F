@@ -109,7 +109,7 @@
 # endif
      &                     AVERAGE(ng) % avgzeta)
         IF (FoundError(status, nf90_noerr, __LINE__,                    &
-    &                  __FILE__)) THEN
+     &                 __FILE__)) THEN
           IF (Master) THEN
             WRITE (stdout,10) TRIM(Vname(1,idFsur)), AVG(ng)%Rindex
           END IF

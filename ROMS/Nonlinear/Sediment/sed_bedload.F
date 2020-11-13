@@ -698,18 +698,18 @@
 !        DO j=Jstr,Jend
 !          DO i=Istr,Iend
 !            cff1=1.0_r8/(Srho(ised,ng)*(1.0_r8-bed(i,j,1,iporo)))
-!            rhs_bed=(FX(i+1,j)-FX(i,j)+                                 &
-!     &               FE(i,j+1)-FE(i,j))*pm(i,j)*pn(i,j)
+!            rhs_bed=(FX(i+1,j)-FX(i,j)+                                &
+!    &                FE(i,j+1)-FE(i,j))*pm(i,j)*pn(i,j)
 !            cff2=MAX(rhs_bed*cff1+h(i,j)-Dcrit(ng),0.0_r8)
 !            cff=cff2/ABS(cff2+eps)
-!            FX(i  ,j  )=MAX(FX(i  ,j  ),0.0_r8)*cff+                    &
-!     &                  MIN(FX(i  ,j  ),0.0_r8)
-!            FX(i+1,j  )=MAX(FX(i+1,j  ),0.0_r8)+                        &
-!     &                  MIN(FX(i+1,j  ),0.0_r8)*cff
-!            FE(i  ,j  )=MAX(FE(i  ,j  ),0.0_r8)*cff+                    &
-!     &                  MIN(FE(i  ,j  ),0.0_r8)
-!            FE(i  ,j+1)=MAX(FE(i  ,j+1),0.0_r8)+                        &
-!     &                  MIN(FE(i  ,j+1),0.0_r8)*cff
+!            FX(i  ,j  )=MAX(FX(i  ,j  ),0.0_r8)*cff+                   &
+!    &                   MIN(FX(i  ,j  ),0.0_r8)
+!            FX(i+1,j  )=MAX(FX(i+1,j  ),0.0_r8)+                       &
+!    &                   MIN(FX(i+1,j  ),0.0_r8)*cff
+!            FE(i  ,j  )=MAX(FE(i  ,j  ),0.0_r8)*cff+                   &
+!    &                   MIN(FE(i  ,j  ),0.0_r8)
+!            FE(i  ,j+1)=MAX(FE(i  ,j+1),0.0_r8)+                       &
+!    &                   MIN(FE(i  ,j+1),0.0_r8)*cff
 !          END DO
 !        END DO
 !

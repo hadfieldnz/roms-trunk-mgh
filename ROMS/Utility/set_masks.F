@@ -218,7 +218,7 @@
         DO is=1,Nsrc(ng)
           i=SOURCES(ng)%Isrc(is)
           j=SOURCES(ng)%Jsrc(is)
-          IF (((IstrT.le.i).and.(i.le.IendT)).and.                        &
+          IF (((IstrT.le.i).and.(i.le.IendT)).and.                      &
      &        ((JstrT.le.j).and.(j.le.JendT))) THEN
             IF (INT(SOURCES(ng)%Dsrc(is)).eq.0) THEN
               umask_full(i,j)=1.0_r8
