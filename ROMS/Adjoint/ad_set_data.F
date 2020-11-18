@@ -193,7 +193,7 @@
       IF (FoundError(exit_flag, NoError, __LINE__,                      &
      &               __FILE__)) RETURN
 #   endif
-#   ifdef DIURNAL_SRFLUX
+#   if defined DIURNAL_SRFLUX && !defined FORWARD_FLUXES
 !
 !  Modulate the averaged shortwave radiation flux by the local diurnal
 !  cycle.

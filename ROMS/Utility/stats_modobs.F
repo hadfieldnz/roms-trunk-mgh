@@ -338,7 +338,7 @@
       CALL netcdf_get_fvar (ng, iNLM, DAV(ng)%name, Vname(1,idNLmo),    &
      &                      mod_value,                                  &
      &                      ncid = DAV(ng)%ncid,                        &
-     &                      start = (/1,outer/),                        &
+     &                      start = (/1,MAX(1,outer)/),                 &
      &                      total = (/Ndatum(ng),1/))
 #  endif
 # endif

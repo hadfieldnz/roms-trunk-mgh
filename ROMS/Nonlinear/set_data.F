@@ -169,12 +169,12 @@
 !  In 4D-Var data assimilation applications, the user have the option
 !  to fix the prior (background phase) surface fluxes in the successive
 !  outer loops (Nouter>1) or the final analysis phase. In such case, the
-!  fluxes are read from the background trajector
+!  fluxes are read from the background trajectory.
 !
       IF (Nrun.eq.1) THEN
         Lprocess=.TRUE.
       ELSE
-         Lprocess=.FALSE.
+        Lprocess=.FALSE.
       END IF
 # else
       Lprocess=.TRUE.
@@ -268,7 +268,9 @@
 !  Modulate the averaged shortwave radiation flux by the local diurnal
 !  cycle.
 !
-      CALL ana_srflux (ng, tile, iNLM)
+      IF (Lprocess) THEN
+        CALL ana_srflux (ng, tile, iNLM)
+      END IF
 #   endif
 #  endif
 
