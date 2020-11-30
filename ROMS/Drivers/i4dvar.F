@@ -151,7 +151,10 @@
       integer :: thread
 # endif
 !
-      SourceFile=__FILE__  // ", background_initialize"
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", background_initialize"
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Initialize nonlinear model kernel.
@@ -163,8 +166,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_on (ng, iNLM, 86, __LINE__,                       &
-     &                    __FILE__)
+          CALL wclock_on (ng, iNLM, 86, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -217,8 +219,7 @@
         DO ng=1,Ngrids
           LdefINI(ng)=.FALSE.
           CALL def_ini (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           INI(ng)%Rindex=Lini
         END DO
       END IF
@@ -230,8 +231,7 @@
         DO ng=1,Ngrids
           LdefMOD(ng)=.FALSE.
           CALL def_mod (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           haveNLmod(ng)=.FALSE.                   ! do not read NLmodVal
         END DO
       END IF
@@ -250,8 +250,7 @@
         CALL netcdf_get_fvar (ng, iTLM, DAV(ng)%name,                   &
      &                        Vname(1,idObsS), ObsScaleGlobal,          &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  If outer>1, read in initial (outer=1) nonlinear cost function values
@@ -266,8 +265,7 @@
      &                          ncid = DAV(ng)%ncid,                    &
      &                          start = (/1,1/),                        &
      &                          total = (/NobsVar(ng)+1,1/))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 
@@ -281,13 +279,11 @@
         DO ng=1,Ngrids
           LdefITL(ng)=.FALSE.
           CALL tl_def_ini (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
           InpRec=Rec5
           CALL get_state (ng, iTLM, 1, ITL(ng)%name, InpRec, LTLM1)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 #  endif
@@ -306,8 +302,7 @@
         END DO
 !
         CALL edit_multifile ('QCK2BLK')
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 #  endif
 # endif
@@ -371,8 +366,7 @@
       END DO
 !
       CALL initial
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  If first pass, save nonlinear initial conditions (currently in time
 !  index 1, background) into next record (Lbck) of INI(ng)%name NetCDF
@@ -386,8 +380,7 @@
           Fcount=INI(ng)%load
           INI(ng)%Nrec(Fcount)=1
           CALL wrt_ini (ng, 1)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 
@@ -414,8 +407,7 @@
         DO ng=1,Ngrids
           LdefMOD(ng)=.TRUE.
           CALL def_mod (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 !
@@ -475,7 +467,10 @@
       real(dp) :: ENDtime, NEXTtime
 # endif
 !
-      SourceFile=__FILE__  // ", background"
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", background"
+!
+      SourceFile=MyFile
 
 # if !(defined MODEL_COUPLING && defined ESMF_LIB)
 !
@@ -484,8 +479,7 @@
 !-----------------------------------------------------------------------
 !
       CALL background_initialize (my_outer)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 !
 !-----------------------------------------------------------------------
@@ -508,8 +502,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_on (ng, iNLM, 86, __LINE__,                       &
-     &                    __FILE__)
+          CALL wclock_on (ng, iNLM, 86, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -561,8 +554,7 @@
 # else
       CALL main2d (RunInterval)
 # endif
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !-----------------------------------------------------------------------
 !  If completed stepping, write out into NetCDF files.
@@ -593,13 +585,11 @@
 !
         DO ng=1,Ngrids
           CALL wrt_frc (ng, Lfout(ng), Lini)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
           IF (my_outer.eq.1) THEN
             CALL wrt_frc (ng, Lfout(ng), Lbck)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END IF
         END DO
 # endif
@@ -607,15 +597,14 @@
 !  Write out nonlinear model misfit cost function into DAV(ng)%name
 !  NetCDF file.
 !
-        SourceFile=__FILE__ // ", background"
+        SourceFile=MyFile
         DO ng=1,Ngrids
           CALL netcdf_put_fvar (ng, iNLM, DAV(ng)%name,                 &
      &                          'NLcost_function',                      &
      &                          FOURDVAR(ng)%NLobsCost(0:),             &
      &                          (/1,my_outer/), (/NobsVar(ng)+1,1/),    &
      &                          ncid = DAV(ng)%ncid)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 
@@ -625,8 +614,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_off (ng, iNLM, 86, __LINE__,                      &
-     &                     __FILE__)
+          CALL wclock_off (ng, iNLM, 86, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -709,8 +697,11 @@
 # endif
 !
       character (len=10) :: suffix
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", increment"
 !
-      SourceFile=__FILE__
+      SourceFile=MyFile
 !
 !=======================================================================
 !  Compute 4D-Var increment.
@@ -722,8 +713,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_on (ng, iTLM, 87, __LINE__,                       &
-     &                    __FILE__)
+          CALL wclock_on (ng, iTLM, 87, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -748,8 +738,7 @@
       DO ng=1,Ngrids
         LdefMOD(ng)=.FALSE.
         CALL def_mod (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         haveNLmod(ng)=.TRUE.
       END DO
 !
@@ -766,14 +755,13 @@
       CALL netcdf_get_fvar (ng, iTLM, DAV(ng)%name,                     &
      &                      Vname(1,idObsS), ObsScaleGlobal,            &
      &                      ncid = DAV(ng)%ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in first value of NLM cost function computed at outer=1, and
 !  load it into "CostNorm" that is used in the reporting of normalized
 !  values.
 !
-      SourceFile=__FILE__ // ", increment"
+      SourceFile=MyFile
       DO ng=1,Ngrids
         CALL netcdf_get_fvar (ng, iNLM, DAV(ng)%name,                   &
      &                        'NLcost_function',                        &
@@ -781,8 +769,7 @@
      &                        ncid = DAV(ng)%ncid,                      &
      &                        start = (/1,1/),                          &
      &                        total = (/NobsVar(ng)+1,1/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !  Read in current outer loop NLM cost function.
@@ -794,8 +781,7 @@
      &                        ncid = DAV(ng)%ncid,                      &
      &                        start = (/1,my_outer/),                   &
      &                        total = (/NobsVar(ng)+1,1/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                   __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !  If outer>1, read in previous background and TLM cost function to
@@ -810,8 +796,7 @@
      &                          ncid = DAV(ng)%ncid,                    &
      &                          start = (/Nrun-1/),                     &
      &                          total = (/1/))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
           CALL netcdf_get_fvar (ng, iNLM, DAV(ng)%name,                 &
      &                          'back_function',                        &
@@ -819,8 +804,7 @@
      &                          ncid = DAV(ng)%ncid,                    &
      &                          start = (/Nrun-1/),                     &
      &                          total = (/1/))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
           FOURDVAR(ng)%CostFun(0)=FOURDVAR(ng)%CostFunOld(0)+           &
      &                            FOURDVAR(ng)%BackCost(0)
@@ -834,8 +818,7 @@
       IF (my_outer.gt.1) THEN
         DO ng=1,Ngrids
           CALL cg_read_cgradient (ng, iTLM, my_outer)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 !
@@ -846,8 +829,7 @@
         DO ng=1,Ngrids
           LdefITL(ng)=.FALSE.
           CALL tl_def_ini (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 !
@@ -858,8 +840,7 @@
         DO ng=1,Ngrids
           LdefTLM(ng)=.FALSE.
           CALL tl_def_his (ng, LdefTLM(ng))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 !
@@ -914,8 +895,7 @@
      &                        Vname(1,idtime), stime,                   &
      &                        start = (/InpRec/),                       &
      &                        total = (/1/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         INItime(ng)=stime
 
 #  ifdef ADJUST_BOUNDARY
@@ -968,8 +948,7 @@
 !  their size.
 !
       CALL edit_multifile ('HIS2FWD')
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       DO ng=1,Ngrids
         LreadFWD(ng)=.TRUE.
       END DO
@@ -989,8 +968,7 @@
 !  and processing from the FRC structure input forcing-files.
 !
       CALL edit_multifile ('QCK2BLK')
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       DO ng=1,Ngrids
         LreadBLK(ng)=.TRUE.
         LreadFRC(ng)=.FALSE.
@@ -1042,8 +1020,7 @@
         lstr=LEN_TRIM(HSS(ng)%name)
         HSS(ng)%base=HSS(ng)%name(1:lstr-3)
         CALL def_hessian (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !  Notice that inner loop iteration start from zero. This is needed to
@@ -1066,8 +1043,7 @@
         DO ng=1,Ngrids
           ITL(ng)%Rindex=1
           CALL tl_initial (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
 !
 !  On first pass, initialize records 2, 3 and 4 of the ITL file to zero.
@@ -1075,14 +1051,11 @@
         IF ((my_inner.eq.0).and.(my_outer.eq.1)) THEN
           DO ng=1,Ngrids
             CALL tl_wrt_ini (ng, LTLM1, Rec2)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
             CALL tl_wrt_ini (ng, LTLM1, Rec3)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
             CALL tl_wrt_ini (ng, LTLM1, Rec4)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END DO
         END IF
 
@@ -1118,8 +1091,7 @@
 # else
         CALL tl_main2d (RunInterval)
 # endif
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef EVOLVED_LCZ
 !
@@ -1135,8 +1107,7 @@
         IF (my_inner.ne.0) THEN
           DO ng=1,Ngrids
             CALL wrt_evolved (ng, kstp(ng), nrhs(ng))
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END DO
         END IF
 # endif
@@ -1145,12 +1116,11 @@
 !
 !  If multiple TLM history NetCDF files, close current NetCDF file.
 !
-        SourceFile=__FILE__ // ", increment"
+        SourceFile=MyFile
         DO ng=1,Ngrids
           IF (TLM(ng)%ncid.ne.-1) THEN
             CALL netcdf_close (ng, iTLM, TLM(ng)%ncid)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END IF
         END DO
 # endif
@@ -1163,8 +1133,7 @@
 !
         DO ng=1,Ngrids
           CALL ad_initial (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
 !
 !  Time-step adjoint model backwards. The adjoint model is forced with
@@ -1182,8 +1151,7 @@
 # else
         CALL ad_main2d (RunInterval)
 # endif
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Clear adjoint arrays.
 !
@@ -1214,30 +1182,25 @@
           IF (my_inner.eq.0) THEN
             InpRec=Rec1
             CALL get_state (ng, iTLM, 8, ITL(ng)%name, InpRec, LTLM1)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           ELSE
             InpRec=Rec3
             CALL get_state (ng, iTLM, 8, ITL(ng)%name, InpRec, LTLM1)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END IF
 
           InpRec=Rec4
           CALL get_state (ng, iTLM, 8, ITL(ng)%name, InpRec, LTLM2)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           InpRec=ADM(ng)%Rindex
           CALL get_state (ng, iADM, 4, ADM(ng)%name, InpRec, LADJ2)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef BALANCE_OPERATOR
           InpRec=Lini
           CALL get_state (ng, iNLM, 2, INI(ng)%name, InpRec, Lini)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           nrhs(ng)=Lini
 # endif
         END DO
@@ -1290,8 +1253,7 @@
           DO ng=1,Ngrids
             InpRec=LADJ1
             CALL get_state (ng, iADM, 3, ADM(ng)%name, InpRec, LADJ1)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END DO
         END IF
 !
@@ -1305,8 +1267,7 @@
           DO ng=1,Ngrids
             InpRec=Rec4
             CALL get_state (ng, iTLM, 2, ITL(ng)%name, InpRec, LTLM2)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
             DO tile=first_tile(ng),last_tile(ng),+1
               CALL back_cost (ng, tile, LTLM2)
@@ -1347,8 +1308,7 @@
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL cgradient (ng, tile, iTLM, my_inner, my_outer)
           END DO
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
 !
 !  Report background (Jb) and observations (Jo) cost function values
@@ -1419,8 +1379,7 @@
           ADM(ng)%Rindex=ADM(ng)%Rindex-1
           LwrtState2d(ng)=.TRUE.
           CALL ad_wrt_his (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           LwrtState2d(ng)=.FALSE.
         END DO
 !
@@ -1429,8 +1388,7 @@
 !
         DO ng=1,Ngrids
           CALL tl_wrt_ini (ng, LTLM2, Rec3)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
 !
 !  Read current outer loop nonlinear model initial conditions and
@@ -1439,13 +1397,11 @@
         DO ng=1,Ngrids
           InpRec=Lini
           CALL get_state (ng, iNLM, 2, INI(ng)%name, InpRec, Lini)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           InpRec=Lbck
           CALL get_state (ng, iNLM, 9, INI(ng)%name, InpRec, Lbck)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
 !
 !  Convert increment vector, deltaV, from minimization space (v-space)
@@ -1475,8 +1431,7 @@
 !
         DO ng=1,Ngrids
           CALL tl_wrt_ini (ng, Lcon, Rec1)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
 !
 !-----------------------------------------------------------------------
@@ -1501,12 +1456,11 @@
 !
 !  Close adjoint NetCDF file.
 !
-      SourceFile=__FILE__ // ", increment"
+      SourceFile=MyFile
       DO ng=1,Ngrids
         IF (ADM(ng)%ncid.ne.-1) THEN
           CALL netcdf_close (ng, iADM, ADM(ng)%ncid)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
       END DO
 !
@@ -1515,8 +1469,7 @@
       DO ng=1,Ngrids
         IF (HSS(ng)%ncid.ne.-1) THEN
           CALL netcdf_close (ng, iADM, HSS(ng)%ncid)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
       END DO
 
@@ -1526,8 +1479,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_off (ng, iTLM, 87, __LINE__,                      &
-     &                     __FILE__)
+          CALL wclock_off (ng, iTLM, 87, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -1600,7 +1552,10 @@
       integer :: thread
 # endif
 !
-      SourceFile=__FILE__
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", analysis"
+!
+      SourceFile=MyFile
 !
 !=======================================================================
 !  Compute new nonlinear initial conditions by adding minimization
@@ -1616,8 +1571,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_on (ng, iNLM, 88, __LINE__,                       &
-     &                    __FILE__)
+          CALL wclock_on (ng, iNLM, 88, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -1643,8 +1597,7 @@
       DO ng=1,Ngrids
         LdefINI(ng)=.FALSE.
         CALL def_ini (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !  Open tangent linear model initial conditions NetCDF file (ITL struc)
@@ -1653,8 +1606,7 @@
       DO ng=1,Ngrids
         LdefITL(ng)=.FALSE.
         CALL tl_def_ini (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !  Open 4D-Var NetCDF file (DAV struc) and inquire about its variables.
@@ -1664,8 +1616,7 @@
       DO ng=1,Ngrids
         LdefMOD(ng)=.FALSE.
         CALL def_mod (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         Nrec=DAV(ng)%Rindex
       END DO
 !
@@ -1704,13 +1655,11 @@
 # endif
         InpRec=Lini
         CALL get_state (ng, iNLM, 1, INI(ng)%name, InpRec, Lini)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         InpRec=LTLM1
         CALL get_state (ng, iTLM, 1, ITL(ng)%name, InpRec, LTLM1)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL ini_adjust (ng, tile, LTLM1, Lini)
@@ -1726,8 +1675,7 @@
         INI(ng)%Nrec(Fcount)=1
         OutRec=Lini
         CALL wrt_ini (ng, Lini, OutRec)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !  Gather the v-space increments from the final inner-loop and
@@ -1737,13 +1685,11 @@
       DO ng=1,Ngrids
         InpRec=Rec3
         CALL get_state (ng, iTLM, 8, ITL(ng)%name, InpRec, LTLM1)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         InpRec=Rec4
         CALL get_state (ng, iTLM, 8, ITL(ng)%name, InpRec, LTLM2)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL sum_grad (ng, tile, LTLM1, LTLM2)
@@ -1754,8 +1700,7 @@
 !
       DO ng=1,Ngrids
         CALL tl_wrt_ini (ng, LTLM2, Rec4)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 
 # if defined ADJUST_STFLUX   || defined ADJUST_WSTRESS || \
@@ -1800,8 +1745,7 @@
 #   endif
         END DO
 #  endif
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 
 #  ifdef SPLIT_4DVAR
@@ -1812,8 +1756,7 @@
 !
       DO ng=1,Ngrids
         CALL tl_wrt_ini (ng, Lfinp(ng), Rec5)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                     __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 #  endif
 # endif
@@ -1828,11 +1771,10 @@
 !
 !  Close current forward NetCDF file.
 !
-      SourceFile=__FILE__ // ", analysis"
+      SourceFile=MyFile
       DO ng=1,Ngrids
 !       CALL netcdf_close (ng, iNLM, FWD(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 
 # ifdef PROFILE
@@ -1841,8 +1783,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_off (ng, iNLM, 88, __LINE__,                      &
-     &                     __FILE__)
+          CALL wclock_off (ng, iNLM, 88, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -1885,7 +1826,10 @@
       integer :: thread
 # endif
 !
-      SourceFile=__FILE__ // ", posterior_analysis_initialize"
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", posterior_analysis_initialize"
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Initialize nonlinear model kernel with new 4D-Var state estimate.
@@ -1897,8 +1841,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_on (ng, iNLM, 88, __LINE__,                       &
-     &                    __FILE__)
+          CALL wclock_on (ng, iNLM, 88, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -1937,8 +1880,7 @@
       DO ng=1,Ngrids
         LdefINI(ng)=.FALSE.
         CALL def_ini (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !  Open 4D-Var NetCDF file (DAV struc) and inquire about its variables.
@@ -1946,8 +1888,7 @@
       DO ng=1,Ngrids
         LdefMOD(ng)=.FALSE.
         CALL def_mod (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         haveNLmod(ng)=.FALSE.                     ! do not read NLmodVal
       END DO
 !
@@ -1964,8 +1905,7 @@
       CALL netcdf_get_fvar (ng, iTLM, DAV(ng)%name,                     &
      &                      Vname(1,idObsS), ObsScaleGlobal,            &
      &                      ncid = DAV(ng)%ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read initial nonlinear cost function values from DAV file and load it
 !  into CostNorm, its values are used for reporting normalized values.
@@ -1977,8 +1917,7 @@
      &                        ncid = DAV(ng)%ncid,                      &
      &                        start = (/1,1/),                          &
      &                        total = (/NobsVar(ng)+1,1/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 
 # if defined ADJUST_STFLUX   || defined ADJUST_WSTRESS || \
@@ -1990,13 +1929,11 @@
       DO ng=1,Ngrids
         LdefITL(ng)=.FALSE.
         CALL tl_def_ini (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         InpRec=Rec5
         CALL get_state (ng, iTLM, 1, ITL(ng)%name, InpRec, LTLM1)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !  If split 4D-Var, reset reset surface forcing and lateral boundary
@@ -2024,8 +1961,7 @@
       END DO
 !
       CALL edit_multifile ('QCK2BLK')
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 #  endif
 # endif
 !
@@ -2086,8 +2022,7 @@
       END DO
 !
       CALL initial
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Clear NLobsCost. Activate switch to write out final misfit between
 !  model and observations.
@@ -2105,8 +2040,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_off (ng, iNLM, 88, __LINE__,                      &
-     &                     __FILE__)
+          CALL wclock_off (ng, iNLM, 88, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -2159,7 +2093,10 @@
       real(dp) :: ENDtime, NEXTtime
 # endif
 !
-      SourceFile=__FILE__ // ", posterior_analysis"
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", posterior_analysis"
+!
+      SourceFile=MyFile
 
 # if !(defined MODEL_COUPLING && defined ESMF_LIB)
 !
@@ -2168,8 +2105,7 @@
 !-----------------------------------------------------------------------
 !
       CALL posterior_analysis_initialize
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 !
 !-----------------------------------------------------------------------
@@ -2189,8 +2125,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_on (ng, iNLM, 88, __LINE__,                       &
-     &                    __FILE__)
+          CALL wclock_on (ng, iNLM, 88, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -2239,8 +2174,7 @@
 # else
       CALL main2d (RunInterval)
 # endif
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !-----------------------------------------------------------------------
 !  If completed stepping, write out and report cost function.
@@ -2267,15 +2201,14 @@
 !  DAV(ng)%name NetCDF file. Notice that it is written in the
 !  Nouter+1 record.
 !
-        SourceFile=__FILE__ // ", posterior_analysis"
+        SourceFile=MyFile
         DO ng=1,Ngrids
           CALL netcdf_put_fvar (ng, iNLM, DAV(ng)%name,                 &
      &                          'NLcost_function',                      &
      &                          FOURDVAR(ng)%NLobsCost(0:),             &
      &                          (/1,Nouter+1/), (/NobsVar(ng)+1,1/),    &
      &                          ncid = DAV(ng)%ncid)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
 !
 !  Report the final value of the nonlinear model misfit cost function.
@@ -2313,8 +2246,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_off (ng, iNLM, 88, __LINE__,                      &
-     &                     __FILE__)
+          CALL wclock_off (ng, iNLM, 88, __LINE__, MyFile)
         END DO
       END DO
 # endif
@@ -2360,7 +2292,10 @@
       integer :: tile
       integer :: NRMrec, STDrec, Tindex
 !
-      SourceFile=__FILE__
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", prior_error"
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Set application grid, metrics, and associated variables and
@@ -2389,8 +2324,7 @@
         STDrec=1
         Tindex=1
         CALL get_state (ng, 10, 10, STD(1,ng)%name, STDrec, Tindex)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef ADJUST_BOUNDARY
 !
@@ -2399,8 +2333,7 @@
         STDrec=1
         Tindex=1
         CALL get_state (ng, 12, 12, STD(3,ng)%name, STDrec, Tindex)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 
 # if defined ADJUST_WSTRESS || defined ADJUST_STFLUX
@@ -2410,8 +2343,7 @@
         STDrec=1
         Tindex=1
         CALL get_state (ng, 13, 13, STD(4,ng)%name, STDrec, Tindex)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &               __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
       END IF
 !
@@ -2428,26 +2360,22 @@
 !
         IF (ANY(LwrtNRM(:,ng))) THEN
           CALL def_norm (ng, iNLM, 1)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                 __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef ADJUST_BOUNDARY
           CALL def_norm (ng, iNLM, 3)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 
 # if defined ADJUST_WSTRESS || defined ADJUST_STFLUX
           CALL def_norm (ng, iNLM, 4)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 !
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL normalization (ng, tile, 2)
           END DO
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           LdefNRM(1:4,ng)=.FALSE.
           LwrtNRM(1:4,ng)=.FALSE.
 
@@ -2455,19 +2383,16 @@
 
           NRMrec=1
           CALL get_state (ng, 14, 14, NRM(1,ng)%name, NRMrec, 1)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef ADJUST_BOUNDARY
           CALL get_state (ng, 16, 16, NRM(3,ng)%name, NRMrec, 1)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 
 # if defined ADJUST_WSTRESS || defined ADJUST_STFLUX
           CALL get_state (ng, 17, 17, NRM(4,ng)%name, NRMrec, 1)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 
         END IF

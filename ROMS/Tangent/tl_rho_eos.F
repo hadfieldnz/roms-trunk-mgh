@@ -60,10 +60,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, model, 14, __LINE__, __FILE__)
+      CALL wclock_on (ng, model, 14, __LINE__, MyFile)
 # endif
       CALL tl_rho_eos_tile (ng, tile, model,                            &
      &                      LBi, UBi, LBj, UBj,                         &
@@ -107,9 +110,9 @@
      &                     OCEAN(ng) % rho,                             &
      &                     OCEAN(ng) % tl_rho)
 # ifdef PROFILE
-      CALL wclock_off (ng, model, 14, __LINE__, __FILE__)
+      CALL wclock_off (ng, model, 14, __LINE__, MyFile)
 # endif
-
+!
       RETURN
       END SUBROUTINE tl_rho_eos
 
@@ -891,7 +894,7 @@
      &                    tl_bvf)
 #   endif
 #  endif
-
+!
       RETURN
       END SUBROUTINE tl_rho_eos_tile
 # endif
@@ -1364,7 +1367,7 @@
      &                    tl_bvf)
 #   endif
 #  endif
-
+!
       RETURN
       END SUBROUTINE tl_rho_eos_tile
 # endif

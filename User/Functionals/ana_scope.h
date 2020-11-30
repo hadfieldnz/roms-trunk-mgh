@@ -19,7 +19,12 @@
 ! Imported variable declarations.
 !
       integer, intent(in) :: ng, tile, model
-
+!
+! Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #include "tile.h"
 !
       CALL ana_scope_tile (ng, tile, model,                             &
@@ -41,9 +46,9 @@
 #else
       IF (Lanafile.and.(tile.eq.0)) THEN
 #endif
-        ANANAME(22)=__FILE__
+        ANANAME(22)=MyFile
       END IF
-
+!
       RETURN
       END SUBROUTINE ana_scope
 !
@@ -168,6 +173,6 @@
      &                    EWperiodic(ng), NSperiodic(ng),               &
      &                    Rscope, Uscope, Vscope)
 #endif
-
+!
       RETURN
       END SUBROUTINE ana_scope_tile

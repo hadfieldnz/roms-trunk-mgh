@@ -33,7 +33,10 @@
       integer :: Iunder, ifile, lstr, ng
       integer :: Nfiles
 !
-      SourceFile=__FILE__
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Edit and update multi-file structure acconding to requested task.

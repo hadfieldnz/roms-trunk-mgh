@@ -17,7 +17,7 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
 # ifdef UV_VIS2
       PUBLIC tl_uv3dmix2
@@ -25,9 +25,9 @@
 # ifdef UV_VIS4
       PUBLIC tl_uv3dmix4
 # endif
-
+!
       CONTAINS
-
+!
 # ifdef UV_VIS2
 #  if defined MIX_S_UV
 #   include "tl_uv3dmix2_s.h"

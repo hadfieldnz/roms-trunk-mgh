@@ -91,15 +91,18 @@
 !
       logical :: TimeLess
       logical :: Linside, LowerBound, Upperbound
-
+!
       integer :: i, nvatt, nvdim
-
+!
       real(dp) :: mday, tstart
       real(dp) :: Tval(ntime)
-
-      character (len=40) :: tunits
 !
-      SourceFile=__FILE__
+      character (len=40) :: tunits
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Find time cycling parameters, if any.
@@ -134,8 +137,7 @@
      &                       VarID = Tid,                               &
      &                       nVarDim = nvdim,                           &
      &                       nVarAtt = nvatt)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Check if time cycling attribute is present and then read in time
 !  cycle length.  Check time coordinate units and determine time
@@ -173,8 +175,7 @@
      &                      total = (/ntime/),                          &
      &                      min_val = Tmin,                             &
      &                      max_val = Tmax)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Scale time variable to days.  Determine the minimum and maximum time
 !  values available

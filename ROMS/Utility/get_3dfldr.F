@@ -92,15 +92,17 @@
       real(dp) :: Tsec, Tval
 !
       character (len=22) :: t_code
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
-      SourceFile=__FILE__
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Initialize.
 !-----------------------------------------------------------------------
 !
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Determine if inquiring about the field to process in input NetCDF
 !  file(s).  This usually happens on first call or when the field
@@ -130,8 +132,7 @@
         job=-3
         CALL inquiry (ng, model, job, Iout, Irec, 1, ifield, ncid,      &
      &                Lmulti, nfiles, S)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         IF (Linfo(5,ifield,ng)) THEN
           Linfo(5,ifield,ng)=.FALSE.
         END IF
@@ -202,8 +203,7 @@
      &                            ncid = ncid,                          &
      &                            start = (/Trec/),                     &
      &                            total = (/1/))
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
               IF (Master) WRITE (stdout,40) TRIM(Tname(ifield)), Trec
               RETURN
             END IF
@@ -278,8 +278,7 @@
               Fmin=Fval
               Fmax=Fval
             END IF
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,40) TRIM(Vname(1,ifield)), Trec
               END IF

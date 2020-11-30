@@ -42,10 +42,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, model, 13, __LINE__, __FILE__)
+      CALL wclock_on (ng, model, 13, __LINE__, MyFile)
 # endif
       CALL omega_tile (ng, tile, model,                                 &
      &                 LBi, UBi, LBj, UBj,                              &
@@ -60,9 +63,9 @@
      &                 GRID(ng) % z_w,                                  &
      &                 OCEAN(ng) % W)
 # ifdef PROFILE
-      CALL wclock_off (ng, model, 13, __LINE__, __FILE__)
+      CALL wclock_off (ng, model, 13, __LINE__, MyFile)
 # endif
-
+!
       RETURN
       END SUBROUTINE omega
 !
@@ -216,7 +219,7 @@
      &                    EWperiodic(ng), NSperiodic(ng),               &
      &                    W)
 # endif
-
+!
       RETURN
       END SUBROUTINE omega_tile
 !
@@ -284,7 +287,7 @@
      &                    EWperiodic(ng), NSperiodic(ng),               &
      &                    Wscl)
 # endif
-
+!
       RETURN
       END SUBROUTINE scale_omega
 #endif

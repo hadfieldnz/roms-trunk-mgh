@@ -15,12 +15,12 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
       PUBLIC  :: tl_biology
-
+!
       CONTAINS
-
+!
 # if defined BIO_FENNEL
 !!#  include <tl_fennel.h>
 # elif defined NEMURO

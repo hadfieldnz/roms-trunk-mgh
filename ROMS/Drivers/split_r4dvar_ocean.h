@@ -101,13 +101,13 @@
 !  Imported variable declarations.
 !
       logical, intent(inout) :: first
-
+!
       integer, intent(in), optional :: mpiCOMM
 !
 !  Local variable declarations.
 !
       logical :: allocate_vars = .TRUE.
-
+!
 #ifdef DISTRIBUTE
       integer :: MyError, MySize
 #endif
@@ -115,6 +115,9 @@
 #ifdef _OPENMP
       integer :: my_threadnum
 #endif
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ROMS_initialize"
 
 #ifdef DISTRIBUTE
 !
@@ -149,12 +152,10 @@
 !  Get 4D-Var phase from APARNAM input script file.
 !
         CALL getpar_s (MyRank, aparnam, 'APARNAM')
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         CALL getpar_s (MyRank, Phase4DVAR, 'Phase4DVAR', aparnam)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Determine ROMS standard output append switch. It is only relevant if
 !  "ROMS_STDINP" is activated. The standard output is created in the
@@ -175,8 +176,7 @@
 !  grids and dimension parameters are known.
 !
         CALL inp_par (iNLM)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Initialize counters. The 'Nrun' counter will be recomputed in the
 !  RBL4D-Var phases to process the obervation operator correctly.
@@ -213,8 +213,7 @@
 !
         DO ng=1,Ngrids
           DO thread=THREAD_RANGE
-            CALL wclock_on (ng, iNLM, 0, __LINE__,                      &
-     &                      __FILE__)
+            CALL wclock_on (ng, iNLM, 0, __LINE__, MyFile)
           END DO
         END DO
 !
@@ -252,8 +251,7 @@
 !
       DO ng=1,Ngrids
         CALL prior_error (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         SetGridConfig(ng)=.FALSE.
       END DO
 !
@@ -297,6 +295,9 @@
 !
       integer :: my_outer, ng
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ROMS_run"
+!
 !=======================================================================
 !  Run Split R4D-Var Data Assimilation algorithm.
 !=======================================================================
@@ -336,8 +337,7 @@
           inner=0
 
           CALL background (outer, RunInterval)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute 4D-Var data assimilation increment, dXa, by iterating over
 !  the inner loops, and minimizing the cost function.
@@ -349,8 +349,7 @@
           inner=0
 
           CALL increment (my_outer, RunInterval)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute 4D-Var data assimilation analysis, Xa = Xb + dXa.  Set
 !  nonlinear model initial conditions for next outer loop.
@@ -362,8 +361,7 @@
           inner=Ninner
 
           CALL analysis (my_outer, RunInterval)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 
 #if defined POSTERIOR_ERROR_I || \
@@ -376,8 +374,7 @@
         CASE ('POST_E')
 
           CALL posterior_error (RunInterval)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 #endif
 !
 !  Issue an error if incorrect 4D-Var phase.
@@ -435,6 +432,9 @@
       integer :: ifile, lstr, ng, tile, thread
 !
       character (len=10) :: suffix
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ROMS_finalize"
 !
 !-----------------------------------------------------------------------
 !  Write out 4D-Var analysis fields that can be used as the initial
@@ -452,8 +452,7 @@
         DO ng=1,Ngrids
           LdefDAI(ng)=.TRUE.
           CALL def_dai (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
           WRITE (TLM(ng)%name,10) TRIM(FWD(ng)%head), Nouter
  10       FORMAT (a,'_outer',i0,'.nc')
@@ -473,18 +472,16 @@
           CALL netcdf_get_dim (ng, iRPM, TLM(ng)%name,                  &
      &                         DimName = 'ocean_time',                  &
      &                         DimSize = InpRec)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+
           Tindex=1
           CALL get_state (ng, iRPM, 1, TLM(ng)%name, InpRec, Tindex)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
           KOUT=Tindex
           NOUT=Tindex
           CALL wrt_dai (ng, tile)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 !
@@ -536,8 +533,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_off (ng, iNLM, 0, __LINE__,                       &
-     &                     __FILE__)
+          CALL wclock_off (ng, iNLM, 0, __LINE__, MyFile)
         END DO
       END DO
 !

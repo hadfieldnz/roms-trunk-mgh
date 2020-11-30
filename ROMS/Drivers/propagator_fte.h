@@ -43,7 +43,7 @@
 !  Imported variable declarations.
 !
       real(dp), intent(in) :: RunInterval
-
+!
       TYPE (T_GST), intent(in) :: state(Ngrids)
       TYPE (T_GST), intent(inout) :: tl_state(Ngrids)
 !
@@ -51,10 +51,14 @@
 !
 #ifdef SOLVE3D
       logical :: FirstPass = .TRUE.
+!
 #endif
       integer :: ng, tile
-
+!
       real(r8) :: StateNorm(Ngrids)
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
 !=======================================================================
 !  Forward integration of the tangent linear model.
@@ -167,16 +171,15 @@
       DO ng=1,Ngrids
 !$OMP MASTER
         CALL close_inp (ng, iTLM)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+
         CALL tl_get_idata (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+
         CALL tl_get_data (ng)
 !$OMP END MASTER
 !$OMP BARRIER
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !-----------------------------------------------------------------------
@@ -200,8 +203,7 @@
       CALL tl_main2d (RunInterval)
 #endif
 !$OMP BARRIER
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !-----------------------------------------------------------------------
 !  Clear nonlinear state (basic state) variables and insure that the

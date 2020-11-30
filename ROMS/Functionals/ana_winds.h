@@ -20,7 +20,12 @@
 ! Imported variable declarations.
 !
       integer, intent(in) :: ng, tile, model
-
+!
+!  Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #include "tile.h"
 !
       CALL ana_winds_tile (ng, tile, model,                             &
@@ -43,9 +48,9 @@
 #else
       IF (Lanafile.and.(tile.eq.0)) THEN
 #endif
-        ANANAME(36)=__FILE__
+        ANANAME(36)=MyFile
       END IF
-
+!
       RETURN
       END SUBROUTINE ana_winds
 !
@@ -100,6 +105,7 @@
 !  Local variable declarations.
 !
       integer :: i, j
+!
       real(r8) :: Wdir, Wmag, cff, u_wind, v_wind
 
 #include "set_bounds.h"
@@ -151,6 +157,6 @@
      &                    EWperiodic(ng), NSperiodic(ng),               &
      &                    Uwind, Vwind)
 #endif
-
+!
       RETURN
       END SUBROUTINE ana_winds_tile

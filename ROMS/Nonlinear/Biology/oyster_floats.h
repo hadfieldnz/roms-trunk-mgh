@@ -82,8 +82,13 @@
       logical, intent(in) :: my_thread(Lstr:Lend)
 #endif
 !
+!  Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #ifdef PROFILE
-      CALL wclock_on (ng, iNLM, 10, __LINE__, __FILE__)
+      CALL wclock_on (ng, iNLM, 10, __LINE__, MyFile)
 #endif
       CALL biology_floats_tile (ng, Lstr, Lend,                         &
      &                          nfm3(ng), nfm2(ng), nfm1(ng), nf(ng),   &
@@ -93,9 +98,9 @@
      &                          DRIFTER(ng) % Tinfo,                    &
      &                          DRIFTER(ng) % track)
 #ifdef PROFILE
-      CALL wclock_off (ng, iNLM, 10, __LINE__, __FILE__)
+      CALL wclock_off (ng, iNLM, 10, __LINE__, MyFile)
 #endif
-
+!
       RETURN
       END SUBROUTINE biology_floats
 !
@@ -435,6 +440,6 @@
 
         END IF
       END DO
-
+!
       RETURN
       END SUBROUTINE biology_floats_tile

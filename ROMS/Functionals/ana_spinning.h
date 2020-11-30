@@ -20,7 +20,12 @@
 ! Imported variable declarations.
 !
       integer, intent(in) :: ng, tile, model
-
+!
+!  Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #include "tile.h"
 !
       CALL ana_spinning_tile (ng, tile, model,                          &
@@ -44,9 +49,9 @@
 #else
       IF (Lanafile.and.(tile.eq.0)) THEN
 #endif
-        ANANAME(26)=__FILE__
+        ANANAME(26)=MyFile
       END IF
-
+!
       RETURN
       END SUBROUTINE ana_spinning
 !
@@ -135,6 +140,6 @@
         END DO
       END DO
 #endif
-
+!
       RETURN
       END SUBROUTINE ana_spinning_tile

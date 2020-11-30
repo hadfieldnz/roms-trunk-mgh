@@ -18,7 +18,12 @@
 ! Imported variable declarations.
 !
       integer, intent(in) :: ng, tile, model
-
+!
+! Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #include "tile.h"
 !
       CALL ana_fsobc_tile (ng, tile, model,                             &
@@ -32,9 +37,9 @@
 #else
       IF (Lanafile.and.(tile.eq.0)) THEN
 #endif
-        ANANAME( 6)=__FILE__
+        ANANAME( 6)=MyFile
       END IF
-
+!
       RETURN
       END SUBROUTINE ana_fsobc
 !
@@ -97,6 +102,6 @@
 #else
       ana_fsobc.h: No values provided for BOUNDARY(ng)%zeta_xxxx.
 #endif
-
+!
       RETURN
       END SUBROUTINE ana_fsobc_tile

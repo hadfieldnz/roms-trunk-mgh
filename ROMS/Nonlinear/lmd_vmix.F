@@ -53,10 +53,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, iNLM, 18, __LINE__, __FILE__)
+      CALL wclock_on (ng, iNLM, 18, __LINE__, MyFile)
 # endif
       IF (.not.PerfectRST(ng).or.iic(ng).ne.ntstart(ng)) THEN
         CALL lmd_vmix_tile (ng, tile,                                   &
@@ -86,8 +89,9 @@
         CALL lmd_finish (ng, tile)
       END IF
 # ifdef PROFILE
-      CALL wclock_off (ng, iNLM, 18, __LINE__, __FILE__)
+      CALL wclock_off (ng, iNLM, 18, __LINE__, MyFile)
 # endif
+!
       RETURN
       END SUBROUTINE lmd_vmix
 !
@@ -577,6 +581,7 @@
      &                    EWperiodic(ng), NSperiodic(ng),               &
      &                    Akt)
 # endif
+!
       RETURN
       END SUBROUTINE lmd_finish_tile
 #endif

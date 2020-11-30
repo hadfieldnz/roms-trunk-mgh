@@ -37,14 +37,16 @@
 
       real(r8), dimension(Nfloats(ng)) :: Tout
 !
-      SourceFile=__FILE__
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Write out station data at RHO-points.
 !-----------------------------------------------------------------------
 !
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Set time record index.
 !
@@ -59,8 +61,7 @@
      &                      (/FLT(ng)%Rindex/), (/1/),                  &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = FLT(ng)%Vid(idtime))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Write out floats X-grid locations.
 !
@@ -76,8 +77,7 @@
      &                      (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),    &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = FLT(ng)%Vid(idXgrd))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Write out floats Y-grid locations.
 !
@@ -93,8 +93,7 @@
      &                      (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),    &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = FLT(ng)%Vid(idYgrd))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef SOLVE3D
 !
@@ -112,8 +111,7 @@
      &                      (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),    &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = FLT(ng)%Vid(idZgrd))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 !
 !  Write out floats (lon,lat) or (x,y) locations.
@@ -138,8 +136,7 @@
      &                        ncid = FLT(ng)%ncid,                      &
      &                        varid = FLT(ng)%Vid(idglon))
       END IF
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
       DO l=1,Nfloats(ng)
         IF (DRIFTER(ng)%bounded(l)) THEN
@@ -161,8 +158,7 @@
      &                        ncid = FLT(ng)%ncid,                      &
      &                        varid = FLT(ng)%Vid(idglat))
       END IF
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef SOLVE3D
 !
@@ -180,8 +176,7 @@
      &                      (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),    &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = FLT(ng)%Vid(iddpth))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Write out density anomaly.
 !
@@ -197,8 +192,7 @@
      &                      (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),    &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = FLT(ng)%Vid(idDano))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Write out tracer type variables.
 !
@@ -215,8 +209,7 @@
      &                        (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),  &
      &                        ncid = FLT(ng)%ncid,                      &
      &                        varid = FLT(ng)%Tid(itrc))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 # endif
 
@@ -236,8 +229,7 @@
      &                      (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),    &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = Flt(ng)%Vid(idswim))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Write out biological float vertical velocity.
 !
@@ -253,8 +245,7 @@
      &                      (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),    &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = FLT(ng)%Vid(idwbio))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Write out biological float size (length).
 !
@@ -270,8 +261,7 @@
      &                      (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),    &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = FLT(ng)%Vid(idsize))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Write out biological float sinking velocity.
 !
@@ -287,8 +277,7 @@
      &                      (/1,FLT(ng)%Rindex/), (/Nfloats(ng),1/),    &
      &                      ncid = FLT(ng)%ncid,                        &
      &                      varid = FLT(ng)%Vid(idwsin))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 !
 !-----------------------------------------------------------------------

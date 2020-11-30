@@ -394,17 +394,20 @@
 !  Imported variable declarations.
 !
       integer, intent(in) :: ng
-
+!
       character (len=*), intent(in) :: fname
       character (len=*), intent(in) :: KeyWord
 !
 !  Local variable declarations.
 !
       logical :: foundit, isURL
-
+!
       integer :: lstr, ncid
 !
-      SourceFile=__FILE__ // ", find_file"
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", find_file"
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Check if the file exit.
@@ -422,8 +425,7 @@
      &            'for standard input script KeyWord: ',a)
         END IF
         exit_flag=5
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Check if provided file is a URL.  This implies the file is a NetCDF

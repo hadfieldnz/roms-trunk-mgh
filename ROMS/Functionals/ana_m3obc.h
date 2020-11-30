@@ -19,7 +19,12 @@
 ! Imported variable declarations.
 !
       integer, intent(in) :: ng, tile, model
-
+!
+! Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #include "tile.h"
 !
       CALL ana_m3obc_tile (ng, tile, model,                             &
@@ -33,9 +38,9 @@
 #else
       IF (Lanafile.and.(tile.eq.0)) THEN
 #endif
-        ANANAME(14)=__FILE__
+        ANANAME(14)=MyFile
       END IF
-
+!
       RETURN
       END SUBROUTINE ana_m3obc
 !
@@ -61,6 +66,7 @@
 !  Local variable declarations.
 !
       integer :: i, j, k
+!
       real(r8) :: fac, val
 
 #include "set_bounds.h"
@@ -166,5 +172,6 @@
         END DO
       END IF
 #endif
+!
       RETURN
       END SUBROUTINE ana_m3obc_tile

@@ -157,6 +157,9 @@
 
       real(r8) :: size2d
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", allocate_tides"
+!
 !-----------------------------------------------------------------------
 !  Allocate module variables.
 !-----------------------------------------------------------------------
@@ -175,8 +178,7 @@
      &                       VarID = Vid,                               &
      &                       nVardim = nvdim,                           &
      &                       nVarAtt = nvatt)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__//", allocate_tides")) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Set maximum number of tidal components.  Allocate and initialize
 !  TIDE I/O structure. Notice that in nested applications, all the

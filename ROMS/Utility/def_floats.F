@@ -40,14 +40,14 @@
 !  Imported variable declarations.
 !
       integer, intent(in) :: ng
-
+!
       logical, intent(in) :: ldef
 !
 !  Local variable declarations.
 !
-      integer, parameter :: Natt = 25
-
       logical :: got_var(-6:NV)
+!
+      integer, parameter :: Natt = 25
 
       integer :: fltdim, i, itrc, j, l
       integer :: recdim, status
@@ -56,20 +56,22 @@
       integer :: fgrd(2), start(2), total(2)
 
       integer :: def_dim
-
+!
       real(r8) :: Aval(6), Tinp(Nfloats(ng))
-
+!
       character (len=120) :: Vinfo(Natt)
       character (len=256) :: ncname
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
-      SourceFile=__FILE__
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Set and report file name.
 !-----------------------------------------------------------------------
 !
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       ncname=FLT(ng)%name
 !
       IF (Master) THEN
@@ -86,8 +88,7 @@
 !
       DEFINE : IF (ldef) THEN
         CALL netcdf_create (ng, iNLM, TRIM(ncname), FLT(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
           IF (Master) WRITE (stdout,30) TRIM(ncname)
           RETURN
         END IF
@@ -101,81 +102,67 @@
 # ifdef SOLVE3D
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 's_rho',         &
      &                 N(ng), DimIDs( 9))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 's_w',           &
      &                 N(ng)+1, DimIDs(10))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'tracer',        &
      &                 NT(ng), DimIDs(11))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 #  ifdef SEDIMENT
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'NST',           &
      &                 NST, DimIDs(32))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'Nbed',          &
      &                 Nbed, DimIDs(16))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 #  endif
 
 #  ifdef ECOSIM
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'Nbands',        &
      &                 NBands, DimIDs(33))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'Nphy',          &
      &                 Nphy, DimIDs(25))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'Nbac',          &
      &                 Nbac, DimIDs(26))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'Ndom',          &
      &                 Ndom, DimIDs(27))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'Nfec',          &
      &                 Nfec, DimIDs(28))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 #  endif
 # endif
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'drifter' ,      &
      &                 Nfloats(ng), DimIDs(15))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'boundary',      &
      &                 4, DimIDs(14))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef FOUR_DVAR
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname, 'Nstate',        &
      &                 NstateVar(ng), DimIDs(29))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 
         status=def_dim(ng, iNLM, FLT(ng)%ncid, ncname,                  &
      &                 TRIM(ADJUSTL(Vname(5,idtime))),                  &
      &                 nf90_unlimited, DimIDs(12))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         recdim=DimIDs(12)
         fltdim=DimIDs(15)
@@ -205,8 +192,7 @@
 !-----------------------------------------------------------------------
 !
         CALL def_info (ng, iNLM, FLT(ng)%ncid, ncname, DimIDs)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !-----------------------------------------------------------------------
 !  Define variables and their attributes.
@@ -222,8 +208,7 @@
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idtime),     &
      &                 NF_TOUT, 1, (/recdim/), Aval, Vinfo, ncname,     &
      &                 SetParAccess = .TRUE.)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Define floats X-grid locations.
 !
@@ -241,8 +226,7 @@
 # endif
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idXgrd),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Define floats Y-grid locations.
 !
@@ -260,8 +244,7 @@
 # endif
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idYgrd),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef SOLVE3D
 !
@@ -281,8 +264,7 @@
 #  endif
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idZgrd),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 !
 !  Define floats (lon,lat) or (x,y) locations.
@@ -303,8 +285,7 @@
           Aval(3)=180.0_r8
           status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idglon),   &
      &                   NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           Vinfo( 1)='lat'
           Vinfo( 2)='latitude of floats trajectories'
@@ -321,8 +302,7 @@
           Aval(3)=90.0_r8
           status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idglat),   &
      &                   NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
        ELSE
           Vinfo( 1)='x'
           Vinfo( 2)='x-location of floats trajectories'
@@ -335,8 +315,7 @@
 # endif
           status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idglon),   &
      &                   NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           Vinfo( 1)='y'
           Vinfo( 2)='y-location of floats trajectories'
@@ -349,8 +328,7 @@
 # endif
           status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idglat),   &
      &                   NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 
 # ifdef SOLVE3D
@@ -368,8 +346,7 @@
 #  endif
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(iddpth),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Define density anomaly.
 !
@@ -384,8 +361,7 @@
 #  endif
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idDano),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Define tracer type variables.
 !
@@ -408,8 +384,7 @@
 #  endif
           status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Tid(itrc),     &
      &                   NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
 # endif
 
@@ -428,8 +403,7 @@
 #  endif
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idswim),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Define biological float vertical velocity.
 !
@@ -444,8 +418,7 @@
 #  endif
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idwbio),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Define biological float size (length).
 !
@@ -460,8 +433,7 @@
 #  endif
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idsize),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Define biological float sinking velocity.
 !
@@ -476,8 +448,7 @@
 #  endif
         status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idwsin),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 !
 !  Initialize unlimited time record dimension.
@@ -489,16 +460,14 @@
 !-----------------------------------------------------------------------
 !
         CALL netcdf_enddef (ng, iNLM, ncname, FLT(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !-----------------------------------------------------------------------
 !  Write out time-recordless, information variables.
 !-----------------------------------------------------------------------
 !
         CALL wrt_info (ng, iNLM, FLT(ng)%ncid, ncname)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF DEFINE
 !
 !=======================================================================
@@ -512,8 +481,7 @@
 !  Open floats file for read/write.
 !
         CALL netcdf_open (ng, iNLM, ncname, 1, FLT(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
           WRITE (stdout,50) TRIM(ncname)
           RETURN
         END IF
@@ -522,8 +490,7 @@
 !
         CALL netcdf_check_dim (ng, iNLM, ncname,                        &
      &                         ncid = FLT(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Get the size of the drifter dimension.
 !
@@ -538,8 +505,7 @@
 !
         CALL netcdf_inq_var (ng, iNLM, ncname,                          &
      &                       ncid = FLT(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Initialize logical switches.
 !
@@ -726,8 +692,7 @@
      &                        ncid = FLT(ng)%ncid,                      &
      &                        start = (/1,FLT(ng)%Rindex/),             &
      &                        total = (/Nfloats(ng),1/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         DO l=1,Nfloats(ng)
           IF ((Tinp(l).gt.REAL(N(ng),r8)).or.                           &
@@ -748,8 +713,7 @@
      &                        ncid = FLT(ng)%ncid,                      &
      &                        start = (/1,FLT(ng)%Rindex/),             &
      &                        total = (/Nfloats(ng),1/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         DO l=1,Nfloats(ng)
           IF ((Tinp(l).gt.REAL(Lm(ng)+1,r8)-0.5_r8).or.                 &
@@ -769,8 +733,7 @@
      &                        ncid = FLT(ng)%ncid,                      &
      &                        start = (/1,FLT(ng)%Rindex/),             &
      &                        total = (/Nfloats(ng),1/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         DO l=1,Nfloats(ng)
           IF ((Tinp(l).gt.REAL(Mm(ng)+1,r8)-0.5_r8).or.                 &
@@ -797,7 +760,7 @@
   50  FORMAT (/,' DEF_FLOATS - unable to open floats NetCDF file: ',a)
   60  FORMAT (/,' DEF_FLOATS - unable to find variable: ',a,2x,         &
      &        ' in floats NetCDF file: ',a)
-
+!
       RETURN
       END SUBROUTINE def_floats
 #else

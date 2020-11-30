@@ -34,7 +34,10 @@
 !
       integer, intent(in) :: ng, tile, model
 !
-!  Local variable declarations.
+! Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
 #include "tile.h"
 !
@@ -49,9 +52,9 @@
 #else
       IF (Lanafile.and.(tile.eq.0)) THEN
 #endif
-        ANANAME(16)=__FILE__
+        ANANAME(16)=MyFile
       END IF
-
+!
       RETURN
       END SUBROUTINE ana_nudgcoef
 !
@@ -88,11 +91,11 @@
 !  Local variable declarations.
 !
       integer :: Iwrk, i, itrc, j, k
-
+!
       real(r8) :: cff1, cff2
-
+!
       real(r8), parameter :: IniVal = 0.0_r8
-
+!
       real(r8), dimension(IminS:ImaxS,JminS:JmaxS) :: wrk
 
 #include "set_bounds.h"
@@ -266,6 +269,6 @@
       END IF
 # endif
 #endif
-
+!
       RETURN
       END SUBROUTINE ana_nudgcoef_tile

@@ -69,7 +69,7 @@
 !  Local variable declarations.
 !
       logical :: update = .FALSE.
-
+!
       integer :: Fcount
       integer :: ng, thread, tile
 #ifdef NESTING
@@ -83,9 +83,14 @@
     defined ADJUST_STFLUX   || defined ADJUST_WSTRESS
       integer :: irec
 #endif
+!
 #ifdef SP4DVAR
       real(dp) :: my_dstart
+!
 #endif
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
 !=======================================================================
 !   Initialize model variables.
@@ -173,7 +178,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_on (ng, iNLM, 2, __LINE__, __FILE__)
+          CALL wclock_on (ng, iNLM, 2, __LINE__, MyFile)
         END DO
       END DO
 !$OMP BARRIER
@@ -199,8 +204,7 @@
 # ifdef DISTRIBUTE
           CALL mp_bcasti (ng, iNLM, exit_flag)
 # endif
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IniRec(ng)=nrrec(ng)
           INI(ng)%Rindex=IniRec(ng)
         ELSE
@@ -400,8 +404,7 @@
         CALL mp_bcasti (ng, iNLM, exit_flag)
 # endif
 !$OMP BARRIER
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         time(ng)=io_time                     ! needed for shared-memory
       END DO
 #else
@@ -418,8 +421,7 @@
           CALL mp_bcasti (ng, iNLM, exit_flag)
 # endif
 !$OMP BARRIER
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           time(ng)=io_time                   ! needed for shared-memory
         END IF
       END DO
@@ -443,8 +445,7 @@
           CALL mp_bcasti (ng, iNLM, exit_flag)
 # endif
 !$OMP BARRIER
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         ELSE
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL wetdry (ng, tile, Tindex(ng), .TRUE.)
@@ -468,8 +469,7 @@
 !$OMP MASTER
         CALL obs_initial (ng, iNLM, .FALSE.)
 !$OMP END MASTER
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !$OMP BARRIER
 #endif
@@ -498,8 +498,7 @@
           CALL mp_bcasti (ng, iNLM, exit_flag)
 # endif
 !$OMP BARRIER
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 #endif
@@ -643,8 +642,7 @@
         CALL mp_bcasti (ng, iNLM, exit_flag)
 #  endif
 !$OMP BARRIER
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 !
 !  If applicable, read in input data.
@@ -658,8 +656,7 @@
         CALL mp_bcasti (ng, iNLM, exit_flag)
 #  endif
 !$OMP BARRIER
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO
 # endif
 #endif
@@ -772,8 +769,7 @@
 # ifdef DISTRIBUTE
           CALL mp_bcasti (ng, iTLM, exit_flag)
 # endif
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
       END DO
 #endif
@@ -859,11 +855,11 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_off (ng, iNLM, 2, __LINE__, __FILE__)
+          CALL wclock_off (ng, iNLM, 2, __LINE__, MyFile)
         END DO
 !$OMP BARRIER
       END DO
 #endif
-
+!
       RETURN
       END SUBROUTINE initial

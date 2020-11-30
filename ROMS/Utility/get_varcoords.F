@@ -67,16 +67,19 @@
 !  Local variable declarations
 !
       logical :: foundit
-
+!
       integer :: i, ic, j, jc
       integer :: alen, blank1, blank2, varid
-
+!
       real(r8), dimension(Nx) :: Xwrk
       real(r8), dimension(Ny) :: Ywrk
-
-      character (len=20) :: Xname, Yname
 !
-      SourceFile=__FILE__
+      character (len=20) :: Xname, Yname
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Get coarse variable coordinates.
@@ -87,8 +90,7 @@
       CALL netcdf_inq_var (ng, model, ncname,                           &
      &                     ncid = ncid,                                 &
      &                     myVarName = ncvname)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Get names of variable coordinates.
 !
@@ -122,8 +124,7 @@
      &                     ncid = ncid,                                 &
      &                     myVarName = Xname,                           &
      &                     VarID= varid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
       IF (n_vdim.eq.1) THEN
         CALL netcdf_get_fvar (ng, model, ncname, Xname,                 &
@@ -131,8 +132,7 @@
      &                        ncid = ncid,                              &
      &                        start = (/1/),                            &
      &                        total = (/Nx/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         rectangular=.TRUE.
         jc=0
@@ -147,8 +147,7 @@
      &                        ncid = ncid,                              &
      &                        start = (/1,1/),                          &
      &                        total = (/Nx,Ny/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         jc=1
         DO j=2,Ny
@@ -164,8 +163,7 @@
      &                     ncid = ncid,                                 &
      &                     myVarName = Yname,                           &
      &                     VarID= varid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
       IF (n_vdim.eq.1) THEN
         CALL netcdf_get_fvar (ng, model, ncname, Yname,                 &
@@ -173,8 +171,7 @@
      &                        ncid = ncid,                              &
      &                        start = (/1/),                            &
      &                        total = (/Ny/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         rectangular=.TRUE.
         ic=0
@@ -189,8 +186,7 @@
      &                        ncid = ncid,                              &
      &                        start = (/1,1/),                          &
      &                        total = (/Nx,Ny/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         ic=1
         DO i=2,Nx
@@ -221,7 +217,7 @@
           Ymax=MAX(Ymax,Y(i,j))
         END DO
       END DO
-
+!
  10   FORMAT (/,' GET_VARCOORDS - Cannot find "coordinates" attribute', &
      &        ' for variable:',2x,a,/,17x,'in file:',2x,a,/,            &
      &     /,17x,'This attribute is needed to interpolate input data',  &
@@ -231,6 +227,6 @@
      &     /,17x,'      my_var:units = "my variable units" ;',          &
      &     /,17x,'      my_var:coordinates = "lon lat" ;',              &
      &     /,17x,'      my_var:time = "my_var_time" ;',/)
-
+!
       RETURN
       END SUBROUTINE get_varcoords

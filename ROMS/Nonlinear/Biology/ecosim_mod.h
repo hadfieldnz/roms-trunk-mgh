@@ -9,6 +9,10 @@
 !  Ecosim tracer parameters:                                           !
 !                                                                      !
 !  NBands         Number of spectral irradiance bands.                 !
+!  NDbands        Number of spectral irrandiance bands to process for  !
+!                   the diagnostics terms. It is possible to reduce    !
+!                   its number for the analysis of few selected        !
+!                   spectral bands (TODO).                             !
 !  Nbac           Number of bacteria constituents.                     !
 !  Ndom           Number of dissolved matter constituents.             !
 !  Nfec           Number of fecal matter constituents.                 !
@@ -199,6 +203,12 @@
       integer, parameter :: Nfec = 2         ! Fecal constituents
       integer, parameter :: Nphy = 4         ! Phytoplankton groups
       integer, parameter :: Npig = 7         ! Pigments
+!
+!  Set number of spectral irrandiance bands to process for the
+!  diagnostics terms. It is possible to reduce its number for the
+!  analysis of few selected spectral bands (TODO).
+!
+      integer :: NDbands = NBands
 !
 !  Determine number of EcoSim biological tracer. Currently, there is a
 !  maximum of seven phytoplankton species and seven different pigments:

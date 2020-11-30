@@ -19,10 +19,10 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
       PUBLIC  :: forcing
-
+!
       CONTAINS
 !
 !***********************************************************************
@@ -66,7 +66,7 @@
      &                   COUPLING(ng) % Zt_avg1,                        &
 # endif
      &                   OCEAN(ng) % zeta)
-
+!
       RETURN
       END SUBROUTINE forcing
 !
@@ -234,7 +234,7 @@
         END DO
       END DO
 # endif
-
+!
       RETURN
       END SUBROUTINE forcing_tile
 #endif

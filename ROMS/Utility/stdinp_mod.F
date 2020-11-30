@@ -84,7 +84,10 @@
 !
       integer :: InpUnit
 !
-      SourceFile=__FILE__// ", stdout_unit"
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", stdout_unit"
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Determine ROMS standard input unit.

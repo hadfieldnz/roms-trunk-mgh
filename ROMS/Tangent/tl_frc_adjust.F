@@ -42,10 +42,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, iTLM, 7, __LINE__, __FILE__)
+      CALL wclock_on (ng, iTLM, 7, __LINE__, MyFile)
 # endif
       CALL tl_frc_adjust_tile (ng, tile,                                &
      &                         LBi, UBi, LBj, UBj,                      &
@@ -62,8 +65,9 @@
 # endif
      &                         Linp)
 # ifdef PROFILE
-      CALL wclock_off (ng, iTLM, 7, __LINE__, __FILE__)
+      CALL wclock_off (ng, iTLM, 7, __LINE__, MyFile)
 # endif
+!
       RETURN
       END SUBROUTINE tl_frc_adjust
 !
@@ -224,7 +228,7 @@
         END IF
       END DO
 # endif
-
+!
       RETURN
       END SUBROUTINE tl_frc_adjust_tile
 #endif

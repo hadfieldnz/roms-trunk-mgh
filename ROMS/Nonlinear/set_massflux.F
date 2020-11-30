@@ -39,10 +39,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, model, 12, __LINE__, __FILE__)
+      CALL wclock_on (ng, model, 12, __LINE__, MyFile)
 # endif
       CALL set_massflux_tile (ng, tile, model,                          &
      &                        LBi, UBi, LBj, UBj,                       &
@@ -60,9 +63,9 @@
      &                        GRID(ng) % Huon,                          &
      &                        GRID(ng) % Hvom)
 # ifdef PROFILE
-      CALL wclock_off (ng, model, 12, __LINE__, __FILE__)
+      CALL wclock_off (ng, model, 12, __LINE__, MyFile)
 # endif
-
+!
       RETURN
       END SUBROUTINE set_massflux
 !
@@ -199,10 +202,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", reset_massflux"
+!
 #  include "tile.h"
 !
 #  ifdef PROFILE
-      CALL wclock_on (ng, model, 12, __LINE__, __FILE__)
+      CALL wclock_on (ng, model, 12, __LINE__, MyFile)
 #  endif
       CALL reset_massflux_tile (ng, tile, model,                        &
      &                          LBi, UBi, LBj, UBj,                     &
@@ -222,9 +228,9 @@
      &                          GRID(ng) % Huon,                        &
      &                          GRID(ng) % Hvom)
 #  ifdef PROFILE
-      CALL wclock_off (ng, model, 12, __LINE__, __FILE__)
+      CALL wclock_off (ng, model, 12, __LINE__, MyFile)
 #  endif
-
+!
       RETURN
       END SUBROUTINE reset_massflux
 !
@@ -395,7 +401,7 @@
      &                    EWperiodic(ng), NSperiodic(ng),               &
      &                    Huon, Hvom)
 #  endif
-
+!
       RETURN
       END SUBROUTINE reset_massflux_tile
 # endif

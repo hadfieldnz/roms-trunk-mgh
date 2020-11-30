@@ -15,12 +15,12 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
       PUBLIC  :: rp_prsgrd
-
+!
       CONTAINS
-
+!
 # if defined PJ_GRADPQ4
 !!#  include "rp_prsgrd44.h"
 # elif defined PJ_GRADPQ2

@@ -41,9 +41,9 @@
 !=======================================================================
 !
         USE mod_kinds
-
+!
         implicit none
-
+!
         TYPE T_DIAGS
 
 # ifdef DIAGNOSTICS_BIO
@@ -86,9 +86,9 @@
         END TYPE T_DIAGS
 
         TYPE (T_DIAGS), allocatable :: DIAGS(:)
-
+!
       CONTAINS
-
+!
       SUBROUTINE allocate_diags (ng, LBi, UBi, LBj, UBj)
 !
 !=======================================================================
@@ -99,6 +99,9 @@
 !=======================================================================
 !
       USE mod_param
+# if defined DIAGNOSTICS_BIO && defined ECOSIM
+      USE mod_biology
+# endif
 !
 !  Local variable declarations.
 !
@@ -205,10 +208,10 @@
 #  endif
 
 # endif
-
+!
       RETURN
       END SUBROUTINE allocate_diags
-
+!
       SUBROUTINE initialize_diags (ng, tile)
 !
 !=======================================================================
@@ -222,6 +225,9 @@
 !=======================================================================
 !
       USE mod_param
+# if defined DIAGNOSTICS_BIO && defined ECOSIM
+      USE mod_biology
+# endif
 !
 !  Imported variable declarations.
 !
@@ -380,7 +386,7 @@
 #  endif
 # endif
       END DO
-
+!
       RETURN
       END SUBROUTINE initialize_diags
 #endif

@@ -38,9 +38,8 @@
 !=======================================================================
 !
       implicit none
-
+!
       CONTAINS
-
 !
 !***********************************************************************
       FUNCTION nf_fread2d_bry (ng, model, ncname, ncid,                 &
@@ -107,6 +106,9 @@
       real(r8), dimension((UBij-LBij+1)*4*Nrec) :: wrk
 !
       character (len=12), dimension(3) :: AttName
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
 !-----------------------------------------------------------------------
 !  Set starting and ending indices to process.
@@ -201,8 +203,7 @@
       CALL netcdf_get_fatt (ng, model, ncname, ncvarid, AttName,        &
      &                      AttValue, foundit,                          &
      &                      ncid = ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
         status=ioerror
         RETURN
       END IF
@@ -274,8 +275,7 @@
       Amax=buffer(3)
 #endif
 
-      IF (FoundError(status, nf90_noerr, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
         exit_flag=2
         ioerror=status
         RETURN
@@ -313,7 +313,7 @@
           END IF
         END DO
       END DO
-
+!
       RETURN
       END FUNCTION nf_fread2d_bry
 

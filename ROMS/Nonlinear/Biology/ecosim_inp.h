@@ -867,12 +867,6 @@
 
 #if defined DIAGNOSTICS && defined DIAGNOSTICS_BIO
 !
-!  Set number of spectral irrandiance bands to process for the
-!  diagnostics terms. It is possible to reduce its number for the
-!  analysis of few selected spectral bands (TODO).
-!
-      NDbands=NBands
-!
 !  Allocate center wavelenght of spectral irradiance bands for diagnostic
 !  terms.
 !

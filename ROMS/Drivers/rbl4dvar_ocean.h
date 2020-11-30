@@ -84,7 +84,7 @@
 !  Imported variable declarations.
 !
       logical, intent(inout) :: first
-
+!
       integer, intent(in), optional :: mpiCOMM
 !
 !  Local variable declarations.
@@ -98,6 +98,9 @@
 #ifdef _OPENMP
       integer :: my_threadnum
 #endif
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ROMS_initialize"
 
 #ifdef DISTRIBUTE
 !
@@ -134,8 +137,7 @@
 !  grids and dimension parameters are known.
 !
         CALL inp_par (iNLM)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Initialize counters. The 'Nrun' counter will be recomputed in the
 !  RBL4D-Var phases to process the obervation operator correctly.
@@ -172,8 +174,7 @@
 !
         DO ng=1,Ngrids
           DO thread=THREAD_RANGE
-            CALL wclock_on (ng, iNLM, 0, __LINE__,                      &
-     &                      __FILE__)
+            CALL wclock_on (ng, iNLM, 0, __LINE__, MyFile)
           END DO
         END DO
 !
@@ -211,8 +212,7 @@
 !
       DO ng=1,Ngrids
         CALL prior_error (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         SetGridConfig(ng)=.FALSE.
       END DO
 !
@@ -255,7 +255,10 @@
 !
       integer :: my_outer, ng
 !
-      SourceFile=__FILE__ // ", ROMS_run"
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ROMS_run"
+!
+      SourceFile=MyFile
 !
 !=======================================================================
 !  Run RBL4D-Var Data Assimilation algorithm.
@@ -285,8 +288,7 @@
 !  minimization.
 !
       CALL background (outer, RunInterval)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Start outer loop iterations.
 !
@@ -299,15 +301,13 @@
 !  the inner loops, and minimizing the cost function.
 !
         CALL increment (my_outer, RunInterval)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute 4D-Var data assimilation analysis, Xa = Xb + dXa.  Set
 !  nonlinear model initial conditions for next outer loop.
 !
         CALL analysis (my_outer, RunInterval)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       END DO OUTER_LOOP
 
@@ -318,8 +318,7 @@
 !  (NOTE: Currently, this code only works for a single outer-loop).
 !
       CALL posterior_error (RunInterval)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 #endif
 !
       RETURN
@@ -345,6 +344,9 @@
 !
       integer :: Fcount, ng, tile, thread
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ROMS_finalize"
+!
 !-----------------------------------------------------------------------
 !  Write out 4D-Var analysis fields that used as initial conditions for
 !  the next data assimilation cycle.
@@ -360,12 +362,10 @@
         DO ng=1,Ngrids
           LdefDAI(ng)=.TRUE.
           CALL def_dai (ng)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
           CALL wrt_dai (ng, tile)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
       END IF
 !
@@ -415,8 +415,7 @@
 !
       DO ng=1,Ngrids
         DO thread=THREAD_RANGE
-          CALL wclock_off (ng, iNLM, 0, __LINE__,                       &
-     &                     __FILE__)
+          CALL wclock_off (ng, iNLM, 0, __LINE__, MyFile)
         END DO
       END DO
 !

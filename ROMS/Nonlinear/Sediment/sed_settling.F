@@ -34,10 +34,10 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
       PUBLIC  :: sed_settling
-
+!
       CONTAINS
 !
 !***********************************************************************
@@ -57,10 +57,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, iNLM, 16, __LINE__, __FILE__)
+      CALL wclock_on (ng, iNLM, 16, __LINE__, MyFile)
 # endif
       CALL sed_settling_tile (ng, tile,                                 &
      &                        LBi, UBi, LBj, UBj,                       &
@@ -71,8 +74,9 @@
      &                        SEDBED(ng) % settling_flux,               &
      &                        OCEAN(ng) % t)
 # ifdef PROFILE
-      CALL wclock_off (ng, iNLM, 16, __LINE__, __FILE__)
+      CALL wclock_off (ng, iNLM, 16, __LINE__, MyFile)
 # endif
+!
       RETURN
       END SUBROUTINE sed_settling
 !
@@ -332,7 +336,7 @@
           END DO
         END DO SED_LOOP
       END DO J_LOOP
-
+!
       RETURN
       END SUBROUTINE sed_settling_tile
 #endif
