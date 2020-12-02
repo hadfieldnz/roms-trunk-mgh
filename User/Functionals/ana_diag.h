@@ -20,7 +20,12 @@
 ! Imported variable declarations.
 !
       integer, intent(in) :: ng, tile, model
-
+!
+! Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #include "tile.h"
 !
       CALL ana_diag_tile (ng, tile, model,                              &
@@ -38,9 +43,9 @@
 #else
       IF (Lanafile.and.(tile.eq.0)) THEN
 #endif
-        ANANAME( 5)=__FILE__
+        ANANAME( 5)=MyFile
       END IF
-
+!
       RETURN
       END SUBROUTINE ana_diag
 !
@@ -99,6 +104,6 @@
 !
       WRITE (usrout,70) 'No user diagnostics computed.'
   70  FORMAT (a)
-
+!
       RETURN
       END SUBROUTINE ana_diag_tile

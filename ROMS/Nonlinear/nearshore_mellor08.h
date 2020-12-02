@@ -33,12 +33,19 @@
       USE mod_diags
 #endif
 !
+!  Imported variable declarations.
+!
       integer, intent(in) :: ng, tile
-
+!
+!  Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #include "tile.h"
 
 #ifdef PROFILE
-      CALL wclock_on (ng, iNLM, 21, __LINE__, __FILE__)
+      CALL wclock_on (ng, iNLM, 21, __LINE__, MyFile)
 #endif
       CALL radiation_stress_tile (ng, tile,                             &
      &                            LBi, UBi, LBj, UBj, N(ng),            &
@@ -105,8 +112,9 @@
      &                            OCEAN(ng) % ubar_stokes,              &
      &                            OCEAN(ng) % vbar_stokes)
 #ifdef PROFILE
-      CALL wclock_off (ng, iNLM, 21, __LINE__, __FILE__)
+      CALL wclock_off (ng, iNLM, 21, __LINE__, MyFile)
 #endif
+!
       RETURN
       END SUBROUTINE radiation_stress
 !
@@ -1255,6 +1263,6 @@
      &                    u_stokes, v_stokes)
 # endif
 #endif
-
+!
       RETURN
       END SUBROUTINE radiation_stress_tile

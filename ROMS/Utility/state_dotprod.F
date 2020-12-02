@@ -44,9 +44,9 @@
 !=======================================================================
 !
       implicit none
-
+!
       PUBLIC  :: state_dotprod
-
+!
       CONTAINS
 !
 !***********************************************************************
@@ -781,7 +781,7 @@
 #endif
       END IF
 !$OMP END CRITICAL (DOT_PROD)
-
+!
       RETURN
       END SUBROUTINE state_dotprod
 

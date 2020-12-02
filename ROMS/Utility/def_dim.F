@@ -60,6 +60,11 @@
       integer, dimension(3) :: buffer
 #endif
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
+      SourceFile=MyFile
+!
 !-----------------------------------------------------------------------
 !  Define requested NetCDF dimension.
 !-----------------------------------------------------------------------
@@ -68,8 +73,7 @@
 
       IF (OutThread) THEN
         status=nf90_def_dim(ncid, TRIM(DimName), DimSize, DimId)
-        IF (FoundError(status, nf90_noerr, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) WRITE (stdout,10) TRIM(DimName), TRIM(ncname)
           exit_flag=3
           ioerror=status
@@ -95,6 +99,6 @@
 !
  10   FORMAT (/,' DEF_DIM - error while defining dimension: ',a,        &
      &        /,11x,'in file: ',a)
-
+!
       RETURN
       END FUNCTION def_dim

@@ -40,7 +40,12 @@
 ! Imported variable declarations.
 !
       integer, intent(in) :: ng, tile, model
-
+!
+! Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #include "tile.h"
 !
       CALL ana_grid_tile (ng, tile, model,                              &
@@ -85,9 +90,9 @@
 #else
       IF (Lanafile.and.(tile.eq.0)) THEN
 #endif
-        ANANAME( 7)=__FILE__
+        ANANAME( 7)=MyFile
       END IF
-
+!
       RETURN
       END SUBROUTINE ana_grid
 !
@@ -199,10 +204,10 @@
 !  Local variable declarations.
 !
       logical, save :: first = .TRUE.
-
+!
       integer :: Imin, Imax, Jmin, Jmax
       integer :: i, ival, j, k
-
+!
       real(r8), parameter :: twopi = 2.0_r8*pi
 
       real(r8) :: Esize, Xsize, beta, cff, depth, dth
@@ -213,7 +218,7 @@
 #endif
       real(r8) :: wrkX(IminS:ImaxS,JminS:JmaxS)
       real(r8) :: wrkY(IminS:ImaxS,JminS:JmaxS)
-
+!
       TYPE (T_STATS), save :: Stats(16)
 
 #include "set_bounds.h"
@@ -1199,6 +1204,6 @@
   10  FORMAT (3x,' ANA_GRID    - ',a,/,19x,                             &
      &        '(Grid = ',i2.2,', Min = ',1p,e15.8,0p,                   &
      &                         ' Max = ',1p,e15.8,0p,')')
-
+!
       RETURN
       END SUBROUTINE ana_grid_tile

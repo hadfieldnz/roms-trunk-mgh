@@ -107,12 +107,12 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
       PUBLIC  :: biology
-
+!
       CONTAINS
-
+!
 # if defined BIO_FENNEL
 #  include <fennel.h>
 # elif defined ECOSIM

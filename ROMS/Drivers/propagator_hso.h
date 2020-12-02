@@ -41,9 +41,9 @@
 !  Imported variable declarations.
 !
       integer :: Iter
-
+!
       real(dp), intent(in) :: RunInterval
-
+!
       TYPE (T_GST), intent(in) :: state(Ngrids)
       TYPE (T_GST), intent(inout) :: ad_state(Ngrids)
 !
@@ -61,6 +61,9 @@
 !
       real(r8) :: StateNorm(Ngrids)
       real(r8) :: so_run_time
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
 !=======================================================================
 !  Forward integration of the tangent linear model.
@@ -243,14 +246,13 @@
         IF (SOrunTL) THEN              ! do not run TLM on last interval
           DO ng=1,Ngrids
             CALL close_inp (ng, iTLM)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+
             CALL tl_get_idata (ng)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+
             CALL tl_get_data (ng)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END DO
 !
 !-----------------------------------------------------------------------
@@ -270,8 +272,7 @@
 #else
           CALL tl_main2d (so_run_time)
 #endif
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 !
 !-----------------------------------------------------------------------
@@ -390,14 +391,13 @@
 #endif
           DO ng=1,Ngrids
             CALL close_inp (ng, iADM)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+
             CALL ad_get_idata (ng)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+
             CALL ad_get_data (ng)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END DO
 !
 !-----------------------------------------------------------------------
@@ -425,8 +425,7 @@
           CALL ad_main2d (RunInterval)
 # endif
 #endif
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 #ifdef STOCH_OPT_WHITE
         END IF
 #endif
@@ -476,8 +475,7 @@
 # endif
           END DO
         END DO
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !-----------------------------------------------------------------------
 !  Clear forcing variables for next iteration.
@@ -502,16 +500,14 @@
      &                      STORAGE(ng)%my_state)
         END DO
       END DO
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
       DO ng=1,Ngrids
         DO tile=last_tile(ng),first_tile(ng),-1
             CALL ad_inner2state (ng, tile, Lini, ad_state(ng)%vector)
         END DO
       END DO
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
  10   FORMAT (/,a,i2.2,a,i3.3,a,i3.3/)
  20   FORMAT (/,a,i2.2)

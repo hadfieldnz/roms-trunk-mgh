@@ -369,7 +369,7 @@
         y01=MyYear/100
         MyYear=MyYear-y01*100
         MyDay=(146097*y01/4) + (1461*MyYear/4) + ((153*MyMonth+2)/5) +  &
-              day + 1721119
+     &        day + 1721119
 !
 !-----------------------------------------------------------------------
 !  Date mumber for the 360_day Calendar: the year has a length of 360

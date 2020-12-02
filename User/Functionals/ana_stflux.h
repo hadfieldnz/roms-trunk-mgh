@@ -20,7 +20,12 @@
 ! Imported variable declarations.
 !
       integer, intent(in) :: ng, tile, model, itrc
-
+!
+! Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 #include "tile.h"
 !
       CALL ana_stflux_tile (ng, tile, model, itrc,                      &
@@ -38,7 +43,7 @@
 #else
       IF (Lanafile.and.(tile.eq.0)) THEN
 #endif
-        ANANAME(31)=__FILE__
+        ANANAME(31)=MyFile
       END IF
 !
       RETURN

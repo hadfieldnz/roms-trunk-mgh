@@ -122,6 +122,9 @@
 
       real(r8), parameter :: IniVal = 0.0_r8
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", allocate_sources"
+!
 !-----------------------------------------------------------------------
 !  Allocate module variables.
 !-----------------------------------------------------------------------
@@ -148,8 +151,7 @@
      &                           VarID = Vid,                           &
      &                           nVardim = nvdim,                       &
      &                           nVarAtt = nvatt)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__//", allocate_sources")) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
             IF (foundit) THEN
               Nsrc(mg)=var_Dsize(1)         ! first dimension

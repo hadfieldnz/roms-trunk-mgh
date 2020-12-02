@@ -101,13 +101,14 @@
       real(r8), intent(in) :: Yout(LBi:UBi,LBj:UBj)
 
       real(r8), intent(out) :: Fout(LBi:UBi,LBj:UBj)
-
+!
       character (len=*), intent(in) :: ncname
       character (len=*), intent(in) :: ncvname
 !
 !  Local variable declarations
 !
       logical :: EastLon, rectangular
+!
       integer :: i, j
       integer :: Istr, Iend, Jstr, Jend
 #ifdef REGRID_SHAPIRO
@@ -116,6 +117,7 @@
 #ifdef DISTRIBUTE
       integer :: Cgrid, ghost
 #endif
+!
       real(r8), parameter :: IJspv = 0.0_r8
 
       real(r8) :: my_min, my_max, Xmin, Xmax, Ymin, Ymax
@@ -130,8 +132,12 @@
 
 #ifdef DISTRIBUTE
       real(r8), dimension(2) :: buffer
+!
       character (len=3), dimension(2) :: op_handle
 #endif
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
 !-----------------------------------------------------------------------
 !  Get input variable coordinates.
@@ -141,8 +147,7 @@
      &                    ncvname, ncvarid, Nx, Ny,                     &
      &                    Xmin, Xmax, Xinp, Ymin, Ymax, Yinp,           &
      &                    rectangular)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Set input gridded data rotation angle.
 !
@@ -329,6 +334,6 @@
       Amin=my_min
       Amax=my_max
 #endif
-
+!
       RETURN
       END SUBROUTINE regrid

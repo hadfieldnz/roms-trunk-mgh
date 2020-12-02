@@ -65,7 +65,10 @@
 !
       integer :: IDmod, i, itrc
 !
-      SourceFile=__FILE__
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Determine state variables needed and check if they are available in
@@ -85,16 +88,14 @@
 !
       CALL netcdf_check_dim (ng, IDmod, ncname,                         &
      &                       ncid = ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       Nrec=rec_size
 !
 !  Inquire about the variables.
 !
       CALL netcdf_check_var (ng, IDmod, ncname,                         &
      &                       ncid = ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Initialize logical switches.
 !
@@ -723,6 +724,6 @@
 !
   10  FORMAT (/,a,'CHECKVARS - unable to find model variable: ',a,      &
      &        /,18x,'in file: ',a)
-
+!
       RETURN
       END SUBROUTINE checkvars

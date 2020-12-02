@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-
       MODULE rp_t3dmix_mod
 
 #ifdef TL_IOMS
@@ -20,7 +19,7 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
 #  ifdef TS_DIF2
       PUBLIC rp_t3dmix2
@@ -28,9 +27,9 @@
 #  ifdef TS_DIF4
       PUBLIC rp_t3dmix4
 #  endif
-
+!
       CONTAINS
-
+!
 #  ifdef TS_DIF2
 #   if defined MIX_S_TS
 #    include "rp_t3dmix2_s.h"

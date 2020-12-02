@@ -44,19 +44,22 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, iADM, 7, __LINE__, __FILE__)
+      CALL wclock_on (ng, iADM, 7, __LINE__, MyFile)
 # endif
       CALL ad_obc_adjust_tile (ng, tile,                                &
      &                         LBi, UBi, LBj, UBj, LBij, UBij,          &
      &                         IminS, ImaxS, JminS, JmaxS,              &
      &                         Linp)
 # ifdef PROFILE
-      CALL wclock_off (ng, iADM, 7, __LINE__, __FILE__)
+      CALL wclock_off (ng, iADM, 7, __LINE__, MyFile)
 # endif
-
+!
       RETURN
       END SUBROUTINE ad_obc_adjust
 !
@@ -709,7 +712,7 @@
         END IF
       END DO
 # endif
-
+!
       RETURN
       END SUBROUTINE ad_obc_adjust_tile
 
@@ -728,10 +731,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ad_obc2d_adjust"
+!
 #  include "tile.h"
 !
 #  ifdef PROFILE
-      CALL wclock_on (ng, iADM, 7, __LINE__, __FILE__)
+      CALL wclock_on (ng, iADM, 7, __LINE__, MyFile)
 #  endif
       CALL ad_obc2d_adjust_tile (ng, tile,                              &
      &                           LBi, UBi, LBj, UBj, LBij, UBij,        &
@@ -746,7 +752,7 @@
      &                           GRID(ng) % ad_Hz,                      &
      &                           GRID(ng) % ad_Hz_bry)
 #  ifdef PROFILE
-      CALL wclock_off (ng, iADM, 7, __LINE__, __FILE__)
+      CALL wclock_off (ng, iADM, 7, __LINE__, MyFile)
 #  endif
 
       RETURN
@@ -1329,7 +1335,7 @@
           ad_CF(0)=0.0_r8
         END DO
       END IF
-
+!
       RETURN
       END SUBROUTINE ad_obc2d_adjust_tile
 # endif

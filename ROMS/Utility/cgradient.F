@@ -170,11 +170,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, model, 85, __LINE__,                          &
-     &                __FILE__)
+      CALL wclock_on (ng, model, 85, __LINE__, MyFile)
 # endif
       CALL cgradient_tile (ng, tile, model,                             &
      &                     LBi, UBi, LBj, UBj, LBij, UBij,              &
@@ -291,9 +293,9 @@
 # endif
      &                     OCEAN(ng) % ad_zeta)
 # ifdef PROFILE
-      CALL wclock_off (ng, model, 85, __LINE__,                         &
-     &                 __FILE__)
+      CALL wclock_off (ng, model, 85, __LINE__, MyFile)
 # endif
+!
       RETURN
       END SUBROUTINE cgradient
 !
@@ -639,18 +641,21 @@
 !  Local variable declarations.
 !
       logical :: Ltrans
-
+!
       integer :: L1 = 1
       integer :: L2 = 2
 
       integer :: Linp, Lout, Lscale, Lwrk, Lwrk1, i, j, ic
       integer :: info, itheta1
-
+!
       real(r8) :: norm, zbeta, ztheta1
 
       real(r8), dimension(2*Ninner-2) :: work
-
+!
       character (len=13) :: string
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", cgradient_tile"
 
 # include "set_bounds.h"
 !
@@ -731,8 +736,7 @@
      &                nl_ubar, nl_vbar,                                 &
 # endif
      &                nl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Copy nl_var(L1) into ad_var(L2).
 !
@@ -822,8 +826,7 @@
      &                tl_ubar, tl_vbar,                                 &
 # endif
      &                tl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Check for positive Hessian of J.
 !
@@ -889,8 +892,7 @@
      &              ad_ubar, ad_vbar,                                   &
 # endif
      &              ad_zeta)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute new direction, d(k+1).
 !
@@ -939,8 +941,7 @@
      &                    d_ubar, d_vbar,                               &
 # endif
      &                    d_zeta)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !-----------------------------------------------------------------------
 !  Calculate the reduction in the gradient norm by solving a
@@ -1055,8 +1056,7 @@
      &                 nl_ubar, nl_vbar,                                &
 # endif
      &                 nl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !-----------------------------------------------------------------------
@@ -1189,8 +1189,7 @@
      &                          ad_ubar, ad_vbar,                       &
 # endif
      &                          ad_zeta)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
             IF (Master.and.(nConvRitz.eq.0)) THEN
               WRITE (stdout,*) ' No converged Hesssian eigenvectors',   &
@@ -1343,8 +1342,7 @@
      &                nl_ubar, nl_vbar,                                 &
 # endif
      &                nl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Copy nl_var(L1) into tl_var(Lout)
 !
@@ -1384,8 +1382,7 @@
 !-----------------------------------------------------------------------
 !
       CALL cg_write (ng, model, innLoop, outLoop)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Report algorithm parameters.
 !
@@ -1703,10 +1700,13 @@
 !
       integer :: i, j, k, rec
       integer :: ib, ir, it
-
+!
       real(r8) :: fac, fac1, fac2
-
+!
       character (len=256) :: ncname
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", tl_new_state"
 
 # include "set_bounds.h"
 !
@@ -2276,8 +2276,7 @@
      &                     tl_ubar, tl_vbar,                            &
 # endif
      &                     tl_zeta)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Sum all previous normalized gradients:
 !
@@ -2497,13 +2496,16 @@
       integer :: gtype, ncid, status, varid
 
       integer, dimension(4) :: Vsize
-
+!
       real(dp) :: scale
       real(r8) :: Fmin, Fmax
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", read_state"
 
 # include "set_bounds.h"
 !
-      SourceFile=__FILE__ // ", read_state"
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Read in requested model state record. Load data into state array
@@ -2514,8 +2516,7 @@
 !
       IF (ndef.gt.0) THEN
         CALL netcdf_open (ng, model, ncname, 0, ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
           WRITE (stdout,10) TRIM(ncname)
           RETURN
         END IF
@@ -2534,8 +2535,7 @@
       scale=1.0_dp
       CALL netcdf_inq_varid (ng, model, ncname, Vname(1,idFsur),        &
      &                       ncid, varid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       status=nf_fread2d(ng, model, ncname, ncid,                        &
      &                  Vname(1,idFsur), varid,                         &
@@ -2546,8 +2546,7 @@
      &                  rmask,                                          &
 # endif
      &                  s_zeta(:,:,Lwrk))
-      IF (FoundError(status, nf90_noerr, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
         IF (Master) THEN
           WRITE (stdout,20) TRIM(Vname(1,idFsur)), rec, TRIM(ncname)
         END IF
@@ -2566,8 +2565,7 @@
         scale=1.0_dp
         CALL netcdf_inq_varid (ng, model, ncname, Vname(1,ifield),      &
      &                         ncid, varid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=nf_fread2d_bry (ng, model, ncname, ncid,                 &
      &                         Vname(1,ifield), varid,                  &
@@ -2575,8 +2573,7 @@
      &                         LBij, UBij, Nbrec(ng),                   &
      &                         scale, Fmin, Fmax,                       &
      &                         s_zeta_obc(:,:,:,Lwrk))
-        IF (FoundError(status, nf90_noerr, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
             WRITE (stdout,20) TRIM(Vname(1,ifield)), rec, TRIM(ncname)
           END IF
@@ -2594,8 +2591,7 @@
       scale=1.0_dp
       CALL netcdf_inq_varid (ng, model, ncname, Vname(1,idUbar),        &
      &                       ncid, varid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       status=nf_fread2d(ng, model, ncname, ncid,                        &
      &                  Vname(1,idUbar), varid,                         &
@@ -2606,8 +2602,7 @@
      &                  umask,                                          &
 #  endif
      &                  s_ubar(:,:,Lwrk))
-      IF (FoundError(status, nf90_noerr, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
         IF (Master) THEN
           WRITE (stdout,20) TRIM(Vname(1,idUbar)), rec, TRIM(ncname)
         END IF
@@ -2622,8 +2617,7 @@
       scale=1.0_dp
       CALL netcdf_inq_varid (ng, model, ncname, Vname(1,idVbar),        &
      &                       ncid, varid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       status=nf_fread2d(ng, model, ncname, ncid,                        &
      &                  Vname(1,idVbar), varid,                         &
@@ -2634,8 +2628,7 @@
      &                  vmask,                                          &
 #  endif
      &                  s_vbar(:,:,Lwrk))
-      IF (FoundError(status, nf90_noerr, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
         IF (Master) THEN
           WRITE (stdout,20) TRIM(Vname(1,idVbar)), rec, TRIM(ncname)
         END IF
@@ -2654,8 +2647,7 @@
         scale=1.0_dp
         CALL netcdf_inq_varid (ng, model, ncname, Vname(1,ifield),      &
      &                         ncid, varid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=nf_fread2d_bry (ng, model, ncname, ncid,                 &
      &                         Vname(1,ifield), varid,                  &
@@ -2663,8 +2655,7 @@
      &                         LBij, UBij, Nbrec(ng),                   &
      &                         scale, Fmin, Fmax,                       &
      &                         s_ubar_obc(:,:,:,Lwrk))
-        IF (FoundError(status, nf90_noerr, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
             WRITE (stdout,20) TRIM(Vname(1,ifield)), rec, TRIM(ncname)
           END IF
@@ -2682,8 +2673,7 @@
         scale=1.0_dp
         CALL netcdf_inq_varid (ng, model, ncname, Vname(1,ifield),      &
      &                         ncid, varid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=nf_fread2d_bry (ng, model, ncname, ncid,                 &
      &                         Vname(1,ifield), varid,                  &
@@ -2691,8 +2681,7 @@
      &                         LBij, UBij, Nbrec(ng),                   &
      &                         scale, Fmin, Fmax,                       &
      &                         s_vbar_obc(:,:,:,Lwrk))
-        IF (FoundError(status, nf90_noerr, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
             WRITE (stdout,20) TRIM(Vname(1,ifield)), rec, TRIM(ncname)
           END IF
@@ -2710,8 +2699,7 @@
       scale=1.0_dp
       CALL netcdf_inq_varid (ng, model, ncname, Vname(1,idUsms),        &
      &                       ncid, varid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       status=nf_fread3d(ng, model, ncname, ncid,                        &
      &                  Vname(1,idUsms), varid,                         &
@@ -2722,8 +2710,7 @@
      &                  umask,                                          &
 #  endif
      &                  s_ustr(:,:,:,Lwrk))
-      IF (FoundError(status, nf90_noerr, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
         IF (Master) THEN
           WRITE (stdout,20) TRIM(Vname(1,idUsms)), rec, TRIM(ncname)
         END IF
@@ -2736,8 +2723,7 @@
       scale=1.0_dp
       CALL netcdf_inq_varid (ng, model, ncname, Vname(1,idVsms),        &
      &                       ncid, varid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       status=nf_fread3d(ng, model, ncname, ncid,                        &
      &                  Vname(1,idVsms), varid,                         &
@@ -2748,8 +2734,7 @@
      &                  vmask,                                          &
 #  endif
      &                  s_vstr(:,:,:,Lwrk))
-      IF (FoundError(status, nf90_noerr, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
         IF (Master) THEN
           WRITE (stdout,20) TRIM(Vname(1,idVsms)), rec, TRIM(ncname)
         END IF
@@ -2767,8 +2752,7 @@
       scale=1.0_dp
       CALL netcdf_inq_varid (ng, model, ncname, Vname(1,idUvel),        &
      &                       ncid, varid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       status=nf_fread3d(ng, model, ncname, ncid,                        &
      &                  Vname(1,idUvel), varid,                         &
@@ -2779,8 +2763,7 @@
      &                  umask,                                          &
 #  endif
      &                  s_u(:,:,:,Lwrk))
-      IF (FoundError(status, nf90_noerr, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
         IF (Master) THEN
           WRITE (stdout,20) TRIM(Vname(1,idUvel)), rec, TRIM(ncname)
         END IF
@@ -2799,8 +2782,7 @@
         scale=1.0_dp
         CALL netcdf_inq_varid (ng, model, ncname, Vname(1,ifield),      &
      &                         ncid, varid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=nf_fread3d_bry (ng, model, ncname, ncid,                 &
      &                         Vname(1,ifield), varid,                  &
@@ -2808,8 +2790,7 @@
      &                         LBij, UBij, 1, N(ng), Nbrec(ng),         &
      &                         scale, Fmin, Fmax,                       &
      &                         s_u_obc(:,:,:,:,Lwrk))
-        IF (FoundError(status, nf90_noerr, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
             WRITE (stdout,20) TRIM(Vname(1,ifield)), rec, TRIM(ncname)
           END IF
@@ -2826,8 +2807,7 @@
       scale=1.0_dp
       CALL netcdf_inq_varid (ng, model, ncname, Vname(1,idVvel),        &
      &                       ncid, varid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       status=nf_fread3d(ng, model, ncname, ncid,                        &
      &                  Vname(1,idVvel), varid,                         &
@@ -2838,8 +2818,7 @@
      &                  vmask,                                          &
 #  endif
      &                  s_v(:,:,:,Lwrk))
-      IF (FoundError(status, nf90_noerr, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
         IF (Master) THEN
           WRITE (stdout,20) TRIM(Vname(1,idVvel)), rec, TRIM(ncname)
         END IF
@@ -2858,8 +2837,7 @@
         scale=1.0_dp
         CALL netcdf_inq_varid (ng, model, ncname, Vname(1,ifield),      &
      &                         ncid, varid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=nf_fread3d_bry (ng, model, ncname, ncid,                 &
      &                         Vname(1,ifield), varid,                  &
@@ -2867,8 +2845,7 @@
      &                         LBij, UBij, 1, N(ng), Nbrec(ng),         &
      &                         scale, Fmin, Fmax,                       &
      &                         s_v_obc(:,:,:,:,Lwrk))
-        IF (FoundError(status, nf90_noerr, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
             WRITE (stdout,20) TRIM(Vname(1,ifield)), rec, TRIM(ncname)
           END IF
@@ -2886,8 +2863,7 @@
       DO it=1,NT(ng)
         CALL netcdf_inq_varid (ng, model, ncname, Vname(1,idTvar(it)),  &
      &                         ncid, varid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         status=nf_fread3d(ng, model, ncname, ncid,                      &
      &                    Vname(1,idTvar(it)), varid,                   &
@@ -2898,8 +2874,7 @@
      &                    rmask,                                        &
 #  endif
      &                    s_t(:,:,:,Lwrk,it))
-        IF (FoundError(status, nf90_noerr, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
             WRITE (stdout,20) TRIM(Vname(1,idTvar(it))), rec,           &
      &                        TRIM(ncname)
@@ -2921,8 +2896,7 @@
           scale=1.0_dp
           CALL netcdf_inq_varid (ng, model, ncname, Vname(1,ifield),    &
      &                           ncid, varid)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           status=nf_fread3d_bry (ng, model, ncname, ncid,               &
      &                           Vname(1,ifield), varid,                &
@@ -2930,8 +2904,7 @@
      &                           LBij, UBij, 1, N(ng), Nbrec(ng),       &
      &                           scale, Fmin, Fmax,                     &
      &                           s_t_obc(:,:,:,:,Lwrk,it))
-          IF (FoundError(status, nf90_noerr, __LINE__,                  &
-     &                   __FILE__)) THEN
+          IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
             IF (Master) THEN
               WRITE (stdout,20) TRIM(Vname(1,ifield)), rec, TRIM(ncname)
             END IF
@@ -2952,8 +2925,7 @@
         IF (Lstflux(it,ng)) THEN
           CALL netcdf_inq_varid (ng, model, ncname,                     &
      &                           Vname(1,idTsur(it)), ncid, varid)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           status=nf_fread3d(ng, model, ncname, ncid,                    &
      &                      Vname(1,idTsur(it)), varid,                 &
@@ -2964,8 +2936,7 @@
      &                      rmask,                                      &
 #   endif
      &                      s_tflux(:,:,:,Lwrk,it))
-          IF (FoundError(status, nf90_noerr, __LINE__,                  &
-     &                   __FILE__)) THEN
+          IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
             IF (Master) THEN
               WRITE (stdout,20) TRIM(Vname(1,idTsur(it))), rec,         &
      &                          TRIM(ncname)
@@ -3866,12 +3837,15 @@
 !
       integer :: i, j, k
       integer :: ib, ir, it
-
+!
       real(r8) :: fac
 
       real(r8), dimension(0:NstateVar(ng)) :: dot
-
+!
       character (len=256) :: ncname
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", hessian"
 
 # include "set_bounds.h"
 !
@@ -4480,8 +4454,7 @@
      &                 tl_ubar, tl_vbar,                                &
 # endif
      &                 tl_zeta)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute current iteration norm Delta(k) used to compute tri-diagonal
 !  matrix T(k) in the Lanczos recurrence.
@@ -4727,13 +4700,16 @@
 !  Local variable declarations.
 !
       integer :: i, j, rec
-
+!
       real(r8) :: fac, fac1, fac2
 
       real(r8), dimension(0:NstateVar(ng)) :: dot
       real(r8), dimension(0:Ninner) :: DotProd, dot_new, dot_old
-
+!
       character (len=256) :: ncname
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", lanczos"
 
 # include "set_bounds.h"
 !
@@ -4834,8 +4810,7 @@
      &                   tl_ubar, tl_vbar,                              &
 # endif
      &                   tl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Substract previous orthonormal Lanczos vector:
 !
@@ -4926,8 +4901,7 @@
      &                   tl_ubar, tl_vbar,                              &
 # endif
      &                   tl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute dot product <q(k+1), q(rec)>.
 !
@@ -5236,8 +5210,7 @@
      &                   tl_ubar, tl_vbar,                              &
 #  endif
      &                   tl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         CALL state_dotprod (ng, tile, model,                            &
      &                      LBi, UBi, LBj, UBj, LBij, UBij,             &
@@ -5503,13 +5476,16 @@
 !  Local variable declarations.
 !
       integer :: rec
-
+!
       real(r8) :: fac1, fac2
 
       real(r8), dimension(0:NstateVar(ng)) :: dot
       real(r8), dimension(0:Ninner) :: DotProd, dot_new, dot_old
-
+!
       character (len=256) :: ncname
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", new_gradient"
 
 # include "set_bounds.h"
 !
@@ -5599,8 +5575,7 @@
      &                   tl_ubar, tl_vbar,                              &
 # endif
      &                   tl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  In this expression for FAC2, the term cg_QG gives the contribution
 !  to the gradient of Jo, and the term cg_Tmatrix gives the contribution
@@ -5972,19 +5947,22 @@
       integer :: i, ingood, rec, nvec, status, varid
       integer :: L1
       integer :: start(4), total(4)
-
+!
       real(r8) :: fac, fac1, fac2
 
       real(r8), dimension(Ninner) :: RitzErr
 
       real(r8), dimension(0:NstateVar(ng)) :: dot
       real(r8), dimension(0:Ninner) :: DotProd, dot_new, dot_old
-
+!
       character (len=256) :: ncname
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", hessian_evecs"
 
 # include "set_bounds.h"
 !
-      SourceFile=__FILE__ // ", hessian_evecs"
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Calculate converged eigenvectors of the Hessian.
@@ -6005,8 +5983,7 @@
       CALL netcdf_put_ivar (ng, model, HSS(ng)%name, 'nConvRitz',       &
      &                      nConvRitz, (/0/), (/0/),                    &
      &                      ncid = HSS(ng)%ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !-----------------------------------------------------------------------
 !  First, premultiply the converged eigenvectors of the tridiagonal
@@ -6088,8 +6065,7 @@
      &                     tl_ubar, tl_vbar,                            &
 # endif
      &                     tl_zeta)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute Hessian eigenvectors:
 !
@@ -6137,8 +6113,7 @@
         LwrtState2d(ng)=.TRUE.
         CALL wrt_hessian (ng, Lold, Lold)
         LwrtState2d(ng)=.FALSE.
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       END DO COLUMNS
 !
@@ -6189,8 +6164,7 @@
      &                   ad_ubar, ad_vbar,                              &
 # endif
      &                   ad_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Initialize nonlinear state arrays index L1 with just read Hessian
 !  vector in index Lold (initialize the summation):
@@ -6262,8 +6236,7 @@
      &                     tl_ubar, tl_vbar,                            &
 # endif
      &                     tl_zeta)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute dot product.
 !
@@ -6459,14 +6432,12 @@
         CALL netcdf_put_fvar (ng, model, HSS(ng)%name, 'Ritz',          &
      &                        Ritz(nvec:), (/nvec/), (/1/),             &
      &                        ncid = HSS(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         CALL netcdf_put_fvar (ng, model, HSS(ng)%name, 'Ritz_error',    &
      &                        RitzErr(nvec:), (/nvec/), (/1/),          &
      &                        ncid = HSS(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Replace record "nvec" of Hessian eigenvectors NetCDF with the
 !  normalized value in adjoint state arrays at index Lold.
@@ -6476,14 +6447,14 @@
         CALL wrt_hessian (ng, Lold, Lold)
         LwrtState2d(ng)=.FALSE.
         IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+     &                 MyFile)) RETURN
 
       END DO
-
+!
   10  FORMAT (/,' Computing converged Hessian eigenvectors...',/)
   20  FORMAT (a,'_',i3.3,'.nc')
   30  FORMAT (/,' Orthonormalizing converged Hessian eigenvectors...',/)
-
+!
       RETURN
       END SUBROUTINE hessian_evecs
 !
@@ -6607,17 +6578,20 @@
 !
 !  Local variable declarations.
 !
+      logical :: Ltrans
+!
       integer :: i, rec, Lscale
       integer :: L1 = 1
       integer :: L2 = 2
-
+!
       real(r8) :: fac, fac1, fac2
 
       real(r8), dimension(0:NstateVar(ng)) :: dot
-
-      logical :: Ltrans
-
+!
       character (len=256) :: ncname
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", new_cost"
 
 # include "set_bounds.h"
 !
@@ -6710,8 +6684,7 @@
      &                   nl_ubar, nl_vbar,                              &
 # endif
      &                   nl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Perform the summation:
 !
@@ -6789,8 +6762,7 @@
      &                 nl_ubar, nl_vbar,                                &
 # endif
      &                 nl_zeta)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute the dot-product of the initial Lanczos vector with the
 !  current increment.
@@ -6883,8 +6855,7 @@
      &                nl_ubar, nl_vbar,                                 &
 # endif
      &                nl_zeta)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Read the sum of previous v-space gradients from record 4 of ITL
@@ -6918,8 +6889,7 @@
      &                 nl_ubar, nl_vbar,                                &
 # endif
      &                 nl_zeta)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Perform the summation:
 !
@@ -7151,17 +7121,20 @@
       integer :: it
 # endif
       integer, parameter :: ndef = 1
-
+!
       real(r8) :: cff, fac, fac1, fac2, facritz
       real(r8), dimension(0:NstateVars) :: Dotprod
       real(r8), dimension(1:Ninner+1,Nouter) :: beta_lcz
       real(r8), dimension(Ninner,Ninner) :: zv_lcz
-
+!
       character (len=256) :: ncname
 
 # ifdef DISTRIBUTE
       character (len=3) :: op_handle
 # endif
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", precond"
 
 # include "set_bounds.h"
 !
@@ -7214,13 +7187,11 @@
 !
         CALL netcdf_get_fvar (ng, model, ncname, 'cg_beta',             &
      &                        beta_lcz)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         CALL netcdf_get_fvar (ng, model, ncname, 'cg_zv',               &
      &                        zv_lcz)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Determine the number of Ritz vectors to use.
 !  For Lritz=.TRUE., choose HvecErr to be larger.
@@ -7307,8 +7278,8 @@
      &                         nl_ubar, nl_vbar,                        &
 # endif
      &                         nl_zeta)
-              IF (FoundError(exit_flag, NoError, __LINE__,              &
-     &                       __FILE__)) RETURN
+              IF (FoundError(exit_flag, NoError,                        &
+     &                       __LINE__, MyFile)) RETURN
 !
 !  Compute the dot-product between the input vector and the Ninner+1
 !  Lanczos vector.
@@ -7401,8 +7372,7 @@
      &                     nl_ubar, nl_vbar,                            &
 # endif
      &                     nl_zeta)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Compute dot product between input vector and Hessian eigenvector.
 !  The input vector is in nl_var(L1) and the Hessian vector in
@@ -7552,8 +7522,7 @@
      &                       nl_ubar, nl_vbar,                          &
 # endif
      &                       nl_zeta)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
             IF (Lscale.eq.2) THEN
               fac2=-facritz*Dotprod(0)/cg_Ritz(Ninner+1-nvec,nol)
@@ -7599,7 +7568,7 @@
 
         END DO
       END DO
-
+!
  10   FORMAT (/,1x,'(',i3.3,',',i3.3,'): PRECOND -',1x,                 &
      &        a,1x,'preconditioning:',1x,a/)
  20   FORMAT (a,'_',i3.3,'.nc')
@@ -7611,7 +7580,7 @@
      &        'Processing Lanczos vectors from:',t58,a)
  60   FORMAT (1x,'(',i3.3,',',i3.3,'): PRECOND -',1x,                   &
      &        'Processing Hessian vectors from:',t58,a)
-
+!
       RETURN
       END SUBROUTINE precond
 !
@@ -7644,7 +7613,10 @@
 !
       integer :: status
 !
-      SourceFile=__FILE__  // ", cg_write"
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", cg_write"
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Write out conjugate gradient vectors.
@@ -7655,14 +7627,12 @@
       CALL netcdf_put_ivar (ng, model, DAV(ng)%name, 'outer',           &
      &                      outer, (/0/), (/0/),                        &
      &                      ncid = DAV(ng)%ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       CALL netcdf_put_ivar (ng, model, DAV(ng)%name, 'inner',           &
      &                      inner, (/0/), (/0/),                        &
      &                      ncid = DAV(ng)%ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Write out number of converged Ritz eigenvalues.
 !
@@ -7670,8 +7640,7 @@
         CALL netcdf_put_ivar (ng, model, DAV(ng)%name, 'nConvRitz',     &
      &                        nConvRitz, (/0/), (/0/),                  &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Write out converged Ritz eigenvalues.
@@ -7680,8 +7649,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'Ritz',          &
      &                        Ritz, (/1/), (/nConvRitz/),               &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Write out conjugate gradient norms.
@@ -7690,8 +7658,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_beta',       &
      &                        cg_beta, (/1,1/), (/Ninner+1,Nouter/),    &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Write out Lanczos algorithm coefficients.
@@ -7700,16 +7667,14 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_delta',      &
      &                        cg_delta, (/1,1/), (/Ninner,Nouter/),     &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
       IF (innLoop.gt.0) THEN
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_gamma',      &
      &                        cg_gamma, (/1,1/), (/Ninner,Nouter/),     &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Initial gradient normalization factor.
@@ -7718,8 +7683,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_Gnorm',      &
      &                        cg_Gnorm, (/1/), (/Nouter/),              &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Lanczos vector normalization factor.
@@ -7728,8 +7692,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_QG',         &
      &                        cg_QG, (/1,1/), (/Ninner,Nouter/),        &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Reduction in the gradient norm.
@@ -7738,8 +7701,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_Greduc',     &
      &                        cg_Greduc, (/1,1/), (/Ninner,Nouter/),    &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Lanczos recurrence tridiagonal matrix.
@@ -7748,8 +7710,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_Tmatrix',    &
      &                        cg_Tmatrix, (/1,1/), (/Ninner,3/),        &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Lanczos tridiagonal matrix, upper diagonal elements.
@@ -7758,8 +7719,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_zu',         &
      &                        cg_zu, (/1,1/), (/Ninner,Nouter/),        &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Eigenvalues of Lanczos recurrence relationship.
@@ -7768,8 +7728,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_Ritz',       &
      &                        cg_Ritz, (/1,1/), (/Ninner,Nouter/),      &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Eigenvalues relative error.
@@ -7778,8 +7737,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_RitzErr',    &
      &                        cg_RitzErr, (/1,1/), (/Ninner,Nouter/),   &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Eigenvectors of Lanczos recurrence relationship.
@@ -7788,8 +7746,7 @@
         CALL netcdf_put_fvar (ng, model, DAV(ng)%name, 'cg_zv',         &
      &                        cg_zv, (/1,1/), (/Ninner,Ninner/),        &
      &                        ncid = DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Write out Lanczos algorithm coefficients into Lanczos vectors
@@ -7801,38 +7758,32 @@
         CALL netcdf_put_fvar (ng, model, ADM(ng)%name, 'cg_beta',       &
      &                        cg_beta, (/1,1/), (/Ninner+1,Nouter/),    &
      &                        ncid = ADM(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         CALL netcdf_put_fvar (ng, model, ADM(ng)%name, 'cg_delta',      &
      &                        cg_delta, (/1,1/), (/Ninner,Nouter/),     &
      &                        ncid = ADM(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         CALL netcdf_put_fvar (ng, model, ADM(ng)%name, 'cg_zv',         &
      &                        cg_zv, (/1,1/), (/Ninner,Ninner/),        &
      &                        ncid = ADM(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # ifdef EVOLVED_LCZ
         CALL netcdf_put_fvar (ng, model, HSS(ng)%name, 'cg_beta',       &
      &                        cg_beta, (/1,1/), (/Ninner+1,Nouter/),    &
      &                        ncid = HSS(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         CALL netcdf_put_fvar (ng, model, HSS(ng)%name, 'cg_delta',      &
      &                        cg_delta, (/1,1/), (/Ninner,Nouter/),     &
      &                        ncid = HSS(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
         CALL netcdf_put_fvar (ng, model, HSS(ng)%name, 'cg_zv',         &
      &                        cg_zv, (/1,1/), (/Ninner,Ninner/),        &
      &                        ncid = HSS(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
       END IF
 !
@@ -7872,7 +7823,10 @@
 !
       integer :: status
 !
-      SourceFile=__FILE__ // ", cg_read"
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", cg_read_cgradient"
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  If split 4D-Var and outer>1, Read in conjugate gradient variables
@@ -7883,8 +7837,7 @@
 !
       IF (DAV(ng)%ncid.eq.-1) THEN
         CALL netcdf_open (ng, model, DAV(ng)%name, 1, DAV(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
 !  Read in number of converged Ritz eigenvalues
@@ -7894,8 +7847,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/outLoop-1/),                      &
      &                      total = (/1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in converged Ritz eigenvalues.
 !
@@ -7904,8 +7856,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1/),                              &
      &                      total = (/Ninner/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in conjugate gradient "beta" coefficients.
 !
@@ -7914,8 +7865,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1,1/),                            &
      &                      total = (/Ninner+1,outLoop-1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in conjugate gradient "delta" coefficients.
 !
@@ -7924,8 +7874,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1,1/),                            &
      &                      total = (/Ninner,outLoop-1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in conjugate gradient "gamma" coefficients.
 !
@@ -7934,8 +7883,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1,1/),                            &
      &                      total = (/Ninner,outLoop-1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in initial gradient normalization factor.
 !
@@ -7944,8 +7892,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1/),                              &
      &                      total = (/outLoop-1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in Lanczos vector normalization factor.
 !
@@ -7954,8 +7901,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1,1/),                            &
      &                      total = (/Ninner+1,outLoop-1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in reduction in the gradient norm.
 !
@@ -7964,8 +7910,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1,1/),                            &
      &                      total = (/Ninner,outLoop-1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in tridiagonal matrix upper diagonal elements.
 !
@@ -7974,8 +7919,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1,1/),                            &
      &                      total = (/Ninner,outLoop-1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in eigenvalues of Lanczos recurrence relationship.
 !
@@ -7984,8 +7928,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1,1/),                            &
      &                      total = (/Ninner,outLoop-1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read eigenvalues relative error.
 !
@@ -7994,8 +7937,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1,1/),                            &
      &                      total = (/Ninner,outLoop-1/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in eigenvectors of Lanczos recurrence relationship.
 !
@@ -8004,8 +7946,7 @@
      &                      ncid = DAV(ng)%ncid,                        &
      &                      start = (/1,1/),                            &
      &                      total = (/Ninner,Ninner/))
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
       RETURN
       END SUBROUTINE cg_read_cgradient

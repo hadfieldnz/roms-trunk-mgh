@@ -32,14 +32,14 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
       PUBLIC  :: ROMS_initialize
       PUBLIC  :: ROMS_run
       PUBLIC  :: ROMS_finalize
-
+!
       CONTAINS
-
+!
       SUBROUTINE ROMS_initialize (first, mpiCOMM)
 !
 !=======================================================================
@@ -68,13 +68,13 @@
 !  Imported variable declarations.
 !
       logical, intent(inout) :: first
-
+!
       integer, intent(in), optional :: mpiCOMM
 !
 !  Local variable declarations.
 !
       logical :: allocate_vars = .TRUE.
-
+!
 #ifdef DISTRIBUTE
       integer :: MyError, MySize
 #endif
@@ -82,6 +82,9 @@
 #ifdef _OPENMP
       integer :: my_threadnum
 #endif
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ROMS_initialize"
 
 #ifdef DISTRIBUTE
 !
@@ -118,8 +121,7 @@
 !  grids and dimension parameters are known.
 !
         CALL inp_par (iNLM)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Set domain decomposition tile partition range.  This range is
 !  computed only once since the "first_tile" and "last_tile" values
@@ -152,7 +154,7 @@
         DO ng=1,Ngrids
 !$OMP PARALLEL
           DO thread=THREAD_RANGE
-            CALL wclock_on (ng, iNLM, 0, __LINE__, __FILE__)
+            CALL wclock_on (ng, iNLM, 0, __LINE__, MyFile)
           END DO
 !$OMP END PARALLEL
         END DO
@@ -180,10 +182,10 @@
 # endif
       END DO
 #endif
-
+!
       RETURN
       END SUBROUTINE ROMS_initialize
-
+!
       SUBROUTINE ROMS_run (RunInterval)
 !
 !=======================================================================
@@ -207,6 +209,9 @@
 !  Local variable declarations.
 !
       integer :: ng
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ROMS_run"
 !
 !-----------------------------------------------------------------------
 !  Run Picard iteratons.
@@ -246,8 +251,7 @@
 !$OMP PARALLEL
           CALL rp_initial (ng)
 !$OMP END PARALLEL
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END DO
 !
 !  Time-step representers tangent linear model
@@ -265,22 +269,19 @@
         CALL rp_main2d (RunInterval)
 #endif
 !$OMP END PARALLEL
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Close IO and re-initialize NetCDF switches.
 !
         DO ng=1,Ngrids
           IF (TLM(ng)%ncid.ne.-1) THEN
             CALL netcdf_close (ng, iRPM, TLM(ng)%ncid)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END IF
 
           IF (FWD(ng)%ncid.ne.-1) THEN
             CALL netcdf_close (ng, iRPM, FWD(ng)%ncid)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END IF
         END DO
 
@@ -292,10 +293,10 @@
      &        /,5x,'  Forward file: ',a,/)
  30   FORMAT (/,1x,a,1x,'ROMS/TOMS: started time-stepping:',            &
      &        ' (Grid: ',i2.2,' TimeSteps: ',i8.8,' - ',i8.8,')',/)
-
+!
       RETURN
       END SUBROUTINE ROMS_run
-
+!
       SUBROUTINE ROMS_finalize
 !
 !=======================================================================
@@ -313,6 +314,9 @@
 !  Local variable declarations.
 !
       integer :: Fcount, ng, thread
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", ROMS_finalize"
 !
 !-----------------------------------------------------------------------
 !  If blowing-up, save latest model state into RESTART NetCDF file.
@@ -353,7 +357,7 @@
       DO ng=1,Ngrids
 !$OMP PARALLEL
         DO thread=THREAD_RANGE
-          CALL wclock_off (ng, iNLM, 0, __LINE__, __FILE__)
+          CALL wclock_off (ng, iNLM, 0, __LINE__, MyFile)
         END DO
 !$OMP END PARALLEL
       END DO
@@ -370,7 +374,7 @@
         CALL close_inp (ng, iNLM)
       END DO
       CALL close_out
-
+!
       RETURN
       END SUBROUTINE ROMS_finalize
 

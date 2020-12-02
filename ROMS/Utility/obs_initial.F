@@ -30,22 +30,25 @@
 !  Imported variable declarations.
 !
       logical, intent(in) :: backward
-
+!
       integer, intent(in) :: ng, model
 !
 !  Local variable declarations.
 !
       logical, dimension(NV) :: got_var(NV)
-
+!
       integer :: Ifirst, i, nvd, recdim, status
       integer :: Vsize(4)
-
+!
 # ifdef WEAK_CONSTRAINT
       real(r8), parameter :: IniVal = 0.0_r8
 # endif
       real(r8) :: tend
 !
-      SourceFile=__FILE__
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
+      SourceFile=MyFile
 !
 !-----------------------------------------------------------------------
 !  Inquire about the contents of observation NetCDF file:  Inquire about
@@ -57,8 +60,7 @@
 !  Open observations NetCDF file.
 !
         CALL netcdf_open (ng, model, OBS(ng)%name, 1, OBS(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
           WRITE (stdout,10) TRIM(OBS(ng)%name)
           RETURN
         END IF
@@ -67,8 +69,7 @@
 !
         CALL netcdf_inq_var (ng, model, OBS(ng)%name,                   &
      &                       OBS(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Initialize logical switches.
 !
@@ -321,6 +322,7 @@
      &        /,12x,'in input NetCDF file: ',a)
   30  FORMAT (/,' OBS_INITIAL - No are observations available for',     &
      &          ' time window (days): ',/,12x,f12.4,' - ',f12.4,/)
+!
       RETURN
       END SUBROUTINE obs_initial
 #else

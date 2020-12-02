@@ -33,6 +33,7 @@
 !  Imported variable declarations
 !
       logical, intent(in) :: Lwrite
+!
       integer, intent(in) :: model, inp, out
 !
 !  Local variable declarations.
@@ -72,6 +73,9 @@
       character (len=50 ) :: label
       character (len=256) :: fname, line
       character (len=256), dimension(nCval) :: Cval
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
 !-----------------------------------------------------------------------
 !  Initialize.
@@ -1431,8 +1435,7 @@
             END IF
           END IF
           exit_flag=4
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
   40      CONTINUE
         END DO
       END IF

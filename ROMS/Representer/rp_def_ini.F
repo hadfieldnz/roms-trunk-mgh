@@ -67,8 +67,11 @@
 !
       character (len=120) :: Vinfo(Natt)
       character (len=256) :: ncname
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
-      SourceFile=__FILE__
+      SourceFile=MyFile
 
 # if defined ADJUST_BOUNDARY || \
      defined ADJUST_STFLUX   || defined ADJUST_WSTRESS
@@ -78,15 +81,13 @@
 !  variables.
 !=======================================================================
 !
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       ncname=IRP(ng)%name
 !
 !  Open representer model initialization file for read/write.
 !
       CALL netcdf_open (ng, iRPM, ncname, 1, IRP(ng)%ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
         IF (Master) WRITE (stdout,10) TRIM(ncname)
         RETURN
       END IF
@@ -95,15 +96,13 @@
 !
       CALL netcdf_check_dim (ng, iRPM, ncname,                          &
      &                       ncid = IRP(ng)%ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Inquire about the variables.
 !
       CALL netcdf_inq_var (ng, iRPM, ncname,                            &
      &                     ncid = IRP(ng)%ncid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Check if surface forcing variables have been already defined.
 !
@@ -195,8 +194,7 @@
 !
       IF (Ldefine) THEN
         CALL netcdf_redef (ng, IRPM, ncname, IRP(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
           IF (Master) WRITE (stdout,20) TRIM(ncname)
           RETURN
         END IF
@@ -262,30 +260,26 @@
         IF (.not.got_boundary) THEN
           status=def_dim(ng, iRPM, IRP(ng)%ncid, ncname, 'boundary',    &
      &                   4, DimIDs(14))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
         IF (.not.got_IorJ) THEN
           status=def_dim(ng, iRPM, IRP(ng)%ncid, ncname, 'IorJ',        &
      &                   IOBOUNDS(ng)%IorJ, IorJdim)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 #  endif
 #  if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
         IF (.not.got_frc_adjust) THEN
           status=def_dim(ng, iRPM, IRP(ng)%ncid, ncname, 'frc_adjust',  &
      &                   Nfrec(ng), frecdim)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 #  endif
 #  ifdef ADJUST_BOUNDARY
         IF (.not.got_obc_adjust) THEN
           status=def_dim(ng, iRPM, IRP(ng)%ncid, ncname, 'obc_adjust',  &
      &                   Nbrec(ng), brecdim)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 #  endif
 !
@@ -361,8 +355,7 @@
           status=def_var(ng, iRPM, IRP(ng)%ncid, IRP(ng)%Vid(ifield),   &
      &                   NF_FOUT, 4, t2dobc, Aval, Vinfo, ncname,       &
      &                   SetFillVal = .FALSE.)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 !
 !  Define 2D U-momentum component open boundaries.
@@ -378,8 +371,7 @@
           status=def_var(ng, iRPM, IRP(ng)%ncid, IRP(ng)%Vid(ifield),   &
      &                   NF_FOUT, 4, t2dobc, Aval, Vinfo, ncname,       &
      &                   SetFillVal = .FALSE.)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 !
 !  Define 2D V-momentum component open boundaries.
@@ -395,8 +387,7 @@
           status=def_var(ng, iRPM, IRP(ng)%ncid, IRP(ng)%Vid(ifield),   &
      &                   NF_FOUT, 4, t2dobc, Aval, Vinfo, ncname,       &
      &                   SetFillVal = .FALSE.)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 
 #   ifdef SOLVE3D
@@ -414,8 +405,7 @@
           status=def_var(ng, iRPM, IRP(ng)%ncid, IRP(ng)%Vid(ifield),   &
      &                   NF_FOUT, 5, t3dobc, Aval, Vinfo, ncname,       &
      &                   SetFillVal = .FALSE.)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 !
 !  Define 3D V-momentum component open boundaries.
@@ -431,8 +421,7 @@
           status=def_var(ng, iRPM, IRP(ng)%ncid, IRP(ng)%Vid(ifield),   &
      &                   NF_FOUT, 5, t3dobc, Aval, Vinfo, ncname,       &
      &                   SetFillVal = .FALSE.)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 !
 !  Define tracer type variables open boundaries.
@@ -449,8 +438,7 @@
             status=def_var(ng, iRPM, IRP(ng)%ncid, IRP(ng)%Vid(ifield), &
      &                     NF_FOUT, 5, t3dobc, Aval, Vinfo, ncname,     &
      &                     SetFillVal = .FALSE.)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END IF
         END DO
 #   endif
@@ -470,8 +458,7 @@
           Aval(5)=REAL(u2dvar,r8)
           status=def_var(ng, iRPM, IRP(ng)%ncid, IRP(ng)%Vid(idUsms),   &
      &                   NF_FOUT, 4, u4dfrc, Aval, Vinfo, ncname)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 !
 !  Define surface V-momentum stress.
@@ -487,8 +474,7 @@
           Aval(5)=REAL(v2dvar,r8)
           status=def_var(ng, iRPM, IRP(ng)%ncid, IRP(ng)%Vid(idVsms),   &
      &                   NF_FOUT, 4, v4dfrc, Aval, Vinfo, ncname)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 #  endif
 #  if defined ADJUST_STFLUX && defined SOLVE3D
@@ -515,8 +501,7 @@
             status=def_var(ng, iRPM, IRP(ng)%ncid,                      &
      &                     IRP(ng)%Vid(idTsur(itrc)), NF_FOUT,          &
      &                     4, t4dfrc, Aval, Vinfo, ncname)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           END IF
         END DO
 #  endif
@@ -526,8 +511,7 @@
 !-----------------------------------------------------------------------
 !
         CALL netcdf_enddef (ng, iRPM, ncname, IRP(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       END IF DEFINE
 # endif
@@ -545,8 +529,7 @@
 !  Open representer model initialization file for read/write.
 !
         CALL netcdf_open (ng, iRPM, TRIM(ncname), 1, IRP(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) THEN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
           WRITE (stdout,10) TRIM(ncname)
           RETURN
         END IF
@@ -555,15 +538,13 @@
 !
         CALL netcdf_check_dim (ng, iRPM, ncname,                        &
      &                         ncid = IRP(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Inquire about the variables.
 !
         CALL netcdf_inq_var (ng, iRPM, ncname,                          &
      &                         ncid = IRP(ng)%ncid)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Initialize logical switches.
 !

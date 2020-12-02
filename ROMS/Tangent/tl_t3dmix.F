@@ -18,7 +18,7 @@
 !=======================================================================
 !
       implicit none
-
+!
       PRIVATE
 #  ifdef TS_DIF2
       PUBLIC tl_t3dmix2
@@ -26,9 +26,9 @@
 #  ifdef TS_DIF4
       PUBLIC tl_t3dmix4
 #  endif
-
+!
       CONTAINS
-
+!
 #  ifdef TS_DIF2
 #   if defined MIX_S_TS
 #    include "tl_t3dmix2_s.h"

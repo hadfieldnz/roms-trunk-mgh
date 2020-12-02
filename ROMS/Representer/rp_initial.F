@@ -83,12 +83,15 @@
 !  Local variable declarations.
 !
       logical :: update = .FALSE.
-
+!
       integer :: LBi, UBi, LBj, UBj
       integer :: Fcount, IniRec, Tindex
       integer :: thread, tile
-
+!
       real(dp) :: my_dstart
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
 !=======================================================================
 !   Initialize model variables.
@@ -184,7 +187,7 @@
 !-----------------------------------------------------------------------
 !
       DO thread=THREAD_RANGE
-        CALL wclock_on (ng, iRPM, 2, __LINE__, __FILE__)
+        CALL wclock_on (ng, iRPM, 2, __LINE__, MyFile)
       END DO
 # endif
 
@@ -203,8 +206,7 @@
         LdefIRP(ng)=.TRUE.
 #  endif
         CALL rp_def_ini (ng)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
       IniRec=IRP(ng)%Rindex
 
@@ -376,8 +378,7 @@
 # endif
       END IF
 # endif
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef WET_DRY
 !
@@ -392,8 +393,7 @@
 #  ifdef DISTRIBUTE
         CALL mp_bcasti (ng, iRPM, exit_flag)
 #  endif
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       ELSE
         DO tile=first_tile(ng),last_tile(ng),+1
           CALL wetdry (ng, tile, Tindex(ng), .TRUE.)
@@ -412,8 +412,7 @@
 !-----------------------------------------------------------------------
 !
       CALL obs_initial (ng, iRPM, .FALSE.)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 # endif
 
 # if defined ANA_PERTURB && defined SANITY_CHECK
@@ -489,8 +488,7 @@
 # ifdef DISTRIBUTE
       CALL mp_bcasti (ng, iRPM, exit_flag)
 # endif
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !-----------------------------------------------------------------------
 !  Read in initial forcing, climatology and assimilation data from
@@ -500,8 +498,7 @@
 !
       CALL rp_get_idata (ng)
       CALL rp_get_data (ng)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef MASKING
 !
@@ -601,7 +598,7 @@
 !-----------------------------------------------------------------------
 !
       DO thread=THREAD_RANGE
-        CALL wclock_off (ng, iRPM, 2, __LINE__, __FILE__)
+        CALL wclock_off (ng, iRPM, 2, __LINE__, MyFile)
       END DO
 # endif
 !

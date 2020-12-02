@@ -17,9 +17,9 @@
 !=======================================================================
 !
       implicit none
-
+!
       PUBLIC  :: state_initialize
-
+!
       CONTAINS
 !
 !***********************************************************************
@@ -478,7 +478,7 @@
 # endif
 
 #endif
-
+!
       RETURN
       END SUBROUTINE state_initialize
 

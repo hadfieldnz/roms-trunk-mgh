@@ -78,10 +78,13 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, iRPM, 17, __LINE__, __FILE__)
+      CALL wclock_on (ng, iRPM, 17, __LINE__, MyFile)
 # endif
       CALL rp_bulk_flux_tile (ng, tile,                                 &
      &                        LBi, UBi, LBj, UBj,                       &
@@ -136,9 +139,9 @@
      &                        FORCES(ng) % svstr,                       &
      &                        FORCES(ng) % tl_svstr)
 # ifdef PROFILE
-      CALL wclock_off (ng, iRPM, 17, __LINE__, __FILE__)
+      CALL wclock_off (ng, iRPM, 17, __LINE__, MyFile)
 # endif
-
+!
       RETURN
       END SUBROUTINE rp_bulk_flux
 !

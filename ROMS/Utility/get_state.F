@@ -110,8 +110,11 @@
       character (len=15) :: Tstring, attnam, tvarnam
       character (len=22) :: t_code
       character (len=40) :: tunits
+
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
 !
-      SourceFile=__FILE__
+      SourceFile=MyFile
 
 #ifdef ADJUST_BOUNDARY
 !
@@ -183,8 +186,7 @@
 !
 !  Turn on time wall clock.
 !
-      CALL wclock_on (ng, IDmod, 80, __LINE__,                          &
-     &                __FILE__)
+      CALL wclock_on (ng, IDmod, 80, __LINE__, MyFile)
 #endif
 !
 !  Set switch to process variables for nonlinear model perfect restart.
@@ -218,8 +220,7 @@
 !  Open input NetCDF file.
 !
       CALL netcdf_open (ng, IDmod, ncname, 0, ncINPid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) THEN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) THEN
         IF (Master) WRITE (stdout,10) string, TRIM(ncname)
         RETURN
       END IF
@@ -228,9 +229,8 @@
 !
       CALL checkvars (ng, model, ncname, ncINPid, string, Nrec, NV,     &
      &                tvarnam, get_var, have_var)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
-      SourceFile=__FILE__
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+      SourceFile=MyFile
 
 #if defined DEBUGGING || defined NO_LBC_ATT
 !
@@ -247,8 +247,7 @@
 !
       IF (((model.eq.0).or.(model.eq.iNLM)).and.(nrrec(ng).ne.0)) THEN
         CALL lbc_getatt (ng, model, ncINPid, ncname, 'NLM_LBC', LBC)
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 #endif
 !
@@ -260,8 +259,7 @@
      &                     VarID = varid,                               &
      &                     nVarDim =  nvdim,                            &
      &                     nVarAtt = nvatts)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Allocate input time variable and read its value(s).  Recall that
 !  input time variable is a one-dimensional array with one or several
@@ -272,8 +270,7 @@
       CALL netcdf_get_time (ng, IDmod, ncname, TRIM(tvarnam),           &
      &                      Rclock%DateNumber, TimeVar,                 &
      &                      ncid = ncINPid)
-      IF (FoundError(exit_flag, NoError, __LINE__,                      &
-     &               __FILE__)) RETURN
+      IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  If using the latest time record from input NetCDF file as the
 !  initialization record, assign input time.
@@ -438,49 +435,42 @@
      &                          ncid = ncINPid,                         &
      &                          start = (/InpRec/),                     &
      &                          total = (/1/))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           CALL netcdf_get_ivar (ng, IDmod, ncname, 'nrhs',              &
      &                          nrhs(ng:),                              &
      &                          ncid = ncINPid,                         &
      &                          start = (/InpRec/),                     &
      &                          total = (/1/))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           CALL netcdf_get_ivar (ng, IDmod, ncname, 'nnew',              &
      &                          nnew(ng:),                              &
      &                          ncid = ncINPid,                         &
      &                          start = (/InpRec/),                     &
      &                          total = (/1/))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 #  endif
           CALL netcdf_get_ivar (ng, IDmod, ncname, 'kstp',              &
      &                          kstp(ng:),                              &
      &                          ncid = ncINPid,                         &
      &                          start = (/InpRec/),                     &
      &                          total = (/1/))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
-
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           CALL netcdf_get_ivar (ng, IDmod, ncname, 'krhs',              &
      &                          krhs(ng:),                              &
      &                          ncid = ncINPid,                         &
      &                          start = (/InpRec/),                     &
      &                          total = (/1/))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
           CALL netcdf_get_ivar (ng, IDmod, ncname, 'knew',              &
      &                          knew(ng:),                              &
      &                          ncid = ncINPid,                         &
      &                          start = (/InpRec/),                     &
      &                          total = (/1/))
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
 # endif
 # if defined SEDIMENT && defined SED_MORPH
@@ -506,8 +496,7 @@
 #  else
      &                        GRID(ng) % h)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idbath)),        &
      &                            InpRec, TRIM(ncname)
@@ -532,8 +521,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -582,8 +571,7 @@
      &                          OCEAN(ng) % zeta(:,:,Tindex))
 # endif
             END IF
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idFsur)),        &
      &                            InpRec, TRIM(ncname)
@@ -608,8 +596,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -636,8 +624,7 @@
 # else
      &                        OCEAN(ng) % rzeta)
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idRzet)),        &
      &                            InpRec, TRIM(ncname)
@@ -662,8 +649,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -711,8 +698,7 @@
      &                          OCEAN(ng) % ubar(:,:,Tindex))
 # endif
             END IF
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -737,8 +723,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -765,8 +751,7 @@
 # else
      &                        OCEAN(ng) % rubar)
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idRu2d)),        &
      &                            InpRec, TRIM(ncname)
@@ -791,8 +776,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -840,8 +825,7 @@
      &                          OCEAN(ng) % vbar(:,:,Tindex))
 # endif
             END IF
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -866,8 +850,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -894,8 +878,7 @@
 # else
      &                        OCEAN(ng) % rvbar)
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idRv2d)),        &
      &                            InpRec, TRIM(ncname)
@@ -920,8 +903,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -967,8 +950,7 @@
      &                          OCEAN(ng) % u(:,:,:,Tindex))
 #  endif
             END IF
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -992,8 +974,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1020,8 +1002,7 @@
 #  else
      &                        OCEAN(ng) % ru)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idRu3d)),        &
      &                            InpRec, TRIM(ncname)
@@ -1045,8 +1026,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1090,8 +1071,7 @@
      &                          OCEAN(ng) % v(:,:,:,Tindex))
 #  endif
             END IF
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -1116,8 +1096,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1144,8 +1124,7 @@
 #  else
      &                        OCEAN(ng) % rv)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idRv3d)),        &
      &                            InpRec, TRIM(ncname)
@@ -1170,8 +1149,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1216,8 +1195,7 @@
      &                            OCEAN(ng) % t(:,:,:,Tindex,itrc))
 #  endif
               END IF
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTvar(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -1242,8 +1220,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -1273,8 +1251,7 @@
 #   else
      &                        MIXING(ng) % AKv)
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVvis)),        &
      &                            InpRec, TRIM(ncname)
@@ -1306,8 +1283,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1334,8 +1311,7 @@
 #   else
      &                        MIXING(ng) % AKt(:,:,:,itemp))
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idTdif)),        &
      &                            InpRec, TRIM(ncname)
@@ -1367,8 +1343,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1396,8 +1372,7 @@
 #    else
      &                        MIXING(ng) % AKt(:,:,:,isalt))
 #    endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idSdif)),        &
      &                            InpRec, TRIM(ncname)
@@ -1429,8 +1404,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1460,8 +1435,7 @@
 #   else
      &                        MIXING(ng) % Hsbl)
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idHsbl)),        &
      &                            InpRec, TRIM(ncname)
@@ -1486,8 +1460,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1516,8 +1490,7 @@
 # else
      &                        MIXING(ng) % Hbbl)
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idHbbl)),        &
      &                            InpRec, TRIM(ncname)
@@ -1542,8 +1515,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1573,8 +1546,7 @@
 #   else
      &                        MIXING(ng) % Ghats(:,:,:,itrc))
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idGhat(itrc))),  &
      &                            InpRec, TRIM(ncname)
@@ -1599,8 +1571,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1630,8 +1602,7 @@
 #   else
      &                        MIXING(ng) % tke)
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idMtke)),        &
      &                            InpRec, TRIM(ncname)
@@ -1656,8 +1627,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1684,8 +1655,7 @@
 #   else
      &                        MIXING(ng) % gls)
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idMtls)),        &
      &                            InpRec, TRIM(ncname)
@@ -1710,8 +1680,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1738,8 +1708,7 @@
 #   else
      &                        MIXING(ng) % Lscale)
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVmLS)),        &
      &                            InpRec, TRIM(ncname)
@@ -1764,8 +1733,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1792,8 +1761,7 @@
 #   else
      &                        MIXING(ng) % Akk)
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVmKK)),        &
      &                            InpRec, TRIM(ncname)
@@ -1818,8 +1786,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1847,8 +1815,7 @@
 #    else
      &                        MIXING(ng) % Akp)
 #    endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVmKP)),        &
      &                            InpRec, TRIM(ncname)
@@ -1873,8 +1840,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -1906,8 +1873,7 @@
 #   else
      &                          SEDBED(ng) % bed_frac(:,:,:,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idfrac(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -1933,8 +1899,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -1961,8 +1927,7 @@
 #   else
      &                          SEDBED(ng) % bed_mass(:,:,:,Tindex,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idBmas(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -1988,8 +1953,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -2018,8 +1983,7 @@
 #   else
      &                          SEDBED(ng) % bed(:,:,:,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idSbed(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -2045,8 +2009,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -2077,8 +2041,7 @@
 #    else
      &                          SEDBED(ng) % bedldu(:,:,i))
 #    endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idUbld(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -2104,8 +2067,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -2130,8 +2093,7 @@
 #    else
      &                          SEDBED(ng) % bedldv(:,:,i))
 #    endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idVbld(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -2157,8 +2119,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -2191,8 +2153,7 @@
 #   else
      &                          SEDBED(ng) % bottom(:,:,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idBott(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -2218,8 +2179,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -2268,8 +2229,7 @@
 # else
      &                        OCEAN(ng) % tl_zeta(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idFsur)),        &
      &                            InpRec, TRIM(ncname)
@@ -2293,8 +2253,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2322,8 +2282,7 @@
      &                             BOUNDARY(ng) % tl_zeta_obc(:,:,:,    &
      &                                                        Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -2347,8 +2306,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2376,8 +2335,7 @@
 # else
      &                        OCEAN(ng) % tl_ubar(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -2401,8 +2359,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2430,8 +2388,7 @@
      &                             BOUNDARY(ng) % tl_ubar_obc(:,:,:,    &
      &                                                        Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -2455,8 +2412,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2484,8 +2441,7 @@
 # else
      &                        OCEAN(ng) % tl_vbar(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -2509,8 +2465,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2538,8 +2494,7 @@
      &                             BOUNDARY(ng) % tl_vbar_obc(:,:,:,    &
      &                                                        Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -2563,8 +2518,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2594,8 +2549,7 @@
 #  else
      &                        FORCES(ng) % tl_ustr(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -2621,8 +2575,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2650,8 +2604,7 @@
 #  else
      &                        FORCES(ng) % tl_vstr(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -2677,8 +2630,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2708,8 +2661,7 @@
 #  else
      &                        OCEAN(ng) % tl_u(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -2733,8 +2685,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2762,8 +2714,7 @@
      &                             BOUNDARY(ng) % tl_u_obc(:,:,:,:,     &
      &                                                     Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -2787,8 +2738,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2816,8 +2767,7 @@
 #  else
      &                        OCEAN(ng) % tl_v(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -2841,8 +2791,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2870,8 +2820,7 @@
      &                             BOUNDARY(ng) % tl_v_obc(:,:,:,:,     &
      &                                                     Tindex))
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -2895,8 +2844,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -2925,8 +2874,7 @@
 #  else
      &                          OCEAN(ng) % tl_t(:,:,:,Tindex,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTvar(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -2951,8 +2899,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -2982,8 +2930,7 @@
      &                               BOUNDARY(ng) % tl_t_obc(:,:,:,:,   &
      &                                                    Tindex,itrc))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,ifield)),      &
      &                              InpRec, TRIM(ncname)
@@ -3007,8 +2954,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -3043,8 +2990,7 @@
      &                          FORCES(ng)% tl_tflux(:,:,:,             &
      &                                               Tindex,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTsur(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -3070,8 +3016,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -3103,8 +3049,7 @@
 #  else
      &                          SEDBED(ng) % tl_bed_frac(:,:,:,i))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idfrac(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -3129,8 +3074,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -3160,8 +3105,7 @@
      &                          SEDBED(ng) % tl_bed_mass(:,:,:,         &
      &                                                   Tindex,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idBmas(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -3186,8 +3130,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -3216,8 +3160,7 @@
 #   else
      &                          SEDBED(ng) % tl_bed(:,:,:,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idSbed(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -3242,8 +3185,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -3274,8 +3217,7 @@
 #    else
      &                          SEDBED(ng) % tl_bedldu(:,:,i))
 #    endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idUbld(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -3300,8 +3242,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -3326,8 +3268,7 @@
 #    else
      &                          SEDBED(ng) % tl_bedldv(:,:,i))
 #    endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idVbld(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -3352,8 +3293,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -3386,8 +3327,7 @@
 #   else
      &                          SEDBED(ng) % tl_bottom(:,:,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idBott(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -3412,8 +3352,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -3453,8 +3393,7 @@
 # else
      &                        OCEAN(ng) % ad_zeta(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idFsur)),        &
      &                            InpRec, TRIM(ncname)
@@ -3478,8 +3417,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -3507,8 +3446,7 @@
      &                             BOUNDARY(ng) % ad_zeta_obc(:,:,:,    &
      &                                                        Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -3532,8 +3470,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -3561,8 +3499,7 @@
 # else
      &                        OCEAN(ng) % ad_ubar(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -3586,8 +3523,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -3615,8 +3552,7 @@
      &                             BOUNDARY(ng) % ad_ubar_obc(:,:,:,    &
      &                                                        Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -3640,8 +3576,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -3669,8 +3605,7 @@
 # else
      &                        OCEAN(ng) % ad_vbar(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -3694,8 +3629,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -3723,8 +3658,7 @@
      &                             BOUNDARY(ng) % ad_vbar_obc(:,:,:,    &
      &                                                        Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -3749,8 +3683,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -3780,8 +3714,7 @@
 #  else
      &                        FORCES(ng) % ad_ustr(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -3807,8 +3740,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -3836,8 +3769,7 @@
 #  else
      &                        FORCES(ng) % ad_vstr(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -3863,8 +3795,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -3893,8 +3825,7 @@
 #  else
      &                        OCEAN(ng) % ad_u(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -3919,8 +3850,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -3948,8 +3879,7 @@
      &                             BOUNDARY(ng) % ad_u_obc(:,:,:,:,     &
      &                                                     Tindex))
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -3973,8 +3903,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -4002,8 +3932,7 @@
 #  else
      &                        OCEAN(ng) % ad_v(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -4028,8 +3957,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -4057,8 +3986,7 @@
      &                             BOUNDARY(ng) % ad_v_obc(:,:,:,:,     &
      &                                                     Tindex))
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -4082,8 +4010,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -4112,8 +4040,7 @@
 #  else
      &                          OCEAN(ng) % ad_t(:,:,:,Tindex,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTvar(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -4138,8 +4065,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -4169,8 +4096,7 @@
      &                               BOUNDARY(ng) % ad_t_obc(:,:,:,:,   &
      &                                                    Tindex,itrc))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,ifield)),      &
      &                              InpRec, TRIM(ncname)
@@ -4194,8 +4120,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -4229,8 +4155,7 @@
      &                          FORCES(ng) % ad_tflux(:,:,:,            &
      &                                                Tindex,itrc))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTsur(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -4256,8 +4181,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -4289,8 +4214,7 @@
 #   else
      &                          SEDBED(ng) % ad_bed_frac(:,:,:,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idfrac(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -4315,8 +4239,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -4345,8 +4269,7 @@
      &                          SEDBED(ng) % ad_bed_mass(:,:,:,         &
      &                                                   Tindex,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idBmas(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -4371,8 +4294,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -4401,8 +4324,7 @@
 #   else
      &                          SEDBED(ng) % ad_bed(:,:,:,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idSbed(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -4427,8 +4349,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -4458,8 +4380,7 @@
 #    else
      &                          SEDBED(ng) % ad_bedldu(:,:,i))
 #    endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idUbld(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -4484,8 +4405,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -4510,8 +4431,7 @@
 #    else
      &                          SEDBED(ng) % ad_bedldv(:,:,i))
 #    endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idVbld(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -4536,8 +4456,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -4569,8 +4489,7 @@
 #   else
      &                          SEDBED(ng) % ad_bottom(:,:,i))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idBott(i))),   &
      &                              InpRec, TRIM(ncname)
@@ -4595,8 +4514,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -4639,8 +4558,7 @@
 # else
      &                        OCEAN(ng) % b_zeta(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idFsur)),        &
      &                            InpRec, TRIM(ncname)
@@ -4672,8 +4590,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -4700,8 +4618,7 @@
 # else
      &                        OCEAN(ng) % b_ubar(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -4732,8 +4649,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -4760,8 +4677,7 @@
 # else
      &                        OCEAN(ng) % b_vbar(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -4792,8 +4708,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
 
@@ -4822,8 +4738,7 @@
 #  else
      &                        OCEAN(ng) % b_u(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -4854,8 +4769,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
 
@@ -4883,8 +4798,7 @@
 #  else
      &                        OCEAN(ng) % b_v(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -4915,8 +4829,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
 
@@ -4946,8 +4860,7 @@
 #  else
      &                          OCEAN(ng) % b_t(:,:,:,Tindex,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTvar(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -4979,8 +4892,8 @@
      &                          TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -5000,8 +4913,7 @@
      &                          start = (/1,1/),                        &
      &                          total = (/IorJ,4/),                     &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isFsur))),            &
      &                        Fmin, Fmax
@@ -5019,8 +4931,7 @@
      &                          start = (/1,1/),                        &
      &                          total = (/IorJ,4/),                     &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isUbar))),            &
      &                        Fmin, Fmax
@@ -5038,8 +4949,7 @@
      &                          start = (/1,1/),                        &
      &                          total = (/IorJ,4/),                     &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isVbar))),            &
      &                        Fmin, Fmax
@@ -5058,8 +4968,7 @@
      &                          start = (/1,1,1/),                      &
      &                          total = (/IorJ,N(ng),4/),               &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isUvel))),            &
      &                        Fmin, Fmax
@@ -5077,8 +4986,7 @@
      &                          start = (/1,1,1/),                      &
      &                          total = (/IorJ,N(ng),4/),               &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isVvel))),            &
      &                        Fmin, Fmax
@@ -5098,8 +5006,7 @@
      &                            start =(/1,1,1/),                     &
      &                            total =(/IorJ,N(ng),4/),              &
      &                            min_val = Fmin, max_val = Fmax)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
             IF (Master) THEN
               WRITE (stdout,75) TRIM(Vname(1,idSbry(isTvar(itrc)))),    &
      &                          Fmin, Fmax
@@ -5131,8 +5038,7 @@
 #  else
      &                        FORCES(ng) % b_sustr)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -5163,8 +5069,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -5191,8 +5097,7 @@
 #  else
      &                        FORCES(ng) % b_svstr)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -5223,8 +5128,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
 
@@ -5256,8 +5161,7 @@
 #  else
      &                          FORCES(ng) % b_stflx(:,:,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTsur(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -5289,8 +5193,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -5332,8 +5236,7 @@
 # else
      &                        OCEAN(ng) % e_zeta(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idFsur)),        &
      &                            InpRec, TRIM(ncname)
@@ -5364,8 +5267,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
 
@@ -5393,8 +5296,7 @@
 # else
      &                        OCEAN(ng) % e_ubar(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -5425,8 +5327,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -5453,8 +5355,7 @@
 # else
      &                        OCEAN(ng) % e_vbar(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -5486,8 +5387,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
 
@@ -5516,8 +5417,7 @@
 #  else
      &                        OCEAN(ng) % e_u(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -5548,8 +5448,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -5576,8 +5476,7 @@
 #  else
      &                        OCEAN(ng) % e_v(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -5608,8 +5507,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
 
@@ -5639,8 +5538,7 @@
 #  else
      &                          OCEAN(ng) % e_t(:,:,:,Tindex,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTvar(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -5672,8 +5570,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -5702,8 +5600,7 @@
 # else
      &                        MIXING(ng) % Kh)
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idKhor)),        &
      &                            InpRec, TRIM(ncname)
@@ -5735,8 +5632,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -5764,8 +5661,7 @@
 #  else
      &                        MIXING(ng) % Kv)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idKver)),        &
      &                            InpRec, TRIM(ncname)
@@ -5797,8 +5693,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -5817,8 +5713,7 @@
      &                          start = (/1,1/),                        &
      &                          total = (/IorJ,4/),                     &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isFsur))),            &
      &                        Fmin, Fmax
@@ -5836,8 +5731,7 @@
      &                          start = (/1,1/),                        &
      &                          total = (/IorJ,4/),                     &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isUbar))),            &
      &                        Fmin, Fmax
@@ -5855,8 +5749,7 @@
      &                          start = (/1,1/),                        &
      &                          total = (/IorJ,4/),                     &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isVbar))),            &
      &                        Fmin, Fmax
@@ -5875,8 +5768,7 @@
      &                          start = (/1,1,1/),                      &
      &                          total = (/IorJ,N(ng),4/),               &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isUvel))),            &
      &                        Fmin, Fmax
@@ -5894,8 +5786,7 @@
      &                          start = (/1,1,1/),                      &
      &                          total = (/IorJ,N(ng),4/),               &
      &                          min_val = Fmin, max_val = Fmax)
-          IF (FoundError(exit_flag, NoError, __LINE__,                  &
-     &                   __FILE__)) RETURN
+          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
           IF (Master) THEN
             WRITE (stdout,75) TRIM(Vname(1,idSbry(isVvel))),            &
      &                        Fmin, Fmax
@@ -5915,8 +5806,7 @@
      &                            start =(/1,1,1/),                     &
      &                            total =(/IorJ,N(ng),4/),              &
      &                            min_val = Fmin, max_val = Fmax)
-            IF (FoundError(exit_flag, NoError, __LINE__,                &
-     &                     __FILE__)) RETURN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
             IF (Master) THEN
               WRITE (stdout,75) TRIM(Vname(1,idSbry(isTvar(itrc)))),    &
      &                          Fmin, Fmax
@@ -5949,8 +5839,7 @@
 #  else
      &                        FORCES(ng) % e_sustr)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -5981,8 +5870,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6010,8 +5899,7 @@
 #  else
      &                        FORCES(ng) % e_svstr)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -6042,8 +5930,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6079,8 +5967,7 @@
 #  else
      &                          FORCES(ng) % e_stflx(:,:,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTsur(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -6112,8 +5999,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -6142,8 +6029,7 @@
      &                        ncid = ncINPid,                           &
      &                        start = (/InpRec/),                       &
      &                        total = (/1/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in free-surface forcing.
 !
@@ -6166,8 +6052,7 @@
 # else
      &                        OCEAN(ng) % f_zeta)
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idFsur)),        &
      &                            InpRec, TRIM(ncname)
@@ -6191,8 +6076,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6221,8 +6106,7 @@
 #  else
      &                        OCEAN(ng) % f_ubar)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -6246,8 +6130,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6274,8 +6158,7 @@
 #  else
      &                        OCEAN(ng) % f_vbar)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -6299,8 +6182,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6329,8 +6212,7 @@
 #  else
      &                        OCEAN(ng) % f_u)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -6354,8 +6236,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6382,8 +6264,7 @@
 #  else
      &                        OCEAN(ng) % f_v)
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -6407,8 +6288,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6436,8 +6317,7 @@
 #  else
      &                          OCEAN(ng) % f_t(:,:,:,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTvar(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -6462,8 +6342,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -6515,8 +6395,7 @@
      &                             BOUNDARY(ng) % tl_zeta_obc(:,:,:,    &
      &                                                        Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -6540,8 +6419,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6568,8 +6447,7 @@
      &                             BOUNDARY(ng) % tl_ubar_obc(:,:,:,    &
      &                                                      Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -6593,8 +6471,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6621,8 +6499,7 @@
      &                             BOUNDARY(ng) % tl_vbar_obc(:,:,:,    &
      &                                                        Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -6646,8 +6523,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6676,8 +6553,7 @@
      &                             BOUNDARY(ng) % tl_u_obc(:,:,:,:,     &
      &                                                     Tindex))
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -6701,8 +6577,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6729,8 +6605,7 @@
      &                             BOUNDARY(ng) % tl_v_obc(:,:,:,:,     &
      &                                                     Tindex))
 #   endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,ifield)),        &
      &                            InpRec, TRIM(ncname)
@@ -6755,8 +6630,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6784,8 +6659,7 @@
      &                               BOUNDARY(ng) % tl_t_obc(:,:,:,:,   &
      &                                                    Tindex,itrc))
 #   endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,ifield)),      &
      &                              InpRec, TRIM(ncname)
@@ -6809,8 +6683,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -6842,8 +6716,7 @@
 #  else
      &                        FORCES(ng) % tl_ustr(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -6869,8 +6742,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6898,8 +6771,7 @@
 #  else
      &                        FORCES(ng) % tl_vstr(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVsms)),        &
      &                            InpRec, TRIM(ncname)
@@ -6925,8 +6797,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -6960,8 +6832,7 @@
      &                          FORCES(ng)% tl_tflux(:,:,:,             &
      &                                               Tindex,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTsur(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -6987,8 +6858,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -7018,8 +6889,7 @@
      &                        ncid = ncINPid,                           &
      &                        start = (/InpRec/),                       &
      &                        total = (/1/))
-        IF (FoundError(exit_flag, NoError, __LINE__,                    &
-     &                 __FILE__)) RETURN
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Read in free-surface forcing.
 !
@@ -7042,8 +6912,7 @@
 # else
      &                        OCEAN(ng) % tl_zeta(:,:,Tindex))
 # endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idFsur)),        &
      &                            InpRec, TRIM(ncname)
@@ -7068,8 +6937,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -7098,8 +6967,7 @@
 #  else
      &                        OCEAN(ng) % tl_ubar(:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -7123,8 +6991,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -7151,8 +7019,7 @@
 #  else
      &                        OCEAN(ng) % tl_vbar(:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVbar)),        &
      &                            InpRec, TRIM(ncname)
@@ -7176,8 +7043,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -7206,8 +7073,7 @@
 #  else
      &                        OCEAN(ng) % tl_u(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idUvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -7231,8 +7097,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -7259,8 +7125,7 @@
 #  else
      &                        OCEAN(ng) % tl_v(:,:,:,Tindex))
 #  endif
-            IF (FoundError(status, nf90_noerr, __LINE__,                &
-     &                     __FILE__)) THEN
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idVvel)),        &
      &                            InpRec, TRIM(ncname)
@@ -7284,8 +7149,8 @@
      &                          TRIM(ncname)
             END IF
             exit_flag=4
-            IF (FoundError(exit_flag, nf90_noerr, __LINE__,             &
-     &                     __FILE__)) THEN
+            IF (FoundError(exit_flag, nf90_noerr,                       &
+     &                     __LINE__, MyFile)) THEN
               RETURN
             END IF
           END IF
@@ -7313,8 +7178,7 @@
 #  else
      &                          OCEAN(ng) % tl_t(:,:,:,Tindex,itrc))
 #  endif
-              IF (FoundError(status, nf90_noerr, __LINE__,              &
-     &                       __FILE__)) THEN
+              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
                 IF (Master) THEN
                   WRITE (stdout,60) string, TRIM(Vname(1,idTvar(itrc))),&
      &                              InpRec, TRIM(ncname)
@@ -7339,8 +7203,8 @@
      &                            TRIM(ncname)
               END IF
               exit_flag=4
-              IF (FoundError(exit_flag, nf90_noerr, __LINE__,           &
-     &                       __FILE__)) THEN
+              IF (FoundError(exit_flag, nf90_noerr,                     &
+     &                       __LINE__, MyFile)) THEN
                 RETURN
               END IF
             END IF
@@ -7360,8 +7224,7 @@
 !
 !  Turn off time wall clock.
 !
-      CALL wclock_off (ng, IDmod, 80, __LINE__,                         &
-     &                 __FILE__)
+      CALL wclock_off (ng, IDmod, 80, __LINE__, MyFile)
 #endif
 !
   10  FORMAT (/,a,'GET_STATE - unable to open input NetCDF file: ',a)
@@ -7390,6 +7253,6 @@
      &        ' Max = ',1p,e15.8,')')
   80  FORMAT (/,a,'GET_STATE - cannot find variable: ',a,               &
      &        /,18x,'in input NetCDF file: ',a)
-
+!
       RETURN
       END SUBROUTINE get_state

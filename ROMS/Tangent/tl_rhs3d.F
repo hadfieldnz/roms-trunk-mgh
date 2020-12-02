@@ -71,6 +71,9 @@
 !
 !  Local variable declarations.
 !
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__
+!
 # include "tile.h"
 !
 !-----------------------------------------------------------------------
@@ -121,7 +124,7 @@
 !-----------------------------------------------------------------------
 !
 # ifdef PROFILE
-      CALL wclock_on (ng, iTLM, 21, __LINE__, __FILE__)
+      CALL wclock_on (ng, iTLM, 21, __LINE__, MyFile)
 # endif
       CALL tl_rhs3d_tile (ng, tile,                                     &
      &                    LBi, UBi, LBj, UBj,                           &
@@ -179,7 +182,7 @@
      &                    OCEAN(ng) % tl_ru,                            &
      &                    OCEAN(ng) % tl_rv)
 # ifdef PROFILE
-      CALL wclock_off (ng, iTLM, 21, __LINE__, __FILE__)
+      CALL wclock_off (ng, iTLM, 21, __LINE__, MyFile)
 # endif
 # ifdef UV_VIS2
 !
@@ -2931,7 +2934,7 @@
 # endif
         END IF
       END DO J_LOOP
-
+!
       RETURN
       END SUBROUTINE tl_rhs3d_tile
 #endif
