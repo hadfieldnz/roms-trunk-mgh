@@ -1224,6 +1224,12 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+22)=' INITIALIZE_AUTOMATIC,'
 #endif
+#ifdef JEDI
+      IF (Master) WRITE (stdout,20) 'JEDI',                             &
+     &   'Joint Effort for Data Assimilation Integration'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+6)=' JEDI,'
+#endif
 #if defined LIMIT_BSTRESS && defined SOLVE3D  && !defined BBL_MODEL
 !
       IF (Master) WRITE (stdout,20) 'LIMIT_BSTRESS',                    &
