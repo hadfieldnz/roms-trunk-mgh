@@ -1172,7 +1172,7 @@
               gtype=w3dvar
             CASE ('b3dvar')
               gtype=b3dvar
-#ifdef ECOSIM && defined DIAGNOSTICS_BIO
+#if defined ECOSIM && defined DIAGNOSTICS_BIO
             CASE ('l3dvar')
               gtype=l3dvar
             CASE ('l4dvar')

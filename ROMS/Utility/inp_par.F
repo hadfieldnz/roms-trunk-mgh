@@ -138,7 +138,7 @@
               ' Model Input Parameters:  ROMS/TOMS version ',a,/,       &
      &        26x,a,/,80('-'))
 
-#ifdef MODEL_COUPLING
+#if defined MODEL_COUPLING || defined JEDI
 !
 !  In multiple model coupling, the ocean input physical parameter
 !  script needs to be opened and processed as a regular file.
