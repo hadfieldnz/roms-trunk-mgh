@@ -690,7 +690,7 @@
             IF (exit_flag.eq.NoError) THEN
               CALL join_string (BRY(i,ng)%files, BRY(i,ng)%Nfiles,      &
      &                          string, lstr)
-              WRITE (bryatt,30) 'clm_file_', i
+              WRITE (bryatt,30) 'bry_file_', i
               status=nf90_put_att(ncid, nf90_global, bryatt,            &
      &                            string(1:lstr))
               IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN

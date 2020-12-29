@@ -179,6 +179,18 @@ case "$FORT" in
       fi
     fi
 
+    if [ -n "${USE_PNETCDF:+1}" ]; then
+      export          PNETCDF=${MPI_SOFT}/pnetcdf
+      export   PNETCDF_LIBDIR=${PNETCDF}/lib
+      export   PNETCDF_INCDIR=${PNETCDF}/include
+    fi
+
+    if [ -n "${USE_PIO:+1}" ]; then
+      export              PIO=${MPI_SOFT}/scorpio
+      export       PIO_LIBDIR=${PIO}/lib
+      export       PIO_INCDIR=${PIO}/include
+    fi
+
     if [ -n "${USE_HDF5:+1}" ]; then
       if [ -n "${USE_PARALLEL_IO:+1}" ] && [ -n "${USE_MPI:+1}" ]; then
         export           HDF5=${MPI_SOFT}/hdf5
@@ -243,6 +255,18 @@ case "$FORT" in
       fi
     fi
 
+    if [ -n "${USE_PNETCDF:+1}" ]; then
+      export          PNETCDF=${MPI_SOFT}/pnetcdf
+      export   PNETCDF_LIBDIR=${PNETCDF}/lib
+      export   PNETCDF_INCDIR=${PNETCDF}/include
+    fi
+
+    if [ -n "${USE_PIO:+1}" ]; then
+      export              PIO=${MPI_SOFT}/scorpio
+      export       PIO_LIBDIR=${PIO}/lib
+      export       PIO_INCDIR=${PIO}/include
+    fi
+
     if [ -n "${USE_HDF5:+1}" ]; then
       if [ -n "${USE_PARALLEL_IO:+1}" ] && [ -n "${USE_MPI:+1}" ]; then
         export           HDF5=${MPI_SOFT}/hdf5
@@ -303,6 +327,18 @@ case "$FORT" in
         export    NETCDF_LIBDIR=${NETCDF}/lib
         export   NETCDF_classic=1
       fi
+    fi
+
+    if [ -n "${USE_PNETCDF:+1}" ]; then
+      export          PNETCDF=${MPI_SOFT}/pnetcdf
+      export   PNETCDF_LIBDIR=${PNETCDF}/lib
+      export   PNETCDF_INCDIR=${PNETCDF}/include
+    fi
+
+    if [ -n "${USE_PIO:+1}" ]; then
+      export              PIO=${MPI_SOFT}/scorpio
+      export       PIO_LIBDIR=${PIO}/lib
+      export       PIO_INCDIR=${PIO}/include
     fi
 
     if [ -n "${USE_HDF5:+1}" ]; then

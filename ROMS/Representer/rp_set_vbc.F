@@ -487,6 +487,9 @@
 !>          stflx(i,j,itrc)=stflux(i,j,itrc)
 !>
             rp_stflx(i,j,itrc)=0.0_r8
+!>          btflx(i,j,itrc)=btflux(i,j,itrc)
+!>
+            rp_btflx(i,j,itrc)=0.0_r8
           END DO
         END DO
       END DO

@@ -8,6 +8,16 @@
 # CMake Flags for the Intel Fortran Compiler.
 
 ###########################################################################
+# Set the name of the Fortran compiler based on FORT and USE_MPI
+###########################################################################
+
+if( MPI )
+  set( CMAKE_Fortran_COMPILER mpif90 )
+else()
+  set( CMAKE_Fortran_COMPILER ifort )
+endif()
+
+###########################################################################
 # FLAGS COMMON TO ALL BUILD TYPES
 ###########################################################################
 
@@ -35,20 +45,37 @@ set( CMAKE_Fortran_FLAGS_BIT     "-O2" )
 # LINK FLAGS
 ###########################################################################
 
+if( APPLE )
+  message( STATUS "MacOS so setting -Wl,-undefined dynamic_lookup linker flag" )
+  set( CMAKE_SHARED_LINKER_FLAGS    "-Wl,-undefined,dynamic_lookup" )
+endif()
+
 set( CMAKE_Fortran_LINK_FLAGS    "" )
 
 ###########################################################################
 # ROMS Definitions
 ###########################################################################
 
-set( my_fort   "ifort" )
-set( my_fc      "${CMAKE_Fortran_COMPILER}" )
+# Special flags for files that may contain very long lines.
 
-if( ${CMAKE_BUILD_TYPE} EQUAL "Debug" )
+set( ROMS_FREEFLAGS "-free" )
+
+# Special flag for if compiler is confused by "dimension(*)"
+
+set( ROMS_NOBOUNDSFLAG "" )
+
+# Special defines for "mod_strings.F"
+
+set( my_fort   "ifort" )
+set( my_fc     "${CMAKE_Fortran_COMPILER}" )
+
+if( ${CMAKE_BUILD_TYPE} MATCHES "Debug" )
   set( my_fflags "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_DEBUG}" )
 else()
   set( my_fflags "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_RELEASE}" )
 endif()
+
+# Flags for the C-preprocessor
 
 set( CPPFLAGS  "-P" "--traditional-cpp" "-w" )
 
