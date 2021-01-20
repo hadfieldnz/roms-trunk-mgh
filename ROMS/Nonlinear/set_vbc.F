@@ -365,6 +365,7 @@
         DO j=JstrR,JendR
           DO i=IstrR,IendR
             stflx(i,j,itrc)=stflux(i,j,itrc)
+            btflx(i,j,itrc)=btflux(i,j,itrc)
           END DO
         END DO
       END DO

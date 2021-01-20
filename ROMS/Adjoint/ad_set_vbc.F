@@ -1038,6 +1038,9 @@
       DO itrc=NAT+1,NT(ng)
         DO j=JstrR,JendR
           DO i=IstrR,IendR
+!>          tl_btflx(i,j,itrc)=0.0_r8
+!>
+            ad_btflx(i,j,itrc)=0.0_r8
 !>          tl_stflx(i,j,itrc)=0.0_r8
 !>
             ad_stflx(i,j,itrc)=0.0_r8
@@ -1209,7 +1212,7 @@
         DO i=IstrR,IendR
 !>        tl_btflx(i,j,itemp)=0.0_r8                ! not needed in TLM
 !>
-!!        ad_stflx(i,j,itemp)=0.0_r8                ! not needed in ADM
+!!        ad_btflx(i,j,itemp)=0.0_r8                ! not needed in ADM
 !>        tl_stflx(i,j,itemp)=0.0_r8                ! not needed in TLM
 !>
 !!        ad_stflx(i,j,itemp)=0.0_r8                ! not needed in ADM

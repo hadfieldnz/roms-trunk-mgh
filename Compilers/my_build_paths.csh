@@ -187,6 +187,18 @@ switch ($FORT)
       endif
     endif
 
+    if ($?USE_PNETCDF) then
+      setenv PNETCDF            ${MPI_SOFT}/pnetcdf
+      setenv PNETCDF_LIBDIR     ${PNETCDF}/lib
+      setenv PNETCDF_INCDIR     ${PNETCDF}/include
+    endif
+
+    if ($?USE_PIO) then
+      setenv PIO                ${MPI_SOFT}/scorpio
+      setenv PIO_LIBDIR         ${PIO}/lib
+      setenv PIO_INCDIR         ${PIO}/include
+    endif
+
     if ($?USE_HDF5) then
       if ($?USE_PARALLEL_IO && $?USE_MPI) then
         setenv HDF5             ${MPI_SOFT}/hdf5
@@ -254,6 +266,18 @@ switch ($FORT)
       endif
     endif
 
+    if ($?USE_PNETCDF) then
+      setenv PNETCDF            ${MPI_SOFT}/pnetcdf
+      setenv PNETCDF_LIBDIR     ${PNETCDF}/lib
+      setenv PNETCDF_INCDIR     ${PNETCDF}/include
+    endif
+
+    if ($?USE_PIO) then
+      setenv PIO                ${MPI_SOFT}/scorpio
+      setenv PIO_LIBDIR         ${PIO}/lib
+      setenv PIO_INCDIR         ${PIO}/include
+    endif
+
     if ($?USE_HDF5) then
       if ($?USE_PARALLEL_IO && $?USE_MPI) then
         setenv HDF5             ${MPI_SOFT}/hdf5
@@ -317,6 +341,18 @@ switch ($FORT)
         setenv NETCDF_LIBDIR      ${NETCDF}/lib
         setenv NETCDF_classic     1
       endif
+    endif
+
+    if ($?USE_PNETCDF) then
+      setenv PNETCDF            ${MPI_SOFT}/pnetcdf
+      setenv PNETCDF_LIBDIR     ${PNETCDF}/lib
+      setenv PNETCDF_INCDIR     ${PNETCDF}/include
+    endif
+
+    if ($?USE_PIO) then
+      setenv PIO                ${MPI_SOFT}/scorpio
+      setenv PIO_LIBDIR         ${PIO}/lib
+      setenv PIO_INCDIR         ${PIO}/include
     endif
 
     if ($?USE_HDF5) then

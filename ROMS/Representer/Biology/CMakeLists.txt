@@ -8,7 +8,7 @@
 # Source code list for sub-directory "ROMS/Representer/Biology"
 
 list( APPEND _files
-      ROMS/Adjoint/Biology/rp_biology.F
+      ROMS/Representer/Biology/rp_biology.F
 )
 
 set ( ROMS_Representer_Biology_files
