@@ -330,8 +330,15 @@
 #else
               bry_val=BOUNDARY(ng)%vbar_south(i)
 #endif
+#ifdef WET_DRY
+              cff=0.5_r8*(GRID(ng)%h(i,Jstr-1)+                         &
+     &                    zeta(i,Jstr-1,know)+                          &
+     &                    GRID(ng)%h(i,Jstr  )+                         &
+     &                    zeta(i,Jstr  ,Know))
+#else
               cff=0.5_r8*(GRID(ng)%h(i,Jstr-1)+                         &
      &                    GRID(ng)%h(i,Jstr  ))
+#endif
               cff1=SQRT(g/cff)
               Ce=dt2d*cff1*cff*0.5_r8*(GRID(ng)%pn(i,Jstr-1)+           &
      &                                 GRID(ng)%pn(i,Jstr  ))
@@ -672,8 +679,15 @@
 #else
               bry_val=BOUNDARY(ng)%vbar_north(i)
 #endif
+#ifdef WET_DRY
+              cff=0.5_r8*(GRID(ng)%h(i,Jend  )+                         &
+     &                    zeta(i,Jend  ,know)+                          &
+     &                    GRID(ng)%h(i,Jend+1)+                         &
+     &                    zeta(i,Jend+1,know))
+#else
               cff=0.5_r8*(GRID(ng)%h(i,Jend  )+                         &
      &                    GRID(ng)%h(i,Jend+1))
+#endif
               cff1=SQRT(g/cff)
               Ce=dt2d*cff1*cff*0.5_r8*(GRID(ng)%pn(i,Jend  )+           &
      &                                 GRID(ng)%pn(i,Jend+1))
@@ -1161,7 +1175,8 @@
       IF (.not.EWperiodic(ng)) THEN
         IF (DOMAIN(ng)%Western_Edge(tile)) THEN
           DO j=JstrV,Jend
-            IF (LBC_apply(ng)%west(j)) THEN
+            IF (LBC_apply(ng)%west(j).or.                               &
+     &          LBC(iwest,isVbar,ng)%nested) THEN
               cff1=ABS(ABS(GRID(ng)%vmask_wet(Istr-1,j))-1.0_r8)
               cff2=0.5_r8+DSIGN(0.5_r8,vbar(Istr-1,j,kout))*            &
      &                    GRID(ng)%vmask_wet(Istr-1,j)
@@ -1173,7 +1188,8 @@
         END IF
         IF (DOMAIN(ng)%Eastern_Edge(tile)) THEN
           DO j=JstrV,Jend
-            IF (LBC_apply(ng)%east(j)) THEN
+            IF (LBC_apply(ng)%east(j).or.                               &
+     &          LBC(ieast,isVbar,ng)%nested) THEN
               cff1=ABS(ABS(GRID(ng)%vmask_wet(Iend+1,j))-1.0_r8)
               cff2=0.5_r8+DSIGN(0.5_r8,vbar(Iend+1,j,kout))*            &
      &                    GRID(ng)%vmask_wet(Iend+1,j)
@@ -1188,7 +1204,8 @@
       IF (.not.NSperiodic(ng)) THEN
         IF (DOMAIN(ng)%Southern_Edge(tile)) THEN
           DO i=Istr,Iend
-            IF (LBC_apply(ng)%south(i)) THEN
+            IF (LBC_apply(ng)%south(i).or.                              &
+     &          LBC(isouth,isVbar,ng)%nested) THEN
               cff1=ABS(ABS(GRID(ng)%vmask_wet(i,Jstr))-1.0_r8)
               cff2=0.5_r8+DSIGN(0.5_r8,vbar(i,Jstr,kout))*              &
      &                    GRID(ng)%vmask_wet(i,Jstr)
@@ -1200,7 +1217,8 @@
         END IF
         IF (DOMAIN(ng)%Northern_Edge(tile)) THEN
           DO i=Istr,Iend
-            IF (LBC_apply(ng)%north(i)) THEN
+            IF (LBC_apply(ng)%north(i).or.                              &
+     &          LBC(inorth,isVbar,ng)%nested) THEN
               cff1=ABS(ABS(GRID(ng)%vmask_wet(i,Jend+1))-1.0_r8)
               cff2=0.5_r8+DSIGN(0.5_r8,vbar(i,Jend+1,kout))*            &
      &                    GRID(ng)%vmask_wet(i,Jend+1)
@@ -1211,11 +1229,13 @@
           END DO
         END IF
       END IF
-
+!
       IF (.not.(EWperiodic(ng).or.NSperiodic(ng))) THEN
         IF (DOMAIN(ng)%SouthWest_Corner(tile)) THEN
-          IF (LBC_apply(ng)%south(Istr-1).and.                          &
-     &        LBC_apply(ng)%west (Jstr  )) THEN
+          IF ((LBC_apply(ng)%south(Istr-1).and.                         &
+     &         LBC_apply(ng)%west (Jstr  )).or.                         &
+     &        (LBC(iwest,isUbar,ng)%nested.and.                         &
+     &         LBC(isouth,isUbar,ng)%nested)) THEN
             cff1=ABS(ABS(GRID(ng)%vmask_wet(Istr-1,Jstr))-1.0_r8)
             cff2=0.5_r8+DSIGN(0.5_r8,vbar(Istr-1,Jstr,kout))*           &
      &                  GRID(ng)%vmask_wet(Istr-1,Jstr)
@@ -1225,8 +1245,10 @@
           END IF
         END IF
         IF (DOMAIN(ng)%SouthEast_Corner(tile)) THEN
-          IF (LBC_apply(ng)%south(Iend+1).and.                          &
-     &        LBC_apply(ng)%east (Jstr  )) THEN
+          IF ((LBC_apply(ng)%south(Iend+1).and.                         &
+     &         LBC_apply(ng)%east (Jstr  )).or.                         &
+     &        (LBC(ieast,isUbar,ng)%nested.and.                         &
+     &         LBC(isouth,isUbar,ng)%nested)) THEN
             cff1=ABS(ABS(GRID(ng)%vmask_wet(Iend+1,Jstr))-1.0_r8)
             cff2=0.5_r8+DSIGN(0.5_r8,vbar(Iend+1,Jstr,kout))*           &
      &                  GRID(ng)%vmask_wet(Iend+1,Jstr)
@@ -1236,8 +1258,10 @@
           END IF
         END IF
         IF (DOMAIN(ng)%NorthWest_Corner(tile)) THEN
-          IF (LBC_apply(ng)%north(Istr-1).and.                          &
-     &        LBC_apply(ng)%west (Jend+1)) THEN
+          IF ((LBC_apply(ng)%north(Istr-1).and.                         &
+     &         LBC_apply(ng)%west (Jend+1)).or.                         &
+     &        (LBC(iwest,isUbar,ng)%nested.and.                         &
+     &         LBC(inorth,isUbar,ng)%nested)) THEN
             cff1=ABS(ABS(GRID(ng)%vmask_wet(Istr-1,Jend+1))-1.0_r8)
             cff2=0.5_r8+DSIGN(0.5_r8,vbar(Istr-1,Jend+1,kout))*         &
      &                  GRID(ng)%vmask_wet(Istr-1,Jend+1)
@@ -1247,8 +1271,10 @@
           END IF
         END IF
         IF (DOMAIN(ng)%NorthEast_Corner(tile)) THEN
-          IF (LBC_apply(ng)%north(Iend+1).and.                          &
-     &        LBC_apply(ng)%east (Jend+1)) THEN
+          IF ((LBC_apply(ng)%north(Iend+1).and.                         &
+     &         LBC_apply(ng)%east (Jend+1)).or.                         &
+     &        (LBC(ieast,isUbar,ng)%nested.and.                         &
+     &         LBC(inorth,isUbar,ng)%nested)) THEN
             cff1=ABS(ABS(GRID(ng)%vmask_wet(Iend+1,Jend+1))-1.0_r8)
             cff2=0.5_r8+DSIGN(0.5_r8,vbar(Iend+1,Jend+1,kout))*         &
      &                  GRID(ng)%vmask_wet(Iend+1,Jend+1)
