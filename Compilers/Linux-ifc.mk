@@ -65,9 +65,13 @@ endif
 ifdef USE_MPI
          CPPFLAGS += -DMPI
  ifdef USE_MPIF90
-               FC := /opt/intelsoft/mpich2/bin/mpif90
+  ifeq ($(which_MPI), intel)
+               FC := mpiifort
+  else
+               FC := mpif90
+  endif
  else
-             LIBS += -lfmpi-pgi -lmpi-pgi
+             LIBS += -lfmpi -lmpi
  endif
 endif
 

@@ -155,6 +155,7 @@ end
 
  setenv USE_MPI              on              # distributed-memory
  setenv USE_MPIF90           on              # compile with mpif90 script
+#setenv which_MPI            intel           # compile with mpiifort library
 #setenv which_MPI            mpich           # compile with MPICH library
 #setenv which_MPI            mpich2          # compile with MPICH2 library
 #setenv which_MPI            mvapich2        # compile with MVAPICH2 library
@@ -266,6 +267,16 @@ if ( $?USE_MPI ) then
   endif
 else
   set mpi=""
+endif
+
+if ( $?USE_MPIF90 ) then
+  if ( "${USE_MPIF90}" == "on" ) then
+    set comm="-DCOMM=${which_MPI}"
+  else
+    set comm=""
+  endif
+else
+  set comm=""
 endif
 
 if ( $?ROMS_EXECUTABLE ) then

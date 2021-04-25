@@ -160,6 +160,7 @@ export     MY_PROJECT_DIR=${PWD}
 
  export           USE_MPI=on               # distributed-memory parallelism
  export        USE_MPIF90=on               # compile with mpif90 script
+#export         which_MPI=intel            # compile with mpiifort library
 #export         which_MPI=mpich            # compile with MPICH library
 #export         which_MPI=mpich2           # compile with MPICH2 library
 #export         which_MPI=mvapich2         # compile with MVAPICH2 library
@@ -262,6 +263,12 @@ else
   mpi=""
 fi
 
+if [[ ! -z "${USE_MPIF90}" && "${USE_MPIF90}" == "on" ]]; then
+  comm="-DCOMM=${which_MPI}"
+else
+  comm=""
+fi
+
 if [ ! -z "${ROMS_EXECUTABLE}" ]; then
   if [[ "${ROMS_EXECUTABLE}" == "ON" ]]; then
     roms_exec="-DROMS_EXECUTABLE=ON"
@@ -294,6 +301,7 @@ if [ $dprint -eq 0 ]; then
                 ${parpack_ldir} \
                 ${arpack_ldir} \
                 ${mpi} \
+                ${comm} \
                 ${roms_exec} \
                 ${dbg} \
                 ${MY_ROMS_SRC}
@@ -306,6 +314,7 @@ if [ $dprint -eq 0 ]; then
                   ${parpack_ldir} \
                   ${arpack_ldir} \
                   ${mpi} \
+                  ${comm} \
                   ${roms_exec} \
                   ${dbg} \
                   ${MY_ROMS_SRC}

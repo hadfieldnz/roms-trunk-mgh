@@ -12,7 +12,11 @@
 ###########################################################################
 
 if( MPI )
-  set( CMAKE_Fortran_COMPILER mpif90 )
+  if( ${COMM} MATCHES "intel")
+    set( CMAKE_Fortran_COMPILER mpiifort )
+  else()
+    set( CMAKE_Fortran_COMPILER mpif90 )
+  endif()
 else()
   set( CMAKE_Fortran_COMPILER ifort )
 endif()
