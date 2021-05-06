@@ -56,6 +56,9 @@
 # if defined UV_DRAG_GRID && !defined ANA_DRAG
       integer :: varid_dragL, varid_dragQ, varid_ZoBL
 # endif
+#if defined UV_WAVEDRAG
+      integer :: varid_dragW
+#endif
       integer :: Vsize(4)
 # ifdef CHECKSUM
       integer(i8b) :: Fhash
@@ -230,7 +233,7 @@
 #  endif
 # endif
 # if defined UV_DRAG_GRID && !defined ANA_DRAG
-#  ifdef UV_LOGDRAG
+#  if defined UV_LOGDRAG || defined BBL_MODEL
       IF (.not.find_string(var_name,n_var,TRIM(Vname(1,idZoBL)),        &
      &                     varid_ZoBL)) THEN
         IF (Master) WRITE (stdout,20) TRIM(Vname(1,idZoBL)),            &
@@ -407,6 +410,7 @@
               END IF
             END IF
 #  ifdef NESTING
+#   if !defined NOFILL_NESTING_MASK
             CALL fill_contact(ng, model, tile,                          &
      &                        cr, Rcontact(cr)%Npoints, Rcontact,       &
      &                        r2dvar, 'rmask', spval_check,             &
@@ -414,6 +418,7 @@
      &                        CONTACT_METRIC(cr) % rmask,               &
      &                        GRID(ng) % rmask)
             IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+#   endif
 #  endif
             IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
               CALL exchange_r2d_tile (ng, tile,                         &
@@ -458,6 +463,7 @@
               END IF
             END IF
 #  ifdef NESTING
+#   if !defined NOFILL_NESTING_MASK
             CALL fill_contact(ng, model, tile,                          &
      &                        cr, Ucontact(cr)%Npoints, Ucontact,       &
      &                        u2dvar, 'umask', spval_check,             &
@@ -465,6 +471,7 @@
      &                        CONTACT_METRIC(cr) % umask,               &
      &                        GRID(ng) % umask)
             IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+#   endif
 #  endif
             IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
               CALL exchange_u2d_tile (ng, tile,                         &
@@ -509,6 +516,7 @@
               END IF
             END IF
 #  ifdef NESTING
+#   if !defined NOFILL_NESTING_MASK
             CALL fill_contact(ng, model, tile,                          &
      &                        cr, Vcontact(cr)%Npoints, Vcontact,       &
      &                        v2dvar, 'vmask', spval_check,             &
@@ -516,6 +524,7 @@
      &                        CONTACT_METRIC(cr) % vmask,               &
      &                        GRID(ng) % vmask)
             IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+#   endif
 #  endif
             IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
               CALL exchange_v2d_tile (ng, tile,                         &
@@ -1145,6 +1154,10 @@
 # endif
               END IF
             END IF
+            IF (.not.spherical) THEN
+              LonMin(ng)=Fmin
+              LonMax(ng)=Fmax
+            END IF
 # ifdef NESTING
             IF (.not.spherical) THEN
               CALL fill_contact(ng, model, tile,                        &
@@ -1195,6 +1208,10 @@
                 WRITE (stdout,60) Fhash
 # endif
               END IF
+            END IF
+            IF (.not.spherical) THEN
+              LatMin(ng)=Fmin
+              LatMax(ng)=Fmax
             END IF
 # ifdef NESTING
             IF (.not.spherical) THEN
@@ -2015,7 +2032,7 @@
       END IF
 
 # if defined UV_DRAG_GRID && !defined ANA_DRAG
-#  ifdef UV_LOGDRAG
+#  if defined UV_LOGDRAG || defined BBL_MODEL
 !
 !  Read in spacially varying bottom roughness length (m).
 !
@@ -2156,6 +2173,40 @@
      &                    EWperiodic(ng), NSperiodic(ng),               &
      &                    GRID(ng) % rdrag2)
 #   endif
+#  endif
+# endif
+# if defined UV_WAVEDRAG
+!
+!  Read in spacially varying linear drag coefficients (m/s).
+!
+      gtype=r2dvar
+      status=nf_fread2d(ng, model, ncname, GRD(ng)%ncid,                &
+     &                  Vname(1,idragW), varid_dragW,                   &
+     &                  0, gtype, Vsize,                                &
+     &                  LBi, UBi, LBj, UBj,                             &
+     &                  Fscl, Fmin, Fmax,                               &
+# ifdef MASKING
+     &                  GRID(ng) % rmask,                               &
+# endif
+     &                  GRID(ng) % wavedrag)
+          IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
+            IF (Master) WRITE (stdout,30) TRIM(Vname(1,idragW)),        &
+     &                                TRIM(ncname)
+            exit_flag=2
+            ioerror=status
+            RETURN
+          END IF
+          IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+            CALL exchange_r2d_tile (ng, tile,                           &
+     &                              LBi, UBi, LBj, UBj,                 &
+     &                              GRID(ng) % wavedrag)
+          END IF
+#  ifdef DISTRIBUTE
+          CALL mp_exchange2d (ng, tile, model, 1,                       &
+     &                        LBi, UBi, LBj, UBj,                       &
+     &                        NghostPoints,                             &
+     &                        EWperiodic(ng), NSperiodic(ng),           &
+     &                        GRID(ng) % wavedrag)
 #  endif
 # endif
 !

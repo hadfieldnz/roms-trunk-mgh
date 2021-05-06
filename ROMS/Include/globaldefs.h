@@ -777,6 +777,7 @@
 #if defined MODEL_COUPLING && \
     defined ESMF_LIB
 # define REGRESS_STARTCLOCK
+# define ESM_SETRUNCLOCK
 #endif
 
 /*

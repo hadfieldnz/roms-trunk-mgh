@@ -150,12 +150,13 @@ export     MY_PROJECT_DIR=${PWD}
 #export      MY_CPP_FLAGS="${MY_CPP_FLAGS} -DDEBUGGING"
 
 #--------------------------------------------------------------------------
-# Compilation options and paths.
+# Compilation options.
 #--------------------------------------------------------------------------
 
 # Set this option to "on" if you wish to use the "ecbuild" CMake wrapper.
 # Setting this to "off" or commenting it out will use cmake directly.
 
+ export       USE_ECBUILD=off              # don't use "ecbuild" wrapper
 #export       USE_ECBUILD=on               # use "ecbuild" wrapper
 
  export           USE_MPI=on               # distributed-memory parallelism
@@ -224,6 +225,44 @@ else
     mkdir ${SCRATCH_DIR}
     cd ${SCRATCH_DIR}
   fi
+fi
+
+#--------------------------------------------------------------------------
+# Add enviromental variables constructed in 'makefile' to MY_CPP_FLAGS
+# so can be passed to ROMS.
+#--------------------------------------------------------------------------
+
+ANALYTICAL_DIR="ANALYTICAL_DIR='${MY_ANALYTICAL_DIR}'"
+HEADER=`echo ${ROMS_APPLICATION} | tr '[:upper:]' '[:lower:]'`.h
+HEADER_DIR="HEADER_DIR='${MY_HEADER_DIR}'"
+ROOT_DIR="ROOT_DIR='${MY_ROMS_SRC}'"
+
+export       MY_CPP_FLAGS="${MY_CPP_FLAGS} -D${ANALYTICAL_DIR}"
+export       MY_CPP_FLAGS="${MY_CPP_FLAGS} -D${HEADER_DIR}"
+export       MY_CPP_FLAGS="${MY_CPP_FLAGS} -D${ROOT_DIR}"
+
+if [[ -d "${MY_ROMS_SRC}/.git" ]]; then
+  cd ${MY_ROMS_SRC}
+  GITURL=$(git config --get remote.origin.url)
+  GITREV=$(git rev-parse --verify HEAD)
+  GIT_URL="GIT_URL='${GITURL}'"
+  GIT_REV="GIT_REV='${GITREV}'"
+  SVN_URL="SVN_URL='https://www.myroms.org/svn/src'"
+
+  export     MY_CPP_FLAGS="${MY_CPP_FLAGS} -D${GIT_URL}"
+  export     MY_CPP_FLAGS="${MY_CPP_FLAGS} -D${GIT_REV}"
+  export     MY_CPP_FLAGS="${MY_CPP_FLAGS} -D${SVN_URL}"
+  cd ${SCRATCH_DIR}
+else
+  cd ${MY_ROMS_SRC}
+  SVNURL=$(svn info | grep '^URL:' | sed 's/URL: //')
+  SVNREV=$(svn info | grep '^Revision:' | sed 's/Revision: //')
+  SVN_URL="SVN_URL='${SVNURL}'"
+  SVN_REV="SVN_REV='${SVNREV}'"
+
+  export     MY_CPP_FLAGS="${MY_CPP_FLAGS} -D${SVN_URL}"
+  export     MY_CPP_FLAGS="${MY_CPP_FLAGS} -D${SVN_REV}"
+  cd ${SCRATCH_DIR}
 fi
 
 #--------------------------------------------------------------------------
