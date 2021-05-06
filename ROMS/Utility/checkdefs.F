@@ -981,6 +981,14 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+10)=' ENSEMBLE,'
 #endif
+#if defined ESM_SETRUNCLOCK && defined MODEL_COUPLING && \
+    defined ESMF_LIB
+!
+      IF (Master) WRITE (stdout,20) 'ESM_SETRUNCLOCK',                     &
+     &   'Sets coupled component specialized SetRunClock method'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+17)=' ESM_SETRUNCLOCK,'
+#endif
 #if defined EVOLVED_LCZ && defined FOUR_DVAR
 !
       IF (Master) WRITE (stdout,20) 'EVOLVED_LCZ',                      &
