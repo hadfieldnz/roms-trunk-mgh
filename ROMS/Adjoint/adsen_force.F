@@ -209,8 +209,8 @@
           adFac=1.0_r8
           IF (Master) THEN
             WRITE (stdout,10) iic(ng)-1
- 10         FORMAT (2x,' ADSEN_FORCE  - forcing Adjoint model at',      &
-     &                 ' TimeStep: ', i8.8)
+ 10         FORMAT (2x,'ADSEN_FORCE      - forcing Adjoint model at',   &
+     &                 ' TimeStep: ', i0)
           END IF
       END IF
 # else

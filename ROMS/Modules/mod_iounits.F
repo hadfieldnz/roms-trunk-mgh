@@ -96,11 +96,22 @@
 !  stdout      Unit number for standard output (often 6).              !
 !  usrout      Unit number for generic USER output.                    !
 !                                                                      !
+!  Standard NetCDF library input files ID per each field:              !
+!                                                                      !
+!  BRYids      File ID associated with each boundary field.            !
+!  CLMids      File ID associated with each climatology field.         !
+!  FRCids      File ID associated with each forcing field.             !
+!                                                                      !
+#if defined PIO_LIB && defined DISTRIBUTE
+!  Parallel-IO (PIO) library input files descriptors per each field:   !
+!                                                                      !
+!  BRYdesc     File descriptor associated with each boundary field.    !
+!  CLMdesc     File descriptor associated with each climatology field. !
+!  FRCdesc     file descriptor associated with each forcing field.     !
+!                                                                      !
+#endif
 !  Miscellaneous variables:                                            !
 !                                                                      !
-!  BRYids      NetCDF file ID associated with each boundary field.     !
-!  CLMids      NetCDF file ID associated with each climatology field.  !
-!  FRCids      NetCDF file ID associated with each forcing field.      !
 !  CalledFrom  Calling routine in IO operations.                       !
 !  Rerror      Running error messages.                                 !
 !  SourceFile  Current executed file name. It is used for IO error     !
@@ -178,21 +189,30 @@
 !
       integer, allocatable :: nBCfiles(:)
       integer, allocatable :: BRYids(:,:)
-
+!
+#if defined PIO_LIB && defined DISTRIBUTE
+      TYPE (File_desc_t), allocatable :: BRYdesc(:,:)
+#endif
       TYPE(T_IO), allocatable :: BRY(:,:)
 !
 !  Input climatology data.
 !
       integer, allocatable :: nCLMfiles(:)
       integer, allocatable :: CLMids(:,:)
-
+!
+#if defined PIO_LIB && defined DISTRIBUTE
+      TYPE (File_desc_t), allocatable :: CLMdesc(:,:)
+#endif
       TYPE(T_IO), allocatable :: CLM(:,:)
 !
 !  Input forcing data.
 !
       integer, allocatable :: nFfiles(:)
       integer, allocatable :: FRCids(:,:)
-
+!
+#if defined PIO_LIB && defined DISTRIBUTE
+      TYPE (File_desc_t), allocatable :: FRCdesc(:,:)
+#endif
       TYPE(T_IO), allocatable :: FRC(:,:)
 !
 !  Error messages.

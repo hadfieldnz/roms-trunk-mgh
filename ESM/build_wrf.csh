@@ -144,8 +144,10 @@ end
 
  setenv USE_MPI              on          # distributed-memory parallelism
  setenv USE_MPIF90           on          # compile with mpif90 script
+#setenv which_MPI            intel       # compile with mpiifort library
 #setenv which_MPI            mpich       # compile with MPICH library
 #setenv which_MPI            mpich2      # compile with MPICH2 library
+#setenv which_MPI            mvapich2    # compile with MVAPICH2 library
  setenv which_MPI            openmpi     # compile with OpenMPI library
 
  setenv FORT                 ifort
@@ -227,7 +229,7 @@ setenv  WRF_BIN_DIR       ${WRF_BUILD_DIR}/Bin
 # column for distributed-memory configuration.
 #--------------------------------------------------------------------------
 
-# Clean source code and remove build directory.
+# Clean source code.
 
 if ( $clean == 1 ) then
   echo ""
@@ -235,8 +237,7 @@ if ( $clean == 1 ) then
   echo "Cleaning WRF source code:  ${WRF_ROOT_DIR}/clean -a"
   echo "${separator}"
   echo ""
-  ${WRF_ROOT_DIR}/clean -a            # clean source code
-  /bin/rm -rf ${WRF_BUILD_DIR}        # remove existing build directories
+  ${WRF_ROOT_DIR}/clean -a
 endif
 
 if ($?USE_DEBUG) then
@@ -360,6 +361,17 @@ endif
 setenv WRF_DA_CORE 0             # no Data Assimilation core
 setenv WRF_EM_CORE 1             # Eurelian Mass-coordinate core
 setenv WRF_NMM_CORE 0            # Nonhydrostatic Mesoscale Model core
+
+# Remove existing build directory.
+
+if ( $clean == 1 ) then
+  echo ""
+  echo "${separator}"
+  echo "Removing WRF build directory:  ${WRF_BUILD_DIR}"
+  echo "${separator}"
+  echo ""
+  /bin/rm -rf ${WRF_BUILD_DIR}
+endif
 
 # Compile (the binary will go to BINDIR set above).
 

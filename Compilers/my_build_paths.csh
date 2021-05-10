@@ -187,16 +187,22 @@ switch ($FORT)
       endif
     endif
 
-    if ($?USE_PNETCDF) then
+    if ($?USE_PIO) then
+      setenv PIO                ${MPI_SOFT}/pio
+      setenv PIO_LIBDIR         ${PIO}/lib
+      setenv PIO_INCDIR         ${PIO}/include
       setenv PNETCDF            ${MPI_SOFT}/pnetcdf
       setenv PNETCDF_LIBDIR     ${PNETCDF}/lib
       setenv PNETCDF_INCDIR     ${PNETCDF}/include
     endif
 
-    if ($?USE_PIO) then
-      setenv PIO                ${MPI_SOFT}/scorpio
-      setenv PIO_LIBDIR         ${PIO}/lib
-      setenv PIO_INCDIR         ${PIO}/include
+    if ($?USE_SCORPIO) then
+      setenv SCORPIO            ${MPI_SOFT}/scorpio
+      setenv PIO_LIBDIR         ${SCORPIO}/lib
+      setenv PIO_INCDIR         ${SCORPIO}/include
+      setenv PNETCDF            ${MPI_SOFT}/pnetcdf
+      setenv PNETCDF_LIBDIR     ${PNETCDF}/lib
+      setenv PNETCDF_INCDIR     ${PNETCDF}/include
     endif
 
     if ($?USE_HDF5) then
@@ -266,16 +272,22 @@ switch ($FORT)
       endif
     endif
 
-    if ($?USE_PNETCDF) then
+    if ($?USE_PIO) then
+      setenv PIO                ${MPI_SOFT}/pio
+      setenv PIO_LIBDIR         ${PIO}/lib
+      setenv PIO_INCDIR         ${PIO}/include
       setenv PNETCDF            ${MPI_SOFT}/pnetcdf
       setenv PNETCDF_LIBDIR     ${PNETCDF}/lib
       setenv PNETCDF_INCDIR     ${PNETCDF}/include
     endif
 
-    if ($?USE_PIO) then
-      setenv PIO                ${MPI_SOFT}/scorpio
-      setenv PIO_LIBDIR         ${PIO}/lib
-      setenv PIO_INCDIR         ${PIO}/include
+    if ($?USE_SCORPIO) then
+      setenv SCORPIO            ${MPI_SOFT}/scorpio
+      setenv PIO_LIBDIR         ${SCORPIO}/lib
+      setenv PIO_INCDIR         ${SCORPIO}/include
+      setenv PNETCDF            ${MPI_SOFT}/pnetcdf
+      setenv PNETCDF_LIBDIR     ${PNETCDF}/lib
+      setenv PNETCDF_INCDIR     ${PNETCDF}/include
     endif
 
     if ($?USE_HDF5) then
@@ -343,16 +355,22 @@ switch ($FORT)
       endif
     endif
 
-    if ($?USE_PNETCDF) then
+    if ($?USE_PIO) then
+      setenv PIO                ${MPI_SOFT}/pio
+      setenv PIO_LIBDIR         ${PIO}/lib
+      setenv PIO_INCDIR         ${PIO}/include
       setenv PNETCDF            ${MPI_SOFT}/pnetcdf
       setenv PNETCDF_LIBDIR     ${PNETCDF}/lib
       setenv PNETCDF_INCDIR     ${PNETCDF}/include
     endif
 
-    if ($?USE_PIO) then
-      setenv PIO                ${MPI_SOFT}/scorpio
-      setenv PIO_LIBDIR         ${PIO}/lib
-      setenv PIO_INCDIR         ${PIO}/include
+    if ($?USE_SCORPIO) then
+      setenv SCORPIO            ${MPI_SOFT}/scorpio
+      setenv PIO_LIBDIR         ${SCORPIO}/lib
+      setenv PIO_INCDIR         ${SCORPIO}/include
+      setenv PNETCDF            ${MPI_SOFT}/pnetcdf
+      setenv PNETCDF_LIBDIR     ${PNETCDF}/lib
+      setenv PNETCDF_INCDIR     ${PNETCDF}/include
     endif
 
     if ($?USE_HDF5) then

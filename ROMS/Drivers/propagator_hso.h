@@ -23,6 +23,7 @@
       USE mod_stepping
       USE mod_storage
 !
+      USE close_io_mod,    ONLY : close_inp
       USE dotproduct_mod,  ONLY : tl_statenorm
       USE ini_adjust_mod,  ONLY : ad_ini_perturb
       USE mod_forces,      ONLY : initialize_forces

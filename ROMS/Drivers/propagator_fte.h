@@ -33,6 +33,7 @@
       USE mod_scalars
       USE mod_stepping
 !
+      USE close_io_mod,   ONLY : close_inp
       USE dotproduct_mod, ONLY : tl_statenorm
       USE packing_mod,    ONLY : tl_unpack, tl_pack
 #ifdef SOLVE3D

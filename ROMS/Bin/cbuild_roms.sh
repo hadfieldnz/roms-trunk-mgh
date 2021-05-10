@@ -172,7 +172,22 @@ export     MY_PROJECT_DIR=${PWD}
 #export              FORT=pgi
 
 #export         USE_DEBUG=on               # use Fortran debugging flags
-#export       USE_NETCDF4=on               # compile with NetCDF-4 library
+
+# ROMS I/O choices and combinations. A more complete description of the
+# available options can be found in the wiki (https://myroms.org/wiki/IO).
+# Most users will want to enable at least USE_NETCDF4 because that will
+# instruct the ROMS build system to use nf-config to determine the
+# necessary libraries and paths to link into the ROMS executable.
+
+ export       USE_NETCDF4=on               # compile with NetCDF-4 library
+#export   USE_PARALLEL_IO=on               # Parallel I/O with NetCDF-4/HDF5
+#export           USE_PIO=on               # Parallel I/O with PIO library
+#export       USE_SCORPIO=on               # Parallel I/O with SCORPIO library
+
+# If any of the coupling component use the HDF5 Fortran API for primary
+# I/O, we need to compile the main driver with the HDF5 library.
+
+#export          USE_HDF5=on               # compile with HDF5 library
 
 #--------------------------------------------------------------------------
 # If applicable, use my specified library paths.
@@ -296,6 +311,25 @@ else
   arpack_ldir=""
 fi
 
+if [ ! -z "${USE_SCORPIO}" ]; then
+  if [[ ! -z "${PIO_LIBDIR}" && ! -z "${PIO_INCDIR}" ]]; then
+    pio_ldir="-DPIO_LIBDIR=${PIO_LIBDIR}"
+    pio_idir="-DPIO_INCDIR=${PIO_INCDIR}"
+    if [[ ! -z "${PNETCDF_LIBDIR}" && ! -z "${PNETCDF_INCDIR}" ]]; then
+      pnetcdf_ldir="-DPNETCDF_LIBDIR=${PNETCDF_LIBDIR}"
+      pnetcdf_idir="-DPNETCDF_INCDIR=${PNETCDF_INCDIR}"
+    else
+      pnetcdf_ldir=""
+      pnetcdf_idir=""
+    fi
+  else
+    pio_ldir=""
+    pio_idir=""
+    pnetcdf_ldir=""
+    pnetcdf_idir=""
+  fi
+fi
+
 if [[ ! -z "${USE_MPI}" && "${USE_MPI}" == "on" ]]; then
   mpi="-DMPI=ON"
 else
@@ -339,6 +373,10 @@ if [ $dprint -eq 0 ]; then
                 ${extra_flags} \
                 ${parpack_ldir} \
                 ${arpack_ldir} \
+                ${pio_ldir} \
+                ${pio_idir} \
+                ${pnetcdf_ldir} \
+                ${pnetcdf_idir} \
                 ${mpi} \
                 ${comm} \
                 ${roms_exec} \
@@ -352,6 +390,10 @@ if [ $dprint -eq 0 ]; then
                   ${extra_flags} \
                   ${parpack_ldir} \
                   ${arpack_ldir} \
+                  ${pio_ldir} \
+                  ${pio_idir} \
+                  ${pnetcdf_ldir} \
+                  ${pnetcdf_idir} \
                   ${mpi} \
                   ${comm} \
                   ${roms_exec} \

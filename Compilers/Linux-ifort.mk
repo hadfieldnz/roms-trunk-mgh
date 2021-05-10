@@ -155,6 +155,30 @@ endif
 
           LDFLAGS := $(FFLAGS)
 
+ifdef USE_PIO
+       PIO_INCDIR ?= /opt/intelsoft/openmpi/pio/include
+       PIO_LIBDIR ?= /opt/intelsoft/openmpi/pio/lib
+           FFLAGS += -I$(PIO_INCDIR)
+             LIBS += -L$(PIO_LIBDIR) -lpiof -lpioc
+
+   PNETCDF_INCDIR ?= /opt/intelsoft/openmpi/pnetcdf/include
+   PNETCDF_LIBDIR ?= /opt/intelsoft/openmpi/pnetcdf/lib
+           FFLAGS += -I$(PNETCDF_INCDIR)
+             LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
+endif
+
+ifdef USE_SCORPIO
+       PIO_INCDIR ?= /opt/intelsoft/openmpi/scorpio/include
+       PIO_LIBDIR ?= /opt/intelsoft/openmpi/scorpio/lib
+           FFLAGS += -I$(PIO_INCDIR)
+             LIBS += -L$(PIO_LIBDIR) -lpiof -lpioc
+
+   PNETCDF_INCDIR ?= /opt/intelsoft/openmpi/pnetcdf/include
+   PNETCDF_LIBDIR ?= /opt/intelsoft/openmpi/pnetcdf/lib
+           FFLAGS += -I$(PNETCDF_INCDIR)
+             LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
+endif
+
 ifdef USE_NETCDF4
         NF_CONFIG ?= nf-config
     NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --prefix)/include

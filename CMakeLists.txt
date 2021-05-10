@@ -100,6 +100,13 @@ if( IN_ECBUILD )
   link_libraries(${MPI_Fortran_LIBRARIES})
 endif()
 
+# SCORPIO Include directories
+
+if( SCORPIO )
+  include_directories( ${PIO_INCDIR} )
+  message( STATUS "SCORPIO included: ${PIO_INCDIR}" )
+endif()
+
 ###########################################################################
 # ROMS
 ###########################################################################
@@ -314,7 +321,7 @@ endif()
 # manually here.
 #
 # I would have done all the files in "Master" here to simplify things
-# but "ocean_control.F", "coupler.F", and "propagator.F" include
+# but "roms_kernel.F", "coupler.F", and "propagator.F" include
 # modules needed in other parts of the code outside "Master".
 
 if( ROMS_EXECUTABLE )
@@ -339,6 +346,15 @@ if( ROMS_EXECUTABLE )
     link_directories( ${PARPACK_LIBDIR} ${ARPACK_LIBDIR} )
   endif()
 
+  # If parallel I/O using SCORPIO is requested, add directory for the
+  # linker. The "link_directories" and "target_link_libraries" for
+  # are separated because "link_libraries" has to be set before
+  # "add_executable" and "target_link_libraries" has to be set after.
+
+  if( SCORPIO )
+    link_directories( ${PNETCDF_LIBDIR} ${PIO_LIBDIR} )
+  endif()
+
   preprocess_fortran( Master/master.F )
   set( master_f90 "${f90srcs}" )
   add_executable( "${BIN}" ${master_f90} )
@@ -357,10 +373,18 @@ if( ROMS_EXECUTABLE )
     Message( FATAL_ERROR "Unknown configuration!" )
   endif()
 
-  # If ARPACK is needed, add to linking library list. The path to the library is set above.
+  # If ARPACK is needed, add to linking library list.
+  # The path to the library is set above.
 
   if( ARPACK )
     target_link_libraries( "${BIN}" parpack arpack )
+  endif()
+
+  # If parallel I/O with SCORPIO is requested, add to linking library list.
+  # The path to the libraries are set above.
+
+  if( SCORPIO )
+    target_link_libraries( "${BIN}" pnetcdf piof pioc )
   endif()
 
   install( TARGETS "${BIN}" RUNTIME )

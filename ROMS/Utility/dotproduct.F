@@ -46,6 +46,9 @@
 !=======================================================================
 !
       USE mod_param
+#  ifdef MASKING
+      USE mod_grid
+#  endif
       USE mod_ocean
       USE mod_stepping
 !

@@ -175,9 +175,22 @@ export     MY_PROJECT_DIR=${PWD}
 
 #export         USE_DEBUG=on            # use Fortran debugging flags
  export         USE_LARGE=on            # activate 64-bit compilation
+
+# ROMS I/O choices and combinations. A more complete description of the
+# available options can be found in the wiki (https://myroms.org/wiki/IO).
+# Most users will want to enable at least USE_NETCDF4 because that will
+# instruct the ROMS build system to use nf-config to determine the
+# necessary libraries and paths to link into the ROMS executable.
+
 #export       USE_NETCDF4=on            # compile with NetCDF-4 library
-#export          USE_HDF5=on            # compile with HDF5 library
 #export   USE_PARALLEL_IO=on            # Parallel I/O with NetCDF-4/HDF5
+#export           USE_PIO=on            # Parallel I/O with PIO library
+#export       USE_SCORPIO=on            # Parallel I/O with SCORPIO library
+
+# If any of the coupling component use the HDF5 Fortran API for primary
+# I/O, we need to compile the main driver with the HDF5 library.
+
+#export          USE_HDF5=on            # compile with HDF5 library
 
 #--------------------------------------------------------------------------
 # If Earth System Model (ESM) coupling, set location of ESM component

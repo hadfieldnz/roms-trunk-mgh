@@ -522,12 +522,12 @@
      &   'Using mpi_allreduce in mp_assemble routine'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+20)=' ASSEMBLE_ALLGATHER,'
-# else
+# elif defined ASSEMBLE_SENDRECV
 !
-      IF (Master) WRITE (stdout,20) '!ASSEMBLE_ALL...',                 &
+      IF (Master) WRITE (stdout,20) 'ASSEMBLE_SENDRECV',                &
      &   'Using mpi_isend/mpi_recv in mp_assemble routine'
       is=LEN_TRIM(Coptions)+1
-      Coptions(is:is+18)=' !ASSEMBLE_ALL...,'
+      Coptions(is:is+19)=' ASSEMBLE_SENDRECV,'
 # endif
 #endif
 #ifdef ASSUMED_SHAPE
@@ -536,6 +536,20 @@
      &   'Using assumed-shape arrays'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+15)=' ASSUMED_SHAPE,'
+#endif
+#if defined ASYNCHRONOUS_PIO && defined PIO_LIB && defined DISTRIBUTE
+!
+      IF (Master) WRITE (stdout,20) 'ASYNCHRONOUS_PIO',                 &
+     &   'PIO library with disjointed dedicated I/O processes'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+18)=' ASYNCHRONOUS_PIO,'
+#endif
+#if defined ASYNCHRONOUS_SCORPIO && defined PIO_LIB && defined DISTRIBUTE
+!
+      IF (Master) WRITE (stdout,20) 'ASYNCHRONOUS_SCORPIO',             &
+     &   'SCORPIO library with disjointed dedicated I/O processes'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+22)=' ASYNCHRONOUS_SCORPIO,'
 #endif
 #ifdef ATM_PRESS
 !
@@ -640,7 +654,7 @@
 #ifdef CHECKSUM
 !
       IF (Master) WRITE (stdout,20) 'CHECKSUM',                         &
-     &   'Report checksum (hash) values when processing I/O'
+     &   'Report order-invariant checksum (hash) when processing I/O'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+10)=' CHECKSUM,'
 #endif
@@ -651,11 +665,11 @@
      &   'Using mpi_allgather in mp_boundary routine'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+20)=' BOUNDARY_ALLGATHER,'
-# else
-      IF (Master) WRITE (stdout,20) '!BOUNDARY_ALLGATHER',              &
+# elif defined BOUNDARY_ALLREDUCE
+      IF (Master) WRITE (stdout,20) 'BOUNDARY_ALLREDUCE',               &
      &   'Using mpi_allreduce in mp_boundary routine'
       is=LEN_TRIM(Coptions)+1
-      Coptions(is:is+21)=' !BOUNDARY_ALLGATHER,'
+      Coptions(is:is+20)=' BOUNDARY_ALLREDUCE,'
 # endif
 #endif
 #ifdef BULK_FLUXES
@@ -751,12 +765,12 @@
      &   'Using mpi_allreduce in mp_collect routine'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+19)=' COLLECT_ALLGATHER,'
-# else
+# elif defined COLLECT_SENDRECV
 !
-      IF (Master) WRITE (stdout,20) '!COLLECT_ALL...',                  &
+      IF (Master) WRITE (stdout,20) 'COLLECT_SENDRECV',                 &
      &   'Using mpi_isend/mpi_recv in mp_collect routine'
       is=LEN_TRIM(Coptions)+1
-      Coptions(is:is+17)=' !COLLECT_ALL...,'
+      Coptions(is:is+18)=' COLLECT_SENDRECV,'
 # endif
 #endif
 #if defined CONCURRENT_KERNEL && defined DISJOINTED && \
@@ -1808,6 +1822,13 @@
       Coptions(is:is+13)=' PICARD TEST,'
       idriver=idriver+1
 #endif
+#if defined PIO_LIB && defined DISTRIBUTE
+!
+      IF (Master) WRITE (stdout,20) 'PIO_LIB',                          &
+     &   'Using Parallel-IO from the SCORPIO library'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+9)=' PIO_LIB,'
+#endif
 #ifdef PJ_GRADP
 !
       IF (Master) WRITE (stdout,20) 'PJ_GRADP',                         &
@@ -2050,12 +2071,12 @@
      &   'Using mpi_allreduce in mp_reduce routine'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+18)=' REDUCE_ALLREDUCE,'
-# else
+# elif defined REDUCE_SENDRECV
 !
-      IF (Master) WRITE (stdout,20) '!REDUCE_ALL...',                   &
+      IF (Master) WRITE (stdout,20) 'REDUCE_SENDRECV',                  &
      &   'Using mpi_isend/mpi_recv in mp_reduce routine'
       is=LEN_TRIM(Coptions)+1
-      Coptions(is:is+16)=' !REDUCE_ALL...,'
+      Coptions(is:is+17)=' REDUCE_SENDRECV,'
 # endif
 #endif
 #ifdef REGCM_COUPLING

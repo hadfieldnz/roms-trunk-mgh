@@ -160,8 +160,6 @@
 !
       IF (DOMAIN(ng)%SouthWest_Corner(tile)) THEN
         IF (Master) WRITE (stdout,10) time_code(ng)
- 10     FORMAT (3x,'NL_FORCING   - added convolved adjoint impulse,',   &
-     &          t62,'t = ', a)
       END IF
 !
 !  Free-surface.
@@ -234,6 +232,9 @@
         END DO
       END DO
 # endif
+!
+ 10   FORMAT (2x,'NL_FORCING       - added convolved adjoint impulse,', &
+     &        t71,'t = ', a)
 !
       RETURN
       END SUBROUTINE forcing_tile

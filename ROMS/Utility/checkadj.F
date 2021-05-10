@@ -130,7 +130,7 @@
       string=uppercase('nl_bulk_fluxes')
       ic=ic+1
       IF (Master) WRITE(stdout,20) TRIM(string),                        &
-     &                             'deprecated option, used ' //        &
+     &                             'deprecated option, use ' //         &
      &                         uppercase('forward_fluxes')//' and ' //  &
      &                         uppercase('prior_bulk_fluxes') //        &
      &                             ' instead, FATAL ERROR'

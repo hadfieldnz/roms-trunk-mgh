@@ -102,6 +102,9 @@
       USE mod_iounits
       USE mod_ncparam
       USE mod_netcdf
+# if defined PIO_LIB && defined DISTRIBUTE
+      USE mod_pio_netcdf
+# endif
       USE mod_scalars
 #endif
 !
@@ -124,6 +127,13 @@
 !
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", allocate_sources"
+
+#ifndef ANA_PSOURCE
+# if defined PIO_LIB && defined DISTRIBUTE
+!
+      TYPE (Var_desc_t)  :: my_pioVar
+# endif
+#endif
 !
 !-----------------------------------------------------------------------
 !  Allocate module variables.
@@ -145,14 +155,26 @@
         DO mg=1,Ngrids
           foundit=.FALSE.
           IF (LuvSrc(mg).or.LwSrc(mg).or.ANY(LtracerSrc(:,mg))) THEN
-            CALL netcdf_inq_var (ng, iNLM, SSF(mg)%name,                &
-     &                           MyVarName = TRIM(Vname(1,idRxpo)),     &
-     &                           SearchVar = foundit,                   &
-     &                           VarID = Vid,                           &
-     &                           nVardim = nvdim,                       &
-     &                           nVarAtt = nvatt)
-            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+            SELECT CASE (AVG(ng)%IOtype)
+              CASE (io_nf90)
+                CALL netcdf_inq_var (ng, iNLM, SSF(mg)%name,            &
+     &                               MyVarName = Vname(1,idRxpo),       &
+     &                               SearchVar = foundit,               &
+     &                               VarID = Vid,                       &
+     &                               nVardim = nvdim,                   &
+     &                               nVarAtt = nvatt)
 
+# if defined PIO_LIB && defined DISTRIBUTE
+              CASE (io_pio)
+                CALL pio_netcdf_inq_var (ng, iNLM, SSF(mg)%name,        &
+     &                                   MyVarName = Vname(1,idRxpo),   &
+     &                                   SearchVar = foundit,           &
+     &                                   pioVar = my_pioVar,            &
+     &                                   nVardim = nvdim,               &
+     &                                   nVarAtt = nvatt)
+# endif
+            END SELECT
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
             IF (foundit) THEN
               Nsrc(mg)=var_Dsize(1)         ! first dimension
               Msrc(mg)=Nsrc(mg)

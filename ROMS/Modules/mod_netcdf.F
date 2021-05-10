@@ -17,11 +17,21 @@
 !=======================================================================
 !
       USE mod_kinds
+      USE mod_param
+      USE mod_parallel
+      USE mod_iounits
+      USE mod_ncparam
+      USE mod_scalars
       USE netcdf
+!
+      USE strings_mod, ONLY : FoundError
 !
       implicit none
 !
-      INTERFACE netcdf_get_fvar
+!  Interfaces for same name routine overloading. They differ in the kind
+!  type parameter and data array rank.
+!
+      INTERFACE netcdf_get_fvar                  ! reads floating-point
         MODULE PROCEDURE netcdf_get_fvar_0d
         MODULE PROCEDURE netcdf_get_fvar_1d
         MODULE PROCEDURE netcdf_get_fvar_2d
@@ -29,30 +39,30 @@
         MODULE PROCEDURE netcdf_get_fvar_4d
       END INTERFACE netcdf_get_fvar
 !
-      INTERFACE netcdf_get_lvar
-        MODULE PROCEDURE netcdf_get_lvar_0d
-        MODULE PROCEDURE netcdf_get_lvar_1d
-      END INTERFACE netcdf_get_lvar
-!
-      INTERFACE netcdf_get_ivar
+      INTERFACE netcdf_get_ivar                  ! reads integer
         MODULE PROCEDURE netcdf_get_ivar_0d
         MODULE PROCEDURE netcdf_get_ivar_1d
         MODULE PROCEDURE netcdf_get_ivar_2d
       END INTERFACE netcdf_get_ivar
 !
-      INTERFACE netcdf_get_svar
+      INTERFACE netcdf_get_lvar                  ! reads logical
+        MODULE PROCEDURE netcdf_get_lvar_0d
+        MODULE PROCEDURE netcdf_get_lvar_1d
+      END INTERFACE netcdf_get_lvar
+!
+      INTERFACE netcdf_get_svar                  ! reads string
         MODULE PROCEDURE netcdf_get_svar_0d
         MODULE PROCEDURE netcdf_get_svar_1d
         MODULE PROCEDURE netcdf_get_svar_2d
         MODULE PROCEDURE netcdf_get_svar_3d
       END INTERFACE netcdf_get_svar
 !
-      INTERFACE netcdf_get_time
+      INTERFACE netcdf_get_time                  ! reads time variable
         MODULE PROCEDURE netcdf_get_time_0d
         MODULE PROCEDURE netcdf_get_time_1d
       END INTERFACE netcdf_get_time
 !
-      INTERFACE netcdf_put_fvar
+      INTERFACE netcdf_put_fvar                  ! writes floating-point
 #ifdef SINGLE_PRECISION
         MODULE PROCEDURE netcdf_put_fvar_0dp
         MODULE PROCEDURE netcdf_put_fvar_1dp
@@ -65,24 +75,38 @@
         MODULE PROCEDURE netcdf_put_fvar_4d
       END INTERFACE netcdf_put_fvar
 !
-      INTERFACE netcdf_put_ivar
+      INTERFACE netcdf_put_ivar                  ! writes integer
         MODULE PROCEDURE netcdf_put_ivar_0d
         MODULE PROCEDURE netcdf_put_ivar_1d
         MODULE PROCEDURE netcdf_put_ivar_2d
       END INTERFACE netcdf_put_ivar
 !
-      INTERFACE netcdf_put_lvar
+      INTERFACE netcdf_put_lvar                  ! writes logical
         MODULE PROCEDURE netcdf_put_lvar_0d
         MODULE PROCEDURE netcdf_put_lvar_1d
         MODULE PROCEDURE netcdf_put_lvar_2d
       END INTERFACE netcdf_put_lvar
 !
-      INTERFACE netcdf_put_svar
+      INTERFACE netcdf_put_svar                  ! writes string
         MODULE PROCEDURE netcdf_put_svar_0d
         MODULE PROCEDURE netcdf_put_svar_1d
         MODULE PROCEDURE netcdf_put_svar_2d
         MODULE PROCEDURE netcdf_put_svar_3d
       END INTERFACE netcdf_put_svar
+!
+      PUBLIC :: netcdf_check_dim        ! checks dimensions
+      PUBLIC :: netcdf_check_var        ! checks variables
+      PUBLIC :: netcdf_close            ! closes file
+      PUBLIC :: netcdf_create           ! creates file
+      PUBLIC :: netcdf_enddef           ! ends definition mode
+      PUBLIC :: netcdf_get_dim          ! reads dimension names/values
+      PUBLIC :: netcdf_get_fatt         ! reads numerical attributes
+      PUBLIC :: netcdf_get_satt         ! reads string attributes
+      PUBLIC :: netcdf_inq_var          ! inquires variables
+      PUBLIC :: netcdf_inq_varid        ! inquires variable ID
+      PUBLIC :: netcdf_open             ! opens file
+      PUBLIC :: netcdf_redef            ! puts file in definition mode
+      PUBLIC :: netcdf_sync             ! synchronizes file
 !
 !  Switch to debug creating, opening, and closing of NetCDF file IDs
 !  to monitor 'Too many open files' error. In the Unix environment
@@ -214,6 +238,80 @@
 !
       CONTAINS
 !
+      FUNCTION netcdf_find_var (ng, model, ncid,                        &
+     &                          VarName, VarID) RESULT (foundit)
+!
+!=======================================================================
+!                                                                      !
+!  This function checks if a requested variable is available in a      !
+!  NetCDF file and returns its ID.                                     !
+!                                                                      !
+!  On Input:                                                           !
+!                                                                      !
+!     ng           Nested grid number (integer)                        !
+!     model        Calling model identifier (integer)                  !
+!     ncid         NetCDF file ID (integer)                            !
+!     VarName      Requested dimension name (string)                   !
+!                                                                      !
+!  On Ouput:                                                           !
+!                                                                      !
+!     VarID        ID of requested variable (integer)                  !
+!                                                                      !
+!=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
+!
+      USE distribute_mod, ONLY : mp_bcasti
+#endif
+!
+!  Imported variable declarations.
+!
+      integer, intent(in) :: ng, model, ncid
+!
+      character (len=*), intent(in) :: VarName
+!
+      integer, intent(out) :: VarID
+!
+!  Local variable declarations.
+!
+      logical :: foundit
+!
+      integer :: status
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
+!
+      integer, dimension(3) :: ibuffer
+#endif
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", netcdf_find_var"
+!
+!-----------------------------------------------------------------------
+!  Inquire if requested variable is available in NetCDF file.
+!-----------------------------------------------------------------------
+!
+      foundit=.FALSE.
+      VarID=0
+      IF (InpThread) THEN
+        status=nf90_inq_varid(ncid, TRIM(VarName), VarID)
+      END IF
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
+!
+      ibuffer(1)=status
+      ibuffer(2)=VarID
+      CALL mp_bcasti (ng, model, ibuffer)
+      status=ibuffer(1)
+      VarID=ibuffer(2)
+#endif
+!
+      IF (status.eq.nf90_noerr) THEN
+        foundit=.TRUE.
+      END IF
+!
+      RETURN
+      END FUNCTION netcdf_find_var
+!
       SUBROUTINE netcdf_get_dim (ng, model, ncname, ncid, DimName,      &
      &                           DimSize, DimID)
 !
@@ -252,16 +350,12 @@
 !     WARNING: This is information is rewritten during each CALL.      !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti, mp_bcasts
 #endif
-      USE strings_mod,    ONLY : FoundError
+
 !
 !  Imported variable declarations.
 !
@@ -281,7 +375,7 @@
       integer :: my_ncid, i, j, status
       integer :: myID, myValue
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(5) :: ibuffer
 #endif
 !
@@ -327,7 +421,7 @@
         status=nf90_inquire(my_ncid, n_dim, n_var, n_gatt, rec_id)
 #endif
         IF ((status.eq.nf90_noerr).and.(n_dim.le.Mdims)) THEN
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
           ibuffer(1)=n_dim
           ibuffer(2)=n_var
           ibuffer(3)=n_gatt
@@ -350,7 +444,7 @@
             END IF
             IF (dim_id(i).eq.rec_id) THEN
               rec_size=dim_size(i)
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
               ibuffer(5)=rec_size
 #endif
             END IF
@@ -369,7 +463,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast dimension to all processors in the group.
 !
@@ -463,13 +557,6 @@
 !     WARNING: This is information is rewritten during each CALL.      !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-      USE strings_mod, ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -658,17 +745,11 @@
 !     WARNING: This is information is rewritten during each CALL.      !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_ncparam
-      USE mod_scalars
-!
+
 #ifdef FOUR_DVAR
+!
       USE strings_mod, ONLY : find_string
 #endif
-      USE strings_mod, ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -1336,16 +1417,11 @@
 !     WARNING: This is information is rewritten during each CALL.      !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti, mp_bcastf, mp_bcasts
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -1369,7 +1445,7 @@
       integer :: i, j, status
       integer :: att_id, my_Alen, my_Atype, my_id, my_ncid
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(4) :: ibuffer
 #endif
 !
@@ -1421,7 +1497,7 @@
       IF (InpThread) THEN
         status=nf90_inquire(my_ncid, n_dim, n_var, n_gatt, rec_id)
         IF ((status.eq.nf90_noerr).and.(n_var.le.Mvars)) THEN
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
           ibuffer(1)=n_dim
           ibuffer(2)=n_var
           ibuffer(3)=n_gatt
@@ -1507,7 +1583,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast dimension to all processors in the group.
 !
@@ -1674,7 +1750,7 @@
             END IF
           END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast requested variable information to all processors in the
 !  group.
@@ -1771,16 +1847,11 @@
 !     VarID        ID of requested variable (integer)                  !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -1794,7 +1865,7 @@
 !  Local variable declarations.
 !
       integer :: status
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(3) :: ibuffer
 #endif
 !
@@ -1815,7 +1886,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       ibuffer(1)=exit_flag
       ibuffer(2)=ioerror
       ibuffer(3)=VarID
@@ -1856,16 +1927,11 @@
 !                    attribute is found (logical array)                !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcastf, mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -1884,7 +1950,7 @@
 !
       integer :: i, j, my_natts, my_ncid, natts, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
       real(r8), allocatable :: buffer(:)
 #endif
@@ -1906,7 +1972,7 @@
         foundit(i)=.FALSE.
         AttValue(i)=0.0_r8
       END DO
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       IF (.not.allocated(buffer)) THEN
         allocate ( buffer(2*natts+1) )
       END IF
@@ -1965,7 +2031,7 @@
               EXIT
             END IF
           END DO
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
           buffer=0.0_r8
           DO i=1,natts
@@ -2050,16 +2116,11 @@
 !                    attribute is found (logical array)                !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti, mp_bcasts
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -2078,7 +2139,7 @@
 !
       integer :: i, j, my_natts, my_ncid, natts, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, allocatable :: ibuffer(:)
 #endif
 !
@@ -2099,7 +2160,7 @@
         foundit(i)=.FALSE.
         AttValue(i)=' '
       END DO
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       IF (.not.allocated(ibuffer)) THEN
         allocate ( ibuffer(natts+1) )
       END IF
@@ -2158,7 +2219,7 @@
               EXIT
             END IF
           END DO
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
           ibuffer=0
           DO i=1,natts
@@ -2178,7 +2239,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast information to all processors in the group. Pack all
 !  data into a real array for efficient communications.
@@ -2256,16 +2317,11 @@
 !    CALL netcdf_get_fvar (ng, iNLM, 'file.nc', 'VarName', fvar(1))    !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcastf, mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -2287,14 +2343,14 @@
 !
 !  Local variable declarations.
 !
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       logical :: DoBroadcast
 !
 #endif
 
       integer :: my_ncid, status, varid
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -2316,7 +2372,7 @@
         my_ncid=ncid
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Determine if the read data is only needed and allocated by the master
 !  node ins distribute-memory applications.
@@ -2353,7 +2409,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -2433,16 +2489,11 @@
 !    CALL netcdf_get_fvar (ng, iNLM, 'file.nc', 'VarName', fvar(:,1))  !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcastf, mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -2464,7 +2515,7 @@
 !
 !  Local variable declarations.
 !
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       logical :: DoBroadcast
 #endif
       logical, dimension(3) :: foundit
@@ -2472,7 +2523,7 @@
       integer :: i, my_ncid, status, varid
 
       integer, dimension(1) :: Asize
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -2509,7 +2560,7 @@
         my_ncid=ncid
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Determine if the read data is only needed and allocated by the master
 !  node ins distribute-memory applications.
@@ -2545,7 +2596,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -2684,16 +2735,11 @@
 !    CALL netcdf_get_fvar (ng, iNLM, 'file.nc', 'VarName', fvar(:,:,1))!
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcastf, mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -2715,7 +2761,7 @@
 !
 !  Local variable declarations.
 !
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       logical :: Dobroadcast
 #endif
       logical, dimension(3) :: foundit
@@ -2724,7 +2770,7 @@
 
       integer, dimension(2) :: Asize
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -2760,7 +2806,7 @@
         my_ncid=ncid
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Determine if the read data is only needed and allocated by the master
 !  node ins distribute-memory applications.
@@ -2790,13 +2836,14 @@
           END IF
         ELSE
           WRITE (stdout,20) TRIM(myVarName), TRIM(ncname),              &
+     &                      TRIM(SourceFile), nf90_strerror(status),    &
      &                      nf90_strerror(status)
           exit_flag=2
           ioerror=status
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -2938,16 +2985,11 @@
 !    CALL netcdf_get_fvar (ng, iNLM, 'file.nc', 'VarName', fvar)       !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcastf, mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -2969,7 +3011,7 @@
 !
 !  Local variable declarations.
 !
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       logical :: DoBroadcast
 #endif
       logical, dimension(3) :: foundit
@@ -2978,7 +3020,7 @@
 
       integer, dimension(3) :: Asize
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -3016,7 +3058,7 @@
         my_ncid=ncid
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Determine if the read data is only needed and allocated by the master
 !  node ins distribute-memory applications.
@@ -3052,7 +3094,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -3202,16 +3244,11 @@
 !    CALL netcdf_get_fvar (ng, iNLM, 'file.nc', 'VarName', fvar)       !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcastf, mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -3233,7 +3270,7 @@
 !
 !  Local variable declarations.
 !
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       logical :: DoBroadcast
 #endif
       logical, dimension(3) :: foundit
@@ -3242,7 +3279,7 @@
 
       integer, dimension(4) :: Asize
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -3282,7 +3319,7 @@
         my_ncid=ncid
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Determine if the read data is only needed and allocated by the master
 !  node ins distribute-memory applications.
@@ -3318,7 +3355,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -3470,16 +3507,11 @@
 !    CALL netcdf_get_lvar (ng, iNLM, 'file.nc', 'VarName', lvar(1))    !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti, mp_bcastl
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -3501,7 +3533,7 @@
       integer :: AI
       integer, dimension(1) :: my_AI
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -3578,7 +3610,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -3645,16 +3677,11 @@
 !    CALL netcdf_get_lvar (ng, iNLM, 'file.nc', 'VarName', lvar(:,1))  !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti, mp_bcastl
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -3675,7 +3702,7 @@
 
       integer, dimension(SIZE(A,1)) :: AI
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -3755,7 +3782,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -3819,16 +3846,11 @@
 !    CALL netcdf_get_ivar (ng, iNLM, 'file.nc', 'VarName', ivar(1))    !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -3849,7 +3871,7 @@
 
       integer, dimension(1) :: my_A
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -3894,7 +3916,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -3956,16 +3978,11 @@
 !    CALL netcdf_get_ivar (ng, iNLM, 'file.nc', 'VarName', ivar(:,1))  !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -3984,7 +4001,7 @@
 !
       integer :: my_ncid, status, varid
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -4028,7 +4045,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -4091,16 +4108,11 @@
 !    CALL netcdf_get_ivar (ng, iNLM, 'file.nc', 'VarName', ivar(:,:,1))!
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -4119,7 +4131,7 @@
 !
       integer :: my_ncid, status, varid
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -4163,7 +4175,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -4234,16 +4246,11 @@
 !    CALL netcdf_get_svar (ng, iNLM, 'file.nc', 'VarName', ivar(1))    !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti, mp_bcasts
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -4262,10 +4269,12 @@
 !
       integer :: my_ncid, status, varid
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
+      character (len=LEN(A)), dimension(1) :: my_A
+
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", netcdf_get_svar_0d"
 !
@@ -4288,7 +4297,8 @@
         status=nf90_inq_varid(my_ncid, TRIM(myVarName), varid)
         IF (status.eq.nf90_noerr) THEN
           IF (PRESENT(start).and.PRESENT(total)) THEN
-            status=nf90_get_var(my_ncid, varid, A, start, total)
+            status=nf90_get_var(my_ncid, varid, my_A, start, total)
+            A=my_A(1)
           ELSE
             status=nf90_get_var(my_ncid, varid, A)
           END IF
@@ -4306,7 +4316,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -4373,16 +4383,11 @@
 !     A            Read 1D-array variable or array element (string)    !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti, mp_bcasts
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -4401,7 +4406,7 @@
 !
       integer :: my_ncid, status, varid
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -4445,7 +4450,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -4512,16 +4517,11 @@
 !     A            Read 2D-array variable or array element (string)    !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti, mp_bcasts
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -4540,7 +4540,7 @@
 !
       integer :: my_ncid, status, varid
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -4584,7 +4584,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -4651,16 +4651,11 @@
 !     A            Read 3D-array variable or element (string)          !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti, mp_bcasts
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -4679,7 +4674,7 @@
 !
       integer :: my_ncid, status, varid
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -4723,7 +4718,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -4795,16 +4790,11 @@
 !                                                                      !
 !=======================================================================
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
       USE dateclock_mod,  ONLY : datenum, datestr, time_units
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcastf, mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError, lowercase
+      USE strings_mod,    ONLY : lowercase
 !
 !  Imported variable declarations.
 !
@@ -4835,7 +4825,7 @@
       integer :: ind, lstr, my_ncid, status, varid
       integer :: year, month, day, hour, minutes
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
       real(dp) :: Afactor, Aoffset, my_Rdate(2), seconds
@@ -4890,7 +4880,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -5082,16 +5072,11 @@
 !                                                                      !
 !=======================================================================
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
       USE dateclock_mod,  ONLY : datenum, datestr, time_units
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcastf, mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError, lowercase
+      USE strings_mod,    ONLY : lowercase
 !
 !  Imported variable declarations.
 !
@@ -5123,7 +5108,7 @@
       integer :: year, month, day, hour, minutes
 
       integer, dimension(1) :: Asize
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -5186,7 +5171,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast read variable to all processors in the group.
 !
@@ -5377,16 +5362,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+# if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-# if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 # endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -5405,11 +5385,11 @@
 !
       integer :: my_ncid, my_varid, status
 
-# if !defined PARALLEL_IO  && defined DISTRIBUTE
+# if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 # endif
 !
-      real(r8), dimension(1) :: my_A
+      real(dp), dimension(1) :: my_A
 !
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", netcdf_put_fvar_0dp"
@@ -5460,7 +5440,7 @@
         END IF
       END IF
 
-# if !defined PARALLEL_IO  && defined DISTRIBUTE
+# if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -5518,16 +5498,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+# if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-# if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 # endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -5546,7 +5521,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-# if !defined PARALLEL_IO  && defined DISTRIBUTE
+# if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 # endif
 !
@@ -5594,7 +5569,7 @@
         END IF
       END IF
 
-# if !defined PARALLEL_IO  && defined DISTRIBUTE
+# if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -5652,16 +5627,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+# if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-# if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 # endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -5680,7 +5650,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-# if !defined PARALLEL_IO  && defined DISTRIBUTE
+# if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 # endif
 !
@@ -5728,7 +5698,7 @@
         END IF
       END IF
 
-# if !defined PARALLEL_IO  && defined DISTRIBUTE
+# if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -5787,16 +5757,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -5815,7 +5780,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -5870,7 +5835,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -5928,16 +5893,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -5956,7 +5916,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -6004,7 +5964,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -6062,16 +6022,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -6090,7 +6045,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -6138,7 +6093,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -6196,16 +6151,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -6224,7 +6174,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -6272,7 +6222,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -6330,16 +6280,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -6358,7 +6303,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -6406,7 +6351,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -6464,16 +6409,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -6494,7 +6434,7 @@
 
       integer, dimension(1) :: my_A
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -6547,7 +6487,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -6605,16 +6545,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -6633,7 +6568,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -6681,7 +6616,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -6739,16 +6674,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -6767,7 +6697,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -6815,7 +6745,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -6876,16 +6806,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -6907,7 +6832,7 @@
       integer :: AI
       integer, dimension(1) :: my_AI
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -6969,7 +6894,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -7036,7 +6961,7 @@
       USE mod_iounits
       USE mod_scalars
 !
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
       USE strings_mod,    ONLY : FoundError
@@ -7060,7 +6985,7 @@
 
       integer, dimension(SIZE(A,1)) :: AI
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -7119,7 +7044,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -7180,16 +7105,11 @@
 !  Notice: This routine must be used to write only nontiled variables. !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -7210,7 +7130,7 @@
 
       integer, dimension(SIZE(A,1),SIZE(A,2)) :: AI
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -7271,7 +7191,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -7337,19 +7257,12 @@
 !     exit_flag    Error flag (integer) stored in MOD_SCALARS          !
 !     ioerror      NetCDF return code (integer) stored in MOD_IOUNITS  !
 !                                                                      !
-!  Notice: This routine must be used to write only nontiled variables. !
-!                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -7367,10 +7280,12 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
+      character (len=LEN(A)), dimension(1) :: my_A
+
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", netcdf_put_svar_0d"
 !
@@ -7405,7 +7320,12 @@
 !  Write out data.
 !
         IF (exit_flag.eq.NoError) THEN
-          status=nf90_put_var(my_ncid, my_varid, A, start, total)
+          IF ((start(1).eq.1).and.(total(1).eq.1)) THEN
+             status=nf90_put_var(my_ncid, my_varid, A)
+          ELSE
+            my_A(1)=A
+            status=nf90_put_var(my_ncid, my_varid, my_A, start, total)
+          END IF
           IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
             WRITE (stdout,20) TRIM(myVarName), TRIM(ncname),            &
      &                        TRIM(SourceFile), nf90_strerror(status)
@@ -7415,7 +7335,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -7482,19 +7402,12 @@
 !     exit_flag    Error flag (integer) stored in MOD_SCALARS          !
 !     ioerror      NetCDF return code (integer) stored in MOD_IOUNITS  !
 !                                                                      !
-!  Notice: This routine must be used to write only nontiled variables. !
-!                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -7513,7 +7426,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -7561,7 +7474,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -7629,16 +7542,11 @@
 !     ioerror      NetCDF return code (integer) stored in MOD_IOUNITS  !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -7657,7 +7565,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -7705,7 +7613,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -7773,16 +7681,11 @@
 !     ioerror      NetCDF return code (integer) stored in MOD_IOUNITS  !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -7801,7 +7704,7 @@
 !
       integer :: my_ncid, my_varid, status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(2) :: ibuffer
 #endif
 !
@@ -7849,7 +7752,7 @@
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -7893,17 +7796,11 @@
 !     Lupdate      Update global attribute (logical, OPTIONAl)         !
 !                                                                      !
 !=======================================================================
+
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_ncparam
-      USE mod_scalars
-!
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -7923,9 +7820,9 @@
 #endif
       integer :: i, status
 #ifdef BIOLOGY
-      integer :: AttLen, is, ie, lstr
+      integer :: is, ie, lstr
 #endif
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer, dimension(3) :: ibuffer
 #endif
 !
@@ -7974,39 +7871,36 @@
 !
         IF (my_Lupdate) THEN
           is=1
-          status=nf90_inquire_attribute(ncid, nf90_global, 'bio_file',  &
-     &                                  len = AttLen)
-          IF (status.eq.nf90_noerr) THEN
-            DO i=1,512
-              bio_file(i:i)=' '
-            END DO
-            DO i=1,4
-              lstr=LEN_TRIM(BIONAME(i))
-              IF (lstr.gt.0) THEN
-                ie=is+lstr-1
-                bio_file(is:ie)=TRIM(BIONAME(i))
-                is=ie+1
-                bio_file(is:is)=','
-                is=is+2
-              END IF
-            END DO
-            lstr=LEN_TRIM(bio_file)-1
+          DO i=1,512
+            bio_file(i:i)=' '
+          END DO
+          DO i=1,4
+            lstr=LEN_TRIM(BIONAME(i))
             IF (lstr.gt.0) THEN
-              status=nf90_put_att(ncid, nf90_global, 'bio_file',        &
-     &                            bio_file(1:lstr))
-              IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
-                WRITE (stdout,10) 'bio_file', TRIM(my_ncname),          &
-     &                            TRIM(SourceFile),                     &
-     &                            nf90_strerror(status)
-                exit_flag=3
-                ioerror=status
-              END IF
+              ie=is+lstr-1
+              bio_file(is:ie)=TRIM(BIONAME(i))
+              is=ie+1
+              bio_file(is:is)=','
+              is=is+2
+            END IF
+          END DO
+          lstr=LEN_TRIM(bio_file)-1
+          IF (lstr.gt.0) THEN
+            status=nf90_put_att(ncid, nf90_global, 'bio_file',          &
+     &                          bio_file(1:lstr))
+            IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
+              WRITE (stdout,10) 'bio_file', TRIM(my_ncname),            &
+     &                          TRIM(SourceFile),                       &
+     &                          nf90_strerror(status)
+              exit_flag=3
+              ioerror=status
             END IF
           END IF
         END IF
 #endif
 !
-!  Close requested NetCDF file.
+!  Close requested NetCDF file. After closing, the "ncid" identifier is
+!  set to its closed state value of -1.
 !
         IF (exit_flag.eq.NoError) THEN
           status=nf90_close(ncid)
@@ -8017,17 +7911,16 @@
             ioerror=status
           END IF
           IF (Ldebug_ncid) THEN
-            WRITE (DBout,'(a,1x," <= ",i8,2(2x,a))') kernel(model)//    &
-     &                                               ' CLOSE', ncid,    &
-     &                                               TRIM(my_ncname),   &
-     &                                               TRIM(SourceFile)
+            WRITE (DBout,'(a,1x," <= ",i8,2(2x,a))')                    &
+     &            kernel(model)//' F90: CLOSE', ncid,                   &
+     &            TRIM(my_ncname), TRIM(SourceFile)
             CALL my_flush (DBout)
           END IF
           ncid=-1
         END IF
       END IF
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
 !
 !  Broadcast error flags to all processors in the group.
 !
@@ -8069,16 +7962,11 @@
 !     ncid         NetCDF file ID (integer)                            !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
+
 #if !defined PARALLEL_IO && defined DISTRIBUTE
+!
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -8150,10 +8038,9 @@
           ioerror=status
         END IF
         IF (Ldebug_ncid) THEN
-            WRITE (DBout,'(a," <= ",i8,2(2x,a))') kernel(model)//       &
-     &                                            ' CREATE', ncid,      &
-     &                                            TRIM(ncname),         &
-     &                                            TRIM(SourceFile)
+            WRITE (DBout,'(a," ** ",i8,2(2x,a))')                       &
+     &            kernel(model)//' F90: CREATE', ncid,                  &
+     &            TRIM(ncname), TRIM(SourceFile)
           CALL my_flush (DBout)
         END IF
 !
@@ -8212,16 +8099,11 @@
 !          NetCDF-4 format type file.                                  !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
+
 #if !defined PARALLEL_IO && defined DISTRIBUTE
+!
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -8297,16 +8179,11 @@
 !     ncid         NetCDF file ID (integer)                            !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
+
 #if !defined PARALLEL_IO && defined DISTRIBUTE
+!
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -8402,10 +8279,9 @@
           ioerror=status
         END IF
         IF (Ldebug_ncid) THEN
-           WRITE (DBout,'(a,2x," => ",i8,2(2x,a))') kernel(model)//     &
-     &                                              ' OPEN', ncid,      &
-     &                                              TRIM(ncname),       &
-     &                                              TRIM(SourceFile)
+           WRITE (DBout,'(a,2x," => ",i8,2(2x,a))')                     &
+     &           kernel(model)//' F90: OPEN', ncid,                     &
+     &           TRIM(ncname), TRIM(SourceFile)
           CALL my_flush (DBout)
         END IF
 # ifdef DISTRIBUTE
@@ -8452,16 +8328,11 @@
 !          NetCDF-4 format type files.                                 !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
+
 #if !defined PARALLEL_IO && defined DISTRIBUTE
+!
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -8481,7 +8352,7 @@
      &  __FILE__//", netcdf_redef"
 !
 !-----------------------------------------------------------------------
-!  Leave definition mode.
+!  Put open file into definition mode.
 !-----------------------------------------------------------------------
 !
       IF (OutThread) THEN
@@ -8530,16 +8401,11 @@
 !  See NetCDF user manual for more details.                            !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_parallel
-      USE mod_iounits
-      USE mod_scalars
-!
+
 #if !defined PARALLEL_IO && defined DISTRIBUTE
+!
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -8551,7 +8417,7 @@
 !
       integer :: status
 
-#if !defined PARALLEL_IO  && defined DISTRIBUTE
+#if !defined PARALLEL_IO && defined DISTRIBUTE
       integer :: ibuffer(2)
 #endif
 !

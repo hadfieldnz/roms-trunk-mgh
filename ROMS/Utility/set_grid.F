@@ -22,13 +22,19 @@
 !
       USE analytical_mod
 #ifdef DISTRIBUTE
-      USE distribute_mod, ONLY : mp_bcasti
+      USE distribute_mod,   ONLY : mp_bcasti
 #endif
-      USE metrics_mod,    ONLY : metrics
+#ifndef ANA_GRID
+      USE get_grid_mod,     ONLY : get_grid
+#endif
+#ifndef ANA_NUDGCOEF
+      USE get_nudgcoef_mod, ONLY : get_nudgcoef
+#endif
+      USE metrics_mod,      ONLY : metrics
 #ifdef NESTING
-      USE nesting_mod,    ONLY : nesting
+      USE nesting_mod,      ONLY : nesting
 #endif
-      USE strings_mod,    ONLY : FoundError
+      USE strings_mod,      ONLY : FoundError
 !
       implicit none
 !
@@ -63,7 +69,11 @@
 !$OMP BARRIER
 #else
 !$OMP MASTER
-      CALL get_grid (ng, model)
+# ifdef DISTRIBUTE
+      CALL get_grid (ng, MyRank, model)
+# else
+      CALL get_grid (ng, -1, model)
+# endif
 !$OMP END MASTER
 # ifdef DISTRIBUTE
       CALL mp_bcasti (ng, model, exit_flag)
@@ -147,7 +157,11 @@
 # else
       IF (Lnudging(ng)) THEN
 !$OMP MASTER
-        CALL get_nudgcoef (ng, model)
+#  ifdef DISTRIBUTE
+        CALL get_nudgcoef (ng, MyRank, model)
+#  else
+        CALL get_nudgcoef (ng, -1, model)
+#  endif
 !$OMP END MASTER
 #  ifdef DISTRIBUTE
         CALL mp_bcasti (ng, model, exit_flag)

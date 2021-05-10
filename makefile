@@ -437,6 +437,10 @@ ifdef MY_HEADER_DIR
  includes +=	$(MY_HEADER_DIR)
 endif
 
+ifdef USE_PIO
+ includes +=	$(PIO_INCDIR)
+endif
+
 ifdef USE_COAMPS
  includes +=	$(COAMPS_LIB_DIR)
 endif

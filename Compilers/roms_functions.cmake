@@ -120,12 +120,13 @@ function(preprocess_fortran)
 endfunction()
 
 ###########################################################################
-# The "use_4dvar" function is used by roms_config.cmake to determine if
+# The "get_options" function is used by roms_config.cmake to determine if
 # the adjoint, tangent linear, and/or representer model(s) are needed
-# and add ARPACK/PARPACK to link into the executable.
+# and whether to add ARPACK/PARPACK and/or parallel I/O using SCORPIO
+# to link into the executable.
 ###########################################################################
 
-function(use_4dvar roms_header)
+function(get_options roms_header)
 
   # Set ROMS_HEADER C-Preprocessor flag.
 
@@ -150,14 +151,13 @@ function(use_4dvar roms_header)
   # Check whether the cpp command above produced an error and stop CMake if it did.
 
   if( status AND NOT status EQUAL 0 )
-    message( FATAL_ERROR "use_4dvar error: ${err}" )
+    message( FATAL_ERROR "get_options error: ${err}" )
   endif()
 
   # Return needed Models/Libraries.
 
   set(defs "${models_libs}" PARENT_SCOPE)
 endfunction()
-
 
 ###########################################################################
 # Determine how to link to NetCDF

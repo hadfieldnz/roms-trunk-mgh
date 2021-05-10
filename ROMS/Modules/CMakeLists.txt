@@ -33,6 +33,7 @@ list ( APPEND _files
        ROMS/Modules/mod_ocean.F
        ROMS/Modules/mod_parallel.F
        ROMS/Modules/mod_param.F
+       ROMS/Modules/mod_pio_netcdf.F
        ROMS/Modules/mod_scalars.F
        ROMS/Modules/mod_sedbed.F
        ROMS/Modules/mod_sediment.F
