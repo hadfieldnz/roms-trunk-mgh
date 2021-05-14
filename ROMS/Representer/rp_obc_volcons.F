@@ -132,7 +132,7 @@
       real(r8) :: tl_cff, tl_my_area, tl_my_flux
 
 # ifdef DISTRIBUTE
-      real(r8), dimension(2) :: buffer
+      real(r8), dimension(2) :: rbuffer
       character (len=3), dimension(2) :: op_handle
 # endif
 
@@ -292,19 +292,19 @@
         IF (tile_count.eq.NSUB) THEN
           tile_count=0
 # ifdef DISTRIBUTE
-!>        buffer(1)=bc_area
-!>        buffer(2)=bc_flux
+!>        rbuffer(1)=bc_area
+!>        rbuffer(2)=bc_flux
 !>
-          buffer(1)=tl_bc_area
-          buffer(2)=tl_bc_flux
+          rbuffer(1)=tl_bc_area
+          rbuffer(2)=tl_bc_flux
           op_handle(1)='SUM'
           op_handle(2)='SUM'
-          CALL mp_reduce (ng, iRPM, 2, buffer, op_handle)
-!>        bc_area=buffer(1)
-!>        bc_flux=buffer(2)
+          CALL mp_reduce (ng, iRPM, 2, rbuffer, op_handle)
+!>        bc_area=rbuffer(1)
+!>        bc_flux=rbuffer(2)
 !>
-          tl_bc_area=buffer(1)
-          tl_bc_flux=buffer(2)
+          tl_bc_area=rbuffer(1)
+          tl_bc_flux=rbuffer(2)
 # endif
 !>        ubar_xs=bc_flux/bc_area
 !>

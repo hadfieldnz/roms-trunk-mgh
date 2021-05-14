@@ -17,6 +17,8 @@
       USE mod_iounits
       USE mod_scalars
 !
+      USE strings_mod, ONLY : FoundError
+!
       implicit none
 !
       INTERFACE def_dim
@@ -53,11 +55,11 @@
 !***********************************************************************
 !
       USE mod_netcdf
-!
+
 #if !defined PARALLEL_IO  && defined DISTRIBUTE
+!
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod, ONLY : FoundError
 !
       implicit none
 !
@@ -75,7 +77,7 @@
       integer :: status
 
 #if !defined PARALLEL_IO  && defined DISTRIBUTE
-      integer, dimension(3) :: buffer
+      integer, dimension(3) :: ibuffer
 #endif
 !
       character (len=*), parameter :: MyFile =                          &
@@ -102,13 +104,13 @@
 !
 !  Broadcast information to all threads in the group.
 !
-      buffer(1)=DimID
-      buffer(2)=status
-      buffer(3)=exit_flag
-      CALL mp_bcasti (ng, model, buffer)
-      DimID=buffer(1)
-      status=buffer(2)
-      exit_flag=buffer(3)
+      ibuffer(1)=DimID
+      ibuffer(2)=status
+      ibuffer(3)=exit_flag
+      CALL mp_bcasti (ng, model, ibuffer)
+      DimID=ibuffer(1)
+      status=ibuffer(2)
+      exit_flag=ibuffer(3)
 #endif
 !
  10   FORMAT (/,' DEF_DIM_NF90 - error while defining dimension: ',a,   &
@@ -146,8 +148,6 @@
 !***********************************************************************
 !
       USE pio
-!
-      USE strings_mod, ONLY : FoundError
 !
 !  Imported variable declarations.
 !

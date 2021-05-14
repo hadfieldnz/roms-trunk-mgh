@@ -203,7 +203,7 @@
 
       real(r8), parameter :: Tspv = 0.0_r8
       real(r8), allocatable :: Tend(:)
-      real(r8), dimension(0:Nregion) :: buffer
+      real(r8), dimension(0:Nregion) :: rbuffer
 
       character (len= 3), dimension(0:Nregion) :: op_handle
 #endif
@@ -322,12 +322,12 @@
           op_handle(0:Nregion)='SUM'      ! Gather all values using a
           DO imodel=1,4                   ! reduced sum between nodes
             DO iregion=0,Nregion
-              buffer(iregion)=Csum(iregion,imodel,ng)
+              rbuffer(iregion)=Csum(iregion,imodel,ng)
             END DO
-            CALL mp_reduce (ng, MyModel, Nregion+1, buffer(0:),         &
+            CALL mp_reduce (ng, MyModel, Nregion+1, rbuffer(0:),        &
      &                      op_handle(0:), MyCOMM)
             DO iregion=0,Nregion
-              Csum(iregion,imodel,ng)=buffer(iregion)
+              Csum(iregion,imodel,ng)=rbuffer(iregion)
             END DO
           END DO
 #endif

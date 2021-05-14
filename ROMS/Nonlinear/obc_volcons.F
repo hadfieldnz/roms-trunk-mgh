@@ -115,7 +115,7 @@
       real(r8) :: cff, my_area, my_flux
 
 #ifdef DISTRIBUTE
-      real(r8), dimension(2) :: buffer
+      real(r8), dimension(2) :: rbuffer
       character (len=3), dimension(2) :: op_handle
 #endif
 
@@ -210,19 +210,19 @@
         IF (tile_count.eq.NSUB) THEN
           tile_count=0
 #ifdef DISTRIBUTE
-          buffer(1)=bc_area
-          buffer(2)=bc_flux
+          rbuffer(1)=bc_area
+          rbuffer(2)=bc_flux
           op_handle(1)='SUM'
           op_handle(2)='SUM'
-          CALL mp_reduce (ng, iNLM, 2, buffer, op_handle)
+          CALL mp_reduce (ng, iNLM, 2, rbuffer, op_handle)
 # ifdef DEBUG_VOLCONS
-          WRITE (150,10) MyRank, iic(ng), iif(ng), bc_area, buffer(1),  &
-                         bc_flux, buffer(2), buffer(2)/buffer(1)
+          WRITE (150,10) MyRank, iic(ng), iif(ng), bc_area, rbuffer(1), &
+                         bc_flux, rbuffer(2), rbuffer(2)/rbuffer(1)
   10      FORMAT (i3,1x,i3.3,1x,i3.3,5(1x,1pe23.15))
           CALL my_flush (150)
 # endif
-          bc_area=buffer(1)
-          bc_flux=buffer(2)
+          bc_area=rbuffer(1)
+          bc_flux=rbuffer(2)
 #endif
           ubar_xs=bc_flux/bc_area
         END IF

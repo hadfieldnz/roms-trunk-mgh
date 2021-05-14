@@ -1952,7 +1952,7 @@
 
 #if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      real(r8), allocatable :: buffer(:)
+      real(r8), allocatable :: rbuffer(:)
 #endif
 !
       character (len=40) :: my_Aname
@@ -1973,8 +1973,8 @@
         AttValue(i)=0.0_r8
       END DO
 #if !defined PARALLEL_IO && defined DISTRIBUTE
-      IF (.not.allocated(buffer)) THEN
-        allocate ( buffer(2*natts+1) )
+      IF (.not.allocated(rbuffer)) THEN
+        allocate ( rbuffer(2*natts+1) )
       END IF
 #endif
 !
@@ -2033,14 +2033,14 @@
           END DO
 #if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-          buffer=0.0_r8
+          rbuffer=0.0_r8
           DO i=1,natts
-            buffer(i)=AttValue(i)
+            rbuffer(i)=AttValue(i)
             IF (foundit(i)) THEN
-               buffer(i+natts)=1.0_r8
+               rbuffer(i+natts)=1.0_r8
             END IF
           END DO
-          buffer(2*natts+1)=REAL(ioerror, r8)
+          rbuffer(2*natts+1)=REAL(ioerror, r8)
 #endif
         ELSE
           IF (Master) WRITE (stdout,30) TRIM(my_Vname),                 &
@@ -2059,16 +2059,16 @@
 !
       CALL mp_bcasti (ng, model, exit_flag)
       IF (exit_flag.eq.NoError) THEN
-        CALL mp_bcastf (ng, model, buffer)
+        CALL mp_bcastf (ng, model, rbuffer)
         DO i=1,natts
-          AttValue(i)=buffer(i)
-          IF (buffer(i+natts).gt.0.0_r8) THEN
+          AttValue(i)=rbuffer(i)
+          IF (rbuffer(i+natts).gt.0.0_r8) THEN
             foundit(i)=.TRUE.
           END IF
         END DO
-        ioerror=INT(buffer(2*natts+1))
-        IF (allocated(buffer)) THEN
-          deallocate (buffer)
+        ioerror=INT(rbuffer(2*natts+1))
+        IF (allocated(rbuffer)) THEN
+          deallocate (rbuffer)
         END IF
       END IF
 #endif

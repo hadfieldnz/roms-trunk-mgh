@@ -129,7 +129,7 @@
       real(r8), dimension(Msrc(ng)*N(ng)) :: Pwrk
 #endif
 #if defined DISTRIBUTE
-      real(r8), dimension(2) :: buffer
+      real(r8), dimension(2) :: rbuffer
 !
       character (len=3), dimension(2) :: io_handle
 #endif
@@ -398,13 +398,13 @@
         IF (tile_count.eq.NSUB) THEN
           tile_count=0
 # ifdef DISTRIBUTE
-          buffer(1)=area_west
-          buffer(2)=area_east
+          rbuffer(1)=area_west
+          rbuffer(2)=area_east
           io_handle(1)='SUM'
           io_handle(2)='SUM'
-          CALL mp_reduce (ng, iNLM, 2, buffer, io_handle)
-          area_west=buffer(1)
-          area_east=buffer(1)
+          CALL mp_reduce (ng, iNLM, 2, rbuffer, io_handle)
+          area_west=rbuffer(1)
+          area_east=rbuffer(1)
 # endif
           DO is=1,Nsrc(ng)/2
             SOURCES(ng)%Qbar(is)=Qbar(is)/area_west
