@@ -282,6 +282,8 @@
 !
 !  Allocate other arrays.
 !
+      ng=1
+!
       allocate ( select(NCV,Ngrids) )
       Dmem(ng)=Dmem(ng)+REAL(NCV*Ngrids,r8)
 

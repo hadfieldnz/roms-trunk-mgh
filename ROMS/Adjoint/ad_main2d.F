@@ -74,6 +74,10 @@
 # ifdef WEAK_CONSTRAINT
       USE frc_weak_mod,            ONLY : frc_ADgather, frc_clear
 # endif
+# if (defined FOUR_DVAR    && !defined I4DVAR_ANA_SENSITIVITY) && \
+      defined OBSERVATIONS
+      USE obs_read_mod,            ONLY : obs_read
+# endif
 # ifdef AIR_OCEAN_NOT_YET
       USE ocean_coupler_mod,       ONLY : atmos_coupling
 # endif

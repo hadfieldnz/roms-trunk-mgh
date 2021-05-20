@@ -327,7 +327,7 @@
 !
 ! Set checksum algorithm: "adler32" or "crc32"
 !
-        character (len=*), parameter :: HashMethod = "crc32"
+        character (len=*), parameter :: HashMethod = "bitsum"
 !
 ! Split 4D-Var phase.
 !
@@ -3400,6 +3400,7 @@
 #endif
       Co=1.0_r8/(2.0_r8+SQRT(2.0_r8))
       gorho0=g/rho0
+      user=0.0_r8
       DO ng=1,Ngrids
         EWperiodic(ng)=.FALSE.
         NSperiodic(ng)=.FALSE.

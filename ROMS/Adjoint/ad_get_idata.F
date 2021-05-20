@@ -40,10 +40,10 @@
 !
       logical, dimension(3) :: update =                                 &
      &         (/ .FALSE., .FALSE., .FALSE. /)
-
+!
       integer :: LBi, UBi, LBj, UBj
       integer :: itrc, is
-
+!
       real(r8) :: time_save = 0.0_r8
 !
       character (len=*), parameter :: MyFile =                          &
@@ -77,8 +77,11 @@
 !
       IF (LprocessTides(ng)) THEN
         IF (iic(ng).eq.0) THEN
-          CALL get_ngfldr (ng, iADM, idTper, ncFRCid(idTper,ng),        &
-     &                     nFfiles(ng), FRC(1,ng), update(1),           &
+          CALL get_ngfldr (ng, iADM, idTper, TIDE(ng)%ncid,             &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                     TIDE(ng)%pioFile,                            &
+#  endif
+     &                     1, TIDE(ng), update(1),                      &
      &                     1, MTC, 1, 1, 1, NTC(ng), 1,                 &
      &                     TIDES(ng) % Tperiod)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -97,25 +100,31 @@
           time_save=time(ng)
           time(ng)=8640000.0_r8
           tdays(ng)=time(ng)*sec2day
-
-          CALL get_2dfldr (ng, iADM, idTzam, ncFRCid(idTzam,ng),        &
-     &                     nFfiles(ng), FRC(1,ng), update(1),           &
+!
+          CALL get_2dfldr (ng, iADM, idTzam, TIDE(ng)%ncid,             &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                     TIDE(ng)%pioFile,                            &
+#  endif
+     &                     1, TIDE(ng), update(1),                      &
      &                     LBi, UBi, LBj, UBj, MTC, NTC(ng),            &
 #  ifdef MASKING
      &                     GRID(ng) % rmask,                            &
 #  endif
      &                     TIDES(ng) % SSH_Tamp)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
-          CALL get_2dfldr (ng, iADM, idTzph, ncFRCid(idTzph,ng),        &
-     &                     nFfiles(ng), FRC(1,ng), update(1),           &
+!
+          CALL get_2dfldr (ng, iADM, idTzph, TIDE(ng)%ncid,             &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                     TIDE(ng)%pioFile,                            &
+#  endif
+     &                     1, TIDE(ng), update(1),                      &
      &                     LBi, UBi, LBj, UBj, MTC, NTC(ng),            &
 #  ifdef MASKING
      &                     GRID(ng) % rmask,                            &
 #  endif
      &                     TIDES(ng) % SSH_Tphase)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
+!
           time(ng)=time_save
           tdays(ng)=time(ng)*sec2day
         END IF
@@ -131,43 +140,55 @@
           time_save=time(ng)
           time(ng)=8640000.0_r8
           tdays(ng)=time(ng)*sec2day
-
-          CALL get_2dfldr (ng, iADM, idTvan, ncFRCid(idTvan,ng),        &
-     &                     nFfiles(ng), FRC(1,ng), update(1),           &
+!
+          CALL get_2dfldr (ng, iADM, idTvan, TIDE(ng)%ncid,             &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                     TIDE(ng)%pioFile,                            &
+#  endif
+     &                     1, TIDE(ng), update(1),                      &
      &                     LBi, UBi, LBj, UBj, MTC, NTC(ng),            &
 #  ifdef MASKING
      &                     GRID(ng) % rmask,                            &
 #  endif
      &                     TIDES(ng) % UV_Tangle)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
-          CALL get_2dfldr (ng, iADM, idTvph, ncFRCid(idTvph,ng),        &
-     &                     nFfiles(ng), FRC(1,ng), update(1),           &
+!
+          CALL get_2dfldr (ng, iADM, idTvph, TIDE(ng)%ncid,             &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                     TIDE(ng)%pioFile,                            &
+#  endif
+     &                     1, TIDE(ng), update(1),                      &
      &                     LBi, UBi, LBj, UBj, MTC, NTC(ng),            &
 #  ifdef MASKING
      &                     GRID(ng) % rmask,                            &
 #  endif
      &                     TIDES(ng) % UV_Tphase)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
-          CALL get_2dfldr (ng, iADM, idTvma, ncFRCid(idTvma,ng),        &
-     &                     nFfiles(ng), FRC(1,ng), update(1),           &
+!
+          CALL get_2dfldr (ng, iADM, idTvma, TIDE(ng)%ncid,             &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                     TIDE(ng)%pioFile,                            &
+#  endif
+     &                     1, TIDE(ng), update(1),                      &
      &                     LBi, UBi, LBj, UBj, MTC, NTC(ng),            &
 #  ifdef MASKING
      &                     GRID(ng) % rmask,                            &
 #  endif
      &                     TIDES(ng) % UV_Tmajor)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
-          CALL get_2dfldr (ng, iADM, idTvmi, ncFRCid(idTvmi,ng),        &
-     &                     nFfiles(ng), FRC(1,ng), update(1),           &
+!
+          CALL get_2dfldr (ng, iADM, idTvmi, TIDE(ng)%ncid,             &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                     TIDE(ng)%pioFile,                            &
+#  endif
+     &                     1, TIDE(ng), update(1),                      &
      &                     LBi, UBi, LBj, UBj, MTC, NTC(ng),            &
 #  ifdef MASKING
      &                     GRID(ng) % rmask,                            &
 #  endif
      &                     TIDES(ng) % UV_Tminor)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
+!
           time(ng)=time_save
           tdays(ng)=time(ng)*sec2day
         END IF
@@ -185,31 +206,44 @@
       IF ((iic(ng).eq.0).and.                                           &
      &    (LuvSrc(ng).or.LwSrc(ng).or.ANY(LtracerSrc(:,ng)))) THEN
         CALL get_ngfldr (ng, iADM, idRxpo, SSF(ng)%ncid,                &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                   SSF(ng)%pioFile,                               &
+#  endif
      &                   1, SSF(ng), update(1),                         &
      &                   1, Nsrc(ng), 1, 1, 1, Nsrc(ng), 1,             &
      &                   SOURCES(ng) % Xsrc)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
+!
         CALL get_ngfldr (ng, iADM, idRepo, SSF(ng)%ncid,                &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                   SSF(ng)%pioFile,                               &
+#  endif
      &                   1, SSF(ng), update(1),                         &
      &                   1, Nsrc(ng), 1, 1, 1, Nsrc(ng), 1,             &
      &                   SOURCES(ng) % Ysrc)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
+!
         CALL get_ngfldr (ng, iADM, idRdir, SSF(ng)%ncid,                &
+#  if defined PIO_LIB && defined DISTRIBUTE
+     &                   SSF(ng)%pioFile,                               &
+#  endif
      &                   1, SSF(ng), update(1),                         &
      &                   1, Nsrc(ng), 1, 1, 1, Nsrc(ng), 1,             &
      &                   SOURCES(ng) % Dsrc)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 #  ifdef SOLVE3D
+!
         CALL get_ngfldr (ng, iADM, idRvsh, SSF(ng)%ncid,                &
+#   if defined PIO_LIB && defined DISTRIBUTE
+     &                   SSF(ng)%pioFile,                               &
+#   endif
      &                   1, SSF(ng), update(1),                         &
      &                   1, Nsrc(ng), N(ng), 1, 1, Nsrc(ng), N(ng),     &
      &                   SOURCES(ng) % Qshape)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 #  endif
-
+!
         DO is=1,Nsrc(ng)
           SOURCES(ng)%Isrc(is)=                                         &
      &                MAX(1,MIN(NINT(SOURCES(ng)%Xsrc(is)),Lm(ng)+1))

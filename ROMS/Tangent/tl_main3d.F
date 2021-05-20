@@ -283,6 +283,9 @@
 # ifdef FORWARD_READ
             CALL omega (ng, tile, iTLM)
 # endif
+# ifdef TLM_CHECK
+            CALL tl_dotproduct (ng, tile, Lnew(ng))
+# endif
           END DO
 !$OMP BARRIER
         END DO

@@ -89,6 +89,10 @@
       USE mod_parallel
       USE mod_iounits
       USE mod_ncparam
+# if defined PROPAGATOR && defined CHECKPOINTING && \
+     defined PIO_LIB    && defined DISTRIBUTE
+      USE mod_pio_netcdf
+# endif
       USE mod_scalars
 # ifdef PROPAGATOR
       USE mod_storage
@@ -96,6 +100,9 @@
 # ifdef DISTRIBUTE
 !
       USE distribute_mod, ONLY : mp_bcastf, mp_gather2d, mp_reduce
+#  if defined PROPAGATOR && defined CHECKPOINTING && defined PIO_LIB
+      USE set_pio_mod,    ONLY : state_iodecomp
+#  endif
 # endif
 !
       implicit none
@@ -136,6 +143,11 @@
 !
 !  Local variable declarations.
 !
+# if defined PROPAGATOR && defined CHECKPOINTING && \
+     defined PIO_LIB    && defined DISTRIBUTE
+      logical, save :: first = .TRUE.
+!
+# endif
       integer :: my_Nxyp, my_Nxyr, my_Nxyu, my_Nxyv
 # ifdef PROPAGATOR
       integer :: my_NwaterR, my_NwaterU, my_NwaterV
@@ -456,6 +468,38 @@
      &          i2.2, ', Mstate = ', i10,/)
       END IF
 #  endif
+# endif
+
+# if defined PIO_LIB && defined DISTRIBUTE && defined CHECKPOINTING
+!
+!-----------------------------------------------------------------------
+!  Set I/O decomposition descriptors for single and double precision
+!  state propagator data
+!-----------------------------------------------------------------------
+!
+      IF (first) THEN
+        IF (ng.eq.Ngrids) first=.FALSE.
+!
+        CALL state_iodecomp (ng, pioSystem(IpioROMS,ng), PIO_real,      &
+     &                       ioDesc_sp_Bvec(ng),                        &
+     &                       'Bvec', 2)
+        CALL state_iodecomp (ng, pioSystem(IpioROMS,ng), PIO_real,      &
+     &                       ioDesc_sp_resid(ng),                       &
+     &                       'resid', 1)
+        CALL state_iodecomp (ng, pioSystem(IpioROMS,ng), PIO_real,      &
+     &                       ioDesc_sp_SworkD(ng),                      &
+     &                       'SworkD', 1)
+!
+        CALL state_iodecomp (ng, pioSystem(IpioROMS,ng), PIO_double,    &
+     &                       ioDesc_dp_Bvec(ng),                        &
+     &                       'Bvec', 2)
+        CALL state_iodecomp (ng, pioSystem(IpioROMS,ng), PIO_double,    &
+     &                       ioDesc_dp_resid(ng),                       &
+     &                       'resid', 1)
+        CALL state_iodecomp (ng, pioSystem(IpioROMS,ng), PIO_double,    &
+     &                       ioDesc_dp_SworkD(IpioROMS,ng),             &
+     &                       'SworkD', 1)
+      END IF
 # endif
 
 # if ((defined READ_WATER && defined DISTRIBUTE) || \

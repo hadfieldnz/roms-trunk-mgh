@@ -109,10 +109,14 @@
 !
       integer :: MyMaster = 0
 
-#if defined DISTRIBUTE && defined DISJOINTED
+#ifdef DISTRIBUTE
+# if defined DISJOINTED        || \
+    (defined PIO_LIB           && \
+     (defined ASYNCHRONOUS_PIO || defined ASYNCHRONOUS_SCORPIO))
 !
 !  Split communicator parameters.
 !
+#  if defined DISJOINTED
       logical :: FullMaster     ! full communicator master process
 
       integer :: ForkColor = -1 ! Fork split criteria: FullRank/ForkSize
@@ -123,6 +127,13 @@
       integer :: TaskColor = -1 ! Task split criteria: FullRank/TaskSize
       integer :: TaskKey        ! Task split rank ordering: FullRank
       integer :: TaskSize       ! number of processes in TASK_COMM_WORLD
+#  endif
+#  if defined PIO_LIB          && \
+     (defined ASYNCHRONOUS_PIO || defined ASYNCHRONOUS_SCORPIO)
+      integer :: PeerRank       ! process rank in PEER_COMM_WORLD
+      integer :: PeerSize       ! number of processes in PEER_COMM_WORLD
+#  endif
+# endif
 #endif
 !
 !  Rank of the parallel local process.
@@ -139,6 +150,12 @@
 !
 !  Distributed-memory group communicator handles.
 !
+#  if defined PIO_LIB          && defined DISTRIBUTE           && \
+     (defined ASYNCHRONOUS_PIO || defined ASYNCHRONOUS_SCORPIO)
+      integer :: PEER_COMM_WORLD            ! PIO full communicator
+      integer :: INTER_COMM_WORLD           ! PIO inter-communicator
+      integer :: IO_COMM_WORLD              ! I/O dedicated communicator
+#  endif
 #  ifdef DISJOINTED
       integer :: FULL_COMM_WORLD            ! full communicator
       integer :: FORK_COMM_WORLD            ! fork communicator

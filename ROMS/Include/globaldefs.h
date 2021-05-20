@@ -48,12 +48,59 @@
 #endif
 
 /*
-** Make sure that either "mpi_allgather" or "mpi_allreduce" is used
-** in mp_reduce.  Low-level routines give an error.
+** Make sure that either "mpi_allgather", "mpi_allreduce" or lower
+** level point-to-point comunications send/recv are used in
+** "mp_collect".  Use "mpi_allreduce" as default since it is more
+** efficient in mostly all computers.
 */
 
 #ifdef DISTRIBUTE
-# if !(defined REDUCE_ALLGATHER || defined REDUCE_ALLREDUCE)
+# if !(defined ASSEMBLE_ALLGATHER || \
+       defined ASSEMBLE_ALLREDUCE || \
+       defined ASSEMBLE_SENDRECV)
+#  define ASSEMBLE_ALLREDUCE
+# endif
+#endif
+
+/*
+** Make sure that either "mpi_allgather" or "mpi_allreduce" are used
+** in "mp_boundary".  Use "mpi_allreduce" as default since it is more
+** efficient in mostly all computers.
+*/
+
+#ifdef DISTRIBUTE
+# if !(defined BOUNDARY_ALLGATHER || \
+       defined BOUNDARY_ALLREDUCE)
+#  define BOUNDARY_ALLREDUCE
+# endif
+#endif
+
+/*
+** Make sure that either "mpi_allgather", "mpi_allreduce" or lower
+** level point-to-point comunications send/recv are used in
+** "mp_collect".  Use "mpi_allreduce" as default since it is more
+** efficient in mostly all computers.
+*/
+
+#ifdef DISTRIBUTE
+# if !(defined COLLECT_ALLGATHER || \
+       defined COLLECT_ALLREDUCE || \
+       defined COLLECT_SENDRECV)
+#  define COLLECT_ALLREDUCE
+# endif
+#endif
+
+/*
+** Make sure that either "mpi_allgather", "mpi_allreduce" or lower
+** level point-to-point comunications send/recv are used in
+** "mp_reduce". Use "mpi_allreduce" as default since it is more
+** efficient in mostly all computers.
+*/
+
+#ifdef DISTRIBUTE
+# if !(defined REDUCE_ALLGATHER || \
+       defined REDUCE_ALLREDUCE || \
+       defined REDUCE_SENDRECV)
 #  define REDUCE_ALLREDUCE
 # endif
 #endif
@@ -777,6 +824,7 @@
 #if defined MODEL_COUPLING && \
     defined ESMF_LIB
 # define REGRESS_STARTCLOCK
+# define ESM_SETRUNCLOCK
 #endif
 
 /*

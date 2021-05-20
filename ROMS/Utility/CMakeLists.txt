@@ -132,6 +132,7 @@ list( APPEND _files
       ROMS/Utility/set_masks.F
       ROMS/Utility/set_ngfld.F
       ROMS/Utility/set_ngfldr.F
+      ROMS/Utility/set_pio.F
       ROMS/Utility/set_scoord.F
       ROMS/Utility/set_weights.F
       ROMS/Utility/shapiro.F

@@ -16,7 +16,7 @@
 #ifdef ESMF_LIB
       USE ESMF
 #endif
-      USE ocean_control_mod, ONLY : ROMS_finalize
+      USE roms_kernel_mod, ONLY : ROMS_finalize
 !
       implicit none
 !

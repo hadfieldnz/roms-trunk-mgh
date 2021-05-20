@@ -39,21 +39,29 @@
       USE mod_stepping
 !
       USE analytical_mod
-      USE dateclock_mod,     ONLY : time_string
-# ifdef DISTRIBUTE
-      USE distribute_mod,    ONLY : mp_bcasti
-# endif
 # if defined AD_SENSITIVITY   || defined I4DVAR_ANA_SENSITIVITY || \
      defined OPT_OBSERVATIONS || defined SENSITIVITY_4DVAR      || \
      defined SO_SEMI
       USE adsen_initial_mod, ONLY : adsen_initial
 # endif
+      USE close_io_mod,      ONLY : close_inp
+      USE dateclock_mod,     ONLY : time_string
+# ifdef DISTRIBUTE
+      USE distribute_mod,    ONLY : mp_bcasti
+# endif
+# ifdef WET_DRY
+      USE get_wetdry_mod,    ONLY : get_wetdry
+# endif
+      USE get_state_mod,     ONLY : get_state
       USE ini_hmixcoef_mod,  ONLY : ini_hmixcoef
 # ifdef SOLVE3D
       USE set_depth_mod,     ONLY : set_depth
       USE omega_mod,         ONLY : omega
       USE rho_eos_mod,       ONLY : rho_eos
       USE set_massflux_mod,  ONLY : set_massflux
+# endif
+# ifdef OBSERVATIONS
+      USE obs_initial_mod,   ONLY : obs_initial
 # endif
 # ifdef MASKING
       USE set_masks_mod,     ONLY : set_masks
@@ -81,7 +89,6 @@
 !
       logical :: update = .FALSE.
 !
-      integer :: LBi, UBi, LBj, UBj
       integer :: Fcount, IniRec, Tindex
       integer :: thread, tile
 !
@@ -172,10 +179,6 @@
       IniRec=nrrec(ng)
       Tindex=1
 
-      LBi=LBOUND(GRID(ng)%h,DIM=1)
-      UBi=UBOUND(GRID(ng)%h,DIM=1)
-      LBj=LBOUND(GRID(ng)%h,DIM=2)
-      UBj=UBOUND(GRID(ng)%h,DIM=2)
 !
 !  Initialize global diagnostics variables.
 !
@@ -379,7 +382,7 @@
 !  Read in initial conditions for initial or restart NetCDF file.
 !
 #  ifdef INI_FILE
-      CALL get_state (ng, iADM, 1, IAD(ng)%name, IniRec, Tindex)
+      CALL get_state (ng, iADM, 1, IAD(ng), IniRec, Tindex)
       time(ng)=io_time                       ! needed for shared-memory
 #   ifdef DISTRIBUTE
       CALL mp_bcasti (ng, iADM, exit_flag)
@@ -387,7 +390,7 @@
       IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 #  else
       IF (nrrec(ng).ne.0) THEN
-        CALL get_state (ng, iADM, 1, IAD(ng)%name, IniRec, Tindex)
+        CALL get_state (ng, iADM, 1, IAD(ng), IniRec, Tindex)
         time(ng)=io_time                     ! needed for shared-memory
 #   ifdef DISTRIBUTE
         CALL mp_bcasti (ng, iADM, exit_flag)

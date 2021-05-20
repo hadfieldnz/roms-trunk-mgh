@@ -114,7 +114,7 @@ ifdef USE_WRF
              LIBS += $(WRF_LIB_DIR)/external/io_grib1/libio_grib1.a
              LIBS += $(WRF_LIB_DIR)/external/io_grib_share/libio_grib_share.a
              LIBS += $(WRF_LIB_DIR)/external/io_int/libwrfio_int.a
-             LIBS += $(WRF_LIB_DIR)/external/esmf_time_f90/libmyesmf_time.a
+             LIBS += $(WRF_LIB_DIR)/external/esmf_time_f90/libesmf_time.a
              LIBS += $(WRF_LIB_DIR)/external/RSL_LITE/librsl_lite.a
              LIBS += $(WRF_LIB_DIR)/frame/module_internal_header_util.o
              LIBS += $(WRF_LIB_DIR)/frame/pack_utils.o
@@ -127,7 +127,7 @@ ifdef USE_WRF
              LIBS += $(WRF_LIB_DIR)/libio_grib1.a
              LIBS += $(WRF_LIB_DIR)/libio_grib_share.a
              LIBS += $(WRF_LIB_DIR)/libwrfio_int.a
-             LIBS += $(WRF_LIB_DIR)/libmyesmf_time.a
+             LIBS += $(WRF_LIB_DIR)/libesmf_time.a
              LIBS += $(WRF_LIB_DIR)/librsl_lite.a
              LIBS += $(WRF_LIB_DIR)/module_internal_header_util.o
              LIBS += $(WRF_LIB_DIR)/pack_utils.o
@@ -140,6 +140,30 @@ endif
 #--------------------------------------------------------------------------
 
           LDFLAGS := $(FFLAGS)
+
+ifdef USE_PIO
+       PIO_INCDIR ?= /opt/gfortransoft/openmpi/pio/include
+       PIO_LIBDIR ?= /opt/gfortransoft/openmpi/pio/lib
+           FFLAGS += -I$(PIO_INCDIR)
+             LIBS += -L$(PIO_LIBDIR) -lpiof -lpioc
+
+   PNETCDF_INCDIR ?= /opt/gfortransoft/openmpi/pnetcdf/include
+   PNETCDF_LIBDIR ?= /opt/gfortransoft/openmpi/pnetcdf/lib
+           FFLAGS += -I$(PNETCDF_INCDIR)
+             LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
+endif
+
+ifdef USE_SCORPIO
+       PIO_INCDIR ?= /opt/gfortransoft/openmpi/scorpio/include
+       PIO_LIBDIR ?= /opt/gfortransoft/openmpi/scorpio/lib
+           FFLAGS += -I$(PIO_INCDIR)
+             LIBS += -L$(PIO_LIBDIR) -lpiof -lpioc
+
+   PNETCDF_INCDIR ?= /opt/intelsoft/openmpi/pnetcdf/include
+   PNETCDF_LIBDIR ?= /opt/intelsoft/openmpi/pnetcdf/lib
+           FFLAGS += -I$(PNETCDF_INCDIR)
+             LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
+endif
 
 ifdef USE_NETCDF4
         NF_CONFIG ?= nf-config

@@ -30,16 +30,19 @@
       USE mod_iounits
       USE mod_scalars
 !
-      USE m_MCTWorld, ONLY : MCTWorld_clean => clean
+      USE m_MCTWorld,        ONLY : MCTWorld_clean => clean
 
-      USE ocean_control_mod, ONLY : ROMS_initialize
-      USE ocean_control_mod, ONLY : ROMS_run
-      USE ocean_control_mod, ONLY : ROMS_finalize
+      USE roms_kernel_mod,   ONLY : ROMS_initialize
+      USE roms_kernel_mod,   ONLY : ROMS_run
+      USE roms_kernel_mod,   ONLY : ROMS_finalize
 #ifdef WRF_COUPLING
       USE ocean_coupler_mod, ONLY : finalize_ocn2atm_coupling
 #endif
 #if defined SWAN_COUPLING || defined REFDIF_COUPLING
       USE ocean_coupler_mod, ONLY : finalize_ocn2wav_coupling
+#endif
+#if defined PIO_LIB && defined DISTRIBUTE
+      USE set_pio_mod,       ONLY : finalize_pio
 #endif
 !
       implicit none
@@ -147,6 +150,9 @@
           CALL ROMS_run (run_time)
         END IF
         CALL ROMS_finalize
+#if defined PIO_LIB && defined DISTRIBUTE
+        CALL finalize_pio
+#endif
 #if defined SWAN_COUPLING || defined REFDIF_COUPLING
         CALL finalize_ocn2wav_coupling
 #endif

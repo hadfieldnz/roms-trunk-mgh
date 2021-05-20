@@ -18,7 +18,7 @@
 # ifdef BBL_MODEL_NOT_YET
       USE mod_bbl
 # endif
-      Use mod_boundary
+      USE mod_boundary
 # ifdef SOLVE3D
       USE mod_coupling
 # endif
@@ -37,9 +37,14 @@
       USE mod_stepping
 !
       USE analytical_mod
+      USE close_io_mod,        ONLY : close_inp
       USE dateclock_mod,       ONLY : time_string
 # ifdef DISTRIBUTE
       USE distribute_mod,      ONLY : mp_bcasti
+# endif
+      USE get_state_mod,       ONLY : get_state
+# ifdef WET_DRY
+      USE get_wetdry_mod,    ONLY : get_wetdry
 # endif
 # ifdef TLM_CHECK
       USE ini_adjust_mod,      ONLY : tl_ini_perturb
@@ -57,6 +62,12 @@
       USE omega_mod,           ONLY : omega
       USE rho_eos_mod,         ONLY : rho_eos
       USE set_massflux_mod,    ONLY : set_massflux
+# endif
+# ifdef OBSERVATIONS
+      USE obs_initial_mod,     ONLY : obs_initial
+# endif
+# ifdef WEAK_CONSTRAINT
+      USE rp_def_ini_mod,      ONLY : rp_def_ini
 # endif
 # ifdef MASKING
       USE set_masks_mod,       ONLY : set_masks
@@ -367,11 +378,11 @@
 !  Read in representer model initial conditions.
 !
 # ifdef INI_FILE
-      CALL get_state (ng, iRPM, 1, IRP(ng)%name, IniRec, Tindex)
+      CALL get_state (ng, iRPM, 1, IRP(ng), IniRec, Tindex)
       time(ng)=io_time                       ! needed for shared-memory
 # else
       IF (nrrec(ng).ne.0) THEN
-        CALL get_state (ng, iRPM, 1, IRP(ng)name, IniRec, Tindex)
+        CALL get_state (ng, iRPM, 1, IRP(ng), IniRec, Tindex)
         time(ng)=io_time                     ! needed for shared-memory
 # ifdef DISTRIBUTE
         CALL mp_bcasti (ng, iNLM, exit_flag)
