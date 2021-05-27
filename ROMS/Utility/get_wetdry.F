@@ -32,10 +32,10 @@
 !
       implicit none
 !
-      PUBLIC  :: get_grid
-      PRIVATE :: get_grid_nf90
+      PUBLIC  :: get_wetdry
+      PRIVATE :: get_wetdry_nf90
 # if defined PIO_LIB && defined DISTRIBUTE
-      PRIVATE :: get_grid_pio
+      PRIVATE :: get_wetdry_pio
 # endif
 !
       CONTAINS
