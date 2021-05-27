@@ -44,7 +44,7 @@
 # endif
       USE get_state_mod,       ONLY : get_state
 # ifdef WET_DRY
-      USE get_wetdry_mod,    ONLY : get_wetdry
+      USE get_wetdry_mod,      ONLY : get_wetdry
 # endif
 # ifdef TLM_CHECK
       USE ini_adjust_mod,      ONLY : tl_ini_perturb
@@ -400,9 +400,11 @@
 !  If restart, read in wet/dry masks.
 !
       IF (nrrec(ng).ne.0) THEN
-        CALL get_wetdry (ng, iRPM, IniRec(ng))
 #  ifdef DISTRIBUTE
+        CALL get_wetdry (ng, MyRank, iRPM, IniRec(ng))
         CALL mp_bcasti (ng, iRPM, exit_flag)
+#  else
+        CALL get_wetdry (ng, -1, iRPM, IniRec(ng))
 #  endif
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       ELSE
