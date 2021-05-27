@@ -262,7 +262,7 @@
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 #  ifdef SEDIMENT
-        status=def_dim(ng, iNLM, AVG(ng)%ncid, ncname, 'NST',           &
+        status=def_dim(ng, model, AVG(ng)%ncid, ncname, 'NST',          &
      &                 NST, DimIDs(32))
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
@@ -278,7 +278,7 @@
 #  endif
 
 #  ifdef ECOSIM
-        status=def_dim(ng, iNLM, AVG(ng)%ncid, ncname, 'Nbands',        &
+        status=def_dim(ng, model, AVG(ng)%ncid, ncname, 'Nbands',       &
      &                 NBands, DimIDs(33))
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
@@ -616,7 +616,7 @@
           Vinfo(21)='barotropic_eastward_sea_water_velocity'
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idu2dE,ng),r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(idu2dE),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(idu2dE),  &
      &                   NF_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -635,7 +635,7 @@
           Vinfo(21)='barotropic_northward_sea_water_velocity'
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idv2dN,ng),r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(idv2dN),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(idv2dN),  &
      &                   NF_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -802,7 +802,7 @@
           Vinfo(21)='eastward_sea_water_velocity'
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idu3dE,ng),r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(idu3dE),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(idu3dE),  &
      &                   NF_FOUT, nvd4, t3dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -821,7 +821,7 @@
           Vinfo(21)='northward_sea_water_velocity'
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idv3dN,ng),r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(idv3dN),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(idv3dN),  &
      &                   NF_FOUT, nvd4, t3dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -988,7 +988,7 @@
 # endif
           Vinfo(22)='coordinates'
           Aval(5)=REAL(p2dvar,r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(id2dPV),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(id2dPV),  &
      &                   NF_FOUT, nvd3, p2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -1006,7 +1006,7 @@
 # endif
           Vinfo(22)='coordinates'
           Aval(5)=REAL(p2dvar,r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(id2dRV),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(id2dRV),  &
      &                   NF_FOUT, nvd3, p2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -1025,7 +1025,7 @@
 #  endif
           Vinfo(22)='coordinates'
           Aval(5)=REAL(p3dvar,r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(id3dPV),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(id3dPV),  &
      &                   NF_FOUT, nvd4, p3dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -1043,7 +1043,7 @@
 #  endif
           Vinfo(22)='coordinates'
           Aval(5)=REAL(p3dvar,r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(id3dRV),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(id3dRV),  &
      &                   NF_FOUT, nvd4, p3dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -1356,7 +1356,7 @@
 #   endif
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idPair,ng),r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(idPair),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(idPair),  &
      &                   NF_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -1376,7 +1376,7 @@
 #   endif
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idTair,ng),r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(idTair),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(idTair),  &
      &                   NF_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -1396,7 +1396,7 @@
 #   endif
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idUair,ng),r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(idUair),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(idUair),  &
      &                   NF_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -1412,7 +1412,7 @@
 #   endif
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idVair,ng),r8)
-          status=def_var(ng, iNLM, AVG(ng)%ncid, AVG(ng)%Vid(idVair),   &
+          status=def_var(ng, model, AVG(ng)%ncid, AVG(ng)%Vid(idVair),  &
      &                   NF_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -3113,7 +3113,7 @@
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 #   ifdef SEDIMENT
-        status=def_dim(ng, iNLM, AVG(ng)%pioFile, ncname, 'NST',        &
+        status=def_dim(ng, model, AVG(ng)%pioFile, ncname, 'NST',       &
      &                 NST, DimIDs(32))
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
@@ -3129,7 +3129,7 @@
 #   endif
 
 #   ifdef ECOSIM
-        status=def_dim(ng, iNLM, AVG(ng)%pioFile, ncname, 'Nbands',     &
+        status=def_dim(ng, model, AVG(ng)%pioFile, ncname, 'Nbands',    &
      &                 NBands, DimIDs(33))
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
@@ -3498,7 +3498,7 @@
           AVG(ng)%pioVar(idu2dE)%dkind=PIO_FOUT
           AVG(ng)%pioVar(idu2dE)%gtype=r2dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(idu2dE)%vd,                     &
      &                   PIO_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -3521,7 +3521,7 @@
           AVG(ng)%pioVar(idv2dN)%dkind=PIO_FOUT
           AVG(ng)%pioVar(idv2dN)%gtype=r2dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(idv2dN)%vd,                     &
      &                   PIO_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -3724,7 +3724,7 @@
           AVG(ng)%pioVar(idu3dE)%dkind=PIO_FOUT
           AVG(ng)%pioVar(idu3dE)%gtype=r3dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(idu3dE)%vd,                     &
      &                   PIO_FOUT, nvd4, t3dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -3747,7 +3747,7 @@
           AVG(ng)%pioVar(idv3dN)%dkind=PIO_FOUT
           AVG(ng)%pioVar(idv3dN)%gtype=r3dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(idv3dN)%vd,                     &
      &                   PIO_FOUT, nvd4, t3dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -3946,7 +3946,7 @@
           AVG(ng)%pioVar(id2dPV)%dkind=PIO_FOUT
           AVG(ng)%pioVar(id2dPV)%gtype=p2dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(id2dPV)%vd,                     &
      &                   PIO_FOUT, nvd3, p2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -3968,7 +3968,7 @@
           AVG(ng)%pioVar(id2dRV)%dkind=PIO_FOUT
           AVG(ng)%pioVar(id2dRV)%gtype=p2dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(id2dRV)%vd,                     &
      &                   PIO_FOUT, nvd3, p2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -3992,7 +3992,7 @@
           AVG(ng)%pioVar(id3dPV)%dkind=PIO_FOUT
           AVG(ng)%pioVar(id3dPV)%gtype=p3dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(id3dPV)%vd,                     &
      &                   PIO_FOUT, nvd4, p3dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -4014,7 +4014,7 @@
           AVG(ng)%pioVar(id3dRV)%dkind=PIO_FOUT
           AVG(ng)%pioVar(id3dRV)%gtype=p3dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(id3dRV)%vd,                     &
      &                   PIO_FOUT, nvd4, p3dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -4391,7 +4391,7 @@
           AVG(ng)%pioVar(idPair)%dkind=PIO_FOUT
           AVG(ng)%pioVar(idPair)%gtype=r2dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(idPair)%vd,                     &
      &                   PIO_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -4415,7 +4415,7 @@
           AVG(ng)%pioVar(idTair)%dkind=PIO_FOUT
           AVG(ng)%pioVar(idTair)%gtype=r2dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(idTair)%vd,                     &
      &                   PIO_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -4439,7 +4439,7 @@
           AVG(ng)%pioVar(idUair)%dkind=PIO_FOUT
           AVG(ng)%pioVar(idUair)%gtype=r2dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(idUair)%vd,                     &
      &                   PIO_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -4459,7 +4459,7 @@
           AVG(ng)%pioVar(idVair)%dkind=PIO_FOUT
           AVG(ng)%pioVar(idVair)%gtype=r2dvar
 !
-          status=def_var(ng, iNLM, AVG(ng)%pioFile,                     &
+          status=def_var(ng, model, AVG(ng)%pioFile,                    &
      &                   AVG(ng)%pioVar(idVair)%vd,                     &
      &                   PIO_FOUT, nvd3, t2dgrd, Aval, Vinfo, ncname)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
