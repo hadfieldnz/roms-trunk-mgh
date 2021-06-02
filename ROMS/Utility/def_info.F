@@ -59,7 +59,13 @@
       USE mod_scalars
       USE mod_strings
 !
-      USE lbc_mod, ONLY : lbc_putatt
+      USE def_dim_mod, ONLY : def_dim
+      USE def_var_mod, ONLY : def_var
+      USE lbc_mod,     ONLY : lbc_putatt
+      USE strings_mod, ONLY : FoundError, join_string
+#ifdef SOLVE3D
+      USE tadv_mod,    ONLY : tadv_putatt
+#endif
 !
       implicit none
 !
@@ -96,17 +102,9 @@
 !
       USE mod_netcdf
 !
-      USE def_dim_mod,    ONLY : def_dim
-      USE def_var_mod,    ONLY : def_var
 #if !defined PARALLEL_IO  && defined DISTRIBUTE
       USE distribute_mod, ONLY : mp_bcasti
 #endif
-      USE strings_mod,    ONLY : FoundError, join_string
-# ifdef SOLVE3D
-      USE tadv_mod,       ONLY : tadv_putatt
-# endif
-!
-      implicit none
 !
 !  Imported variable declarations.
 !
@@ -3519,16 +3517,6 @@
 !***********************************************************************
 !
       USE mod_pio_netcdf
-      USE pio
-!
-      USE def_dim_mod, ONLY : def_dim
-      USE def_var_mod, ONLY : def_var
-      USE strings_mod, ONLY : FoundError, join_string
-# ifdef SOLVE3D
-      USE tadv_mod,    ONLY : tadv_putatt
-# endif
-!
-      implicit none
 !
 !  Imported variable declarations.
 !

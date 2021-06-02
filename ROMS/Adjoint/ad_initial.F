@@ -409,9 +409,11 @@
 !  If restart, read in wet/dry masks.
 !
       IF (nrrec(ng).ne.0) THEN
-        CALL get_wetdry (ng, iADM, IniRec(ng))
 #  ifdef DISTRIBUTE
+        CALL get_wetdry (ng, MyRank, iADM, IniRec(ng))
         CALL mp_bcasti (ng, iADM, exit_flag)
+#  else
+        CALL get_wetdry (ng, -1, iADM, IniRec(ng))
 #  endif
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       ELSE

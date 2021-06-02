@@ -138,7 +138,8 @@
       USE mod_param
       USE mod_parallel
       USE mod_iounits
-      USE mod_ncparam#
+      USE mod_ncparam
+      USE mod_netcdf
 # if defined PIO_LIB && defined DISTRIBUTE
       USE mod_pio_netcdf
 # endif

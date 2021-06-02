@@ -128,7 +128,7 @@
       real(r8), dimension(Msrc(ng)*N(ng)) :: Pwrk
 #endif
 #if defined DISTRIBUTE
-      real(r8), dimension(2) :: buffer
+      real(r8), dimension(2) :: rbuffer
 !
       character (len=3), dimension(2) :: io_handle
 #endif

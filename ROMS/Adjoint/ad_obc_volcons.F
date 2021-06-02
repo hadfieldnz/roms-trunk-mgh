@@ -129,7 +129,7 @@
       real(r8) :: adfac, ad_cff, ad_my_area, ad_my_flux
 
 # ifdef DISTRIBUTE
-      real(r8), dimension(2) :: buffer
+      real(r8), dimension(2) :: rbuffer
       character (len=3), dimension(2) :: op_handle
 # endif
 !
@@ -404,7 +404,7 @@
       real(r8) :: adfac, adfac1, adfac2, adfac3
       real(r8) :: ad_my_ubar_xs
 # ifdef DISTRIBUTE
-      real(r8) :: buffer
+      real(r8) :: rbuffer
       character (len=3) :: op_handle
 # endif
 
@@ -596,10 +596,10 @@
         IF (tile_count.eq.NSUB) THEN
           tile_count=0
 # ifdef DISTRIBUTE
-          buffer=adfac3
+          rbuffer=adfac3
           op_handle='SUM'
-          CALL mp_reduce (ng, iADM, 1, buffer, op_handle)
-          adfac3=buffer
+          CALL mp_reduce (ng, iADM, 1, rbuffer, op_handle)
+          adfac3=rbuffer
 # endif
           IF (iif(ng).eq.nfast(ng)+1) THEN
             ad_ubar_xs=ad_ubar_xs+adfac3

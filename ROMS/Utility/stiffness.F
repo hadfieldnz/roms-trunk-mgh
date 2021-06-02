@@ -133,10 +133,10 @@
 
 #ifdef DISTRIBUTE
 # ifdef SOLVE3D
-      real(r8), dimension(5) :: buffer
+      real(r8), dimension(5) :: rbuffer
       character (len=3), dimension(5) :: op_handle
 # else
-      real(r8), dimension(3) :: buffer
+      real(r8), dimension(3) :: rbuffer
       character (len=3), dimension(3) :: op_handle
 # endif
 #endif
@@ -258,12 +258,12 @@
       IF (tile_count.eq.NSUB) THEN
         tile_count=0
 #ifdef DISTRIBUTE
-        buffer(1)=TotVolume(ng)
-        buffer(2)=MinVolume(ng)
-        buffer(3)=MaxVolume(ng)
+        rbuffer(1)=TotVolume(ng)
+        rbuffer(2)=MinVolume(ng)
+        rbuffer(3)=MaxVolume(ng)
 # ifdef SOLVE3D
-        buffer(4)=rx0(ng)
-        buffer(5)=rx1(ng)
+        rbuffer(4)=rx0(ng)
+        rbuffer(5)=rx1(ng)
 # endif
         op_handle(1)='SUM'
         op_handle(2)='MIN'
@@ -273,16 +273,16 @@
         op_handle(5)='MAX'
 # endif
 # ifdef SOLVE3D
-        CALL mp_reduce (ng, model, 5, buffer, op_handle)
+        CALL mp_reduce (ng, model, 5, rbuffer, op_handle)
 # else
-        CALL mp_reduce (ng, model, 3, buffer, op_handle)
+        CALL mp_reduce (ng, model, 3, rbuffer, op_handle)
 # endif
-        TotVolume(ng)=buffer(1)
-        MinVolume(ng)=buffer(2)
-        MaxVolume(ng)=buffer(3)
+        TotVolume(ng)=rbuffer(1)
+        MinVolume(ng)=rbuffer(2)
+        MaxVolume(ng)=rbuffer(3)
 # ifdef SOLVE3D
-        rx0(ng)=buffer(4)
-        rx1(ng)=buffer(5)
+        rx0(ng)=rbuffer(4)
+        rx1(ng)=rbuffer(5)
 # endif
 #endif
         IF (Master.and.LwrtInfo(ng)) THEN

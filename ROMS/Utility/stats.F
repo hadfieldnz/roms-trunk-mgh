@@ -103,7 +103,7 @@
       real(r8) :: my_avg, my_rms
 
 #ifdef DISTRIBUTE
-      real(r8), dimension(5) :: buffer
+      real(r8), dimension(5) :: rbuffer
       character (len=3), dimension(5) :: op_handle
 #endif
 !
@@ -226,22 +226,22 @@
       IF (tile_count.eq.NSUB) THEN
         tile_count=0
 #ifdef DISTRIBUTE
-        buffer(1)=S%count
-        buffer(2)=S%min
-        buffer(3)=S%max
-        buffer(4)=S%avg
-        buffer(5)=S%rms
+        rbuffer(1)=S%count
+        rbuffer(2)=S%min
+        rbuffer(3)=S%max
+        rbuffer(4)=S%avg
+        rbuffer(5)=S%rms
         op_handle(1)='SUM'
         op_handle(2)='MIN'
         op_handle(3)='MAX'
         op_handle(4)='SUM'
         op_handle(5)='SUM'
-        CALL mp_reduce (ng, model, 5, buffer, op_handle)
-        S%count=buffer(1)
-        S%min=buffer(2)
-        S%max=buffer(3)
-        S%avg=buffer(4)
-        S%rms=buffer(5)
+        CALL mp_reduce (ng, model, 5, rbuffer, op_handle)
+        S%count=rbuffer(1)
+        S%min=rbuffer(2)
+        S%max=rbuffer(3)
+        S%avg=rbuffer(4)
+        S%rms=rbuffer(5)
 #endif
 !
 !  Finalize computation of the mean and root mean square.
@@ -331,7 +331,7 @@
       real(r8) :: my_avg, my_rms
 
 #ifdef DISTRIBUTE
-      real(r8), dimension(5) :: buffer
+      real(r8), dimension(5) :: rbuffer
       character (len=3), dimension(5) :: op_handle
 #endif
 !
@@ -461,22 +461,22 @@
       IF (thread_count.eq.NSUB) THEN
         thread_count=0
 #ifdef DISTRIBUTE
-        buffer(1)=S%count
-        buffer(2)=S%min
-        buffer(3)=S%max
-        buffer(4)=S%avg
-        buffer(5)=S%rms
+        rbuffer(1)=S%count
+        rbuffer(2)=S%min
+        rbuffer(3)=S%max
+        rbuffer(4)=S%avg
+        rbuffer(5)=S%rms
         op_handle(1)='SUM'
         op_handle(2)='MIN'
         op_handle(3)='MAX'
         op_handle(4)='SUM'
         op_handle(5)='SUM'
-        CALL mp_reduce (ng, model, 5, buffer, op_handle)
-        S%count=buffer(1)
-        S%min=buffer(2)
-        S%max=buffer(3)
-        S%avg=buffer(4)
-        S%rms=buffer(5)
+        CALL mp_reduce (ng, model, 5, rbuffer, op_handle)
+        S%count=rbuffer(1)
+        S%min=rbuffer(2)
+        S%max=rbuffer(3)
+        S%avg=rbuffer(4)
+        S%rms=rbuffer(5)
 #endif
 !
 !  Finalize computation of the mean and root mean square.

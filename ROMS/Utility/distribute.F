@@ -1749,7 +1749,7 @@
 !  Local variable declarations
 !
       integer :: Lstr, MyCOMM, MyError, Nchars, Npts, Serror
-      integer :: buffer(5)
+      integer :: ibuffer(5)
 !
       character (len=MPI_MAX_ERROR_STRING) :: string
 
@@ -1785,14 +1785,14 @@
 !
 !  Structure scalar integer variables.
 !
-      buffer(1)=S(ng)%Nfiles
-      buffer(2)=S(ng)%Fcount
-      buffer(3)=S(ng)%load
-      buffer(4)=S(ng)%Rindex
-      buffer(5)=S(ng)%ncid
+      ibuffer(1)=S(ng)%Nfiles
+      ibuffer(2)=S(ng)%Fcount
+      ibuffer(3)=S(ng)%load
+      ibuffer(4)=S(ng)%Rindex
+      ibuffer(5)=S(ng)%ncid
 !
       Npts=5
-      CALL mpi_bcast (buffer, Npts, MPI_INTEGER, MyMaster,              &
+      CALL mpi_bcast (ibuffer, Npts, MPI_INTEGER, MyMaster,             &
      &                MyCOMM, MyError)
       IF (MyError.ne.MPI_SUCCESS) THEN
         CALL mpi_error_string (MyError, string, Lstr, Serror)
@@ -1803,11 +1803,11 @@
         exit_flag=2
         RETURN
       ELSE
-        S(ng)%Nfiles=buffer(1)
-        S(ng)%Fcount=buffer(2)
-        S(ng)%load  =buffer(3)
-        S(ng)%Rindex=buffer(4)
-        S(ng)%ncid  =buffer(5)
+        S(ng)%Nfiles=ibuffer(1)
+        S(ng)%Fcount=ibuffer(2)
+        S(ng)%load  =ibuffer(3)
+        S(ng)%Rindex=ibuffer(4)
+        S(ng)%ncid  =ibuffer(5)
       END IF
 !
 !  Variables IDs.

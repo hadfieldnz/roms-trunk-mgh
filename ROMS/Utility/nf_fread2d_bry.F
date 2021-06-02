@@ -45,7 +45,7 @@
 !                                                                      !
 !     Amin         Field minimum value (real)                          !
 !     Amax         Field maximum value (real)                          !
-!     A            2D boundary field to read in (real array)           !
+!     Abry         2D boundary field to read in (real array)           !
 !     checksum     Field checksum value (integer*8; OPTIONAL)          !
 !                                                                      !
 !     status       Error flag (integer)                                !
@@ -82,7 +82,7 @@
      &                           tindex, gtype,                         &
      &                           LBij, UBij, Nrec,                      &
      &                           Ascl, Amin, Amax,                      &
-     &                           A, checksum)  RESULT(status)
+     &                           Abry, checksum)  RESULT(status)
 !***********************************************************************
 !
       USE mod_netcdf
@@ -102,9 +102,9 @@
       character (len=*), intent(in) :: ncvname
 
 #ifdef ASSUMED_SHAPE
-      real(r8), intent(out) :: A(LBij:,:,:)
+      real(r8), intent(out) :: Abry(LBij:,:,:)
 #else
-      real(r8), intent(out) :: A(LBij:UBij,4,Nrec)
+      real(r8), intent(out) :: Abry(LBij:UBij,4,Nrec)
 #endif
 !
 !  Local variable declarations.
@@ -127,7 +127,7 @@
       real(r8), dimension(3) :: AttValue
 
 #if !defined PARALLEL_IO && defined DISTRIBUTE
-      real(r8), dimension(3) :: buffer
+      real(r8), dimension(3) :: rbuffer
 #endif
       real(r8), dimension(LBij:UBij,4,Nrec) :: wrk
 !
@@ -316,13 +316,13 @@
 
 #if !defined PARALLEL_IO && defined DISTRIBUTE
 !
-      buffer(1)=REAL(status,r8)
-      buffer(2)=Amin
-      buffer(3)=Amax
-      CALL mp_bcastf (ng, model, buffer)
-      status=INT(buffer(1))
-      Amin=buffer(2)
-      Amax=buffer(3)
+      rbuffer(1)=REAL(status,r8)
+      rbuffer(2)=Amin
+      rbuffer(3)=Amax
+      CALL mp_bcastf (ng, model, rbuffer)
+      status=INT(rbuffer(1))
+      Amin=rbuffer(2)
+      Amax=rbuffer(3)
 #endif
 !
       IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
@@ -342,18 +342,18 @@
 !  Unpack read data.
 !-----------------------------------------------------------------------
 !
-      A=0.0_r8
+      Abry=0.0_r8
 
       DO ir=1,Nrec
         DO ib=1,4
           IF (bounded(ib)) THEN
             IF ((ib.eq.iwest).or.(ib.eq.ieast)) THEN
               DO j=Jmin,Jmax
-                A(j,ib,ir)=wrk(j,ib,ir)
+                Abry(j,ib,ir)=wrk(j,ib,ir)
               END DO
             ELSE IF ((ib.eq.isouth).or.(ib.eq.inorth)) THEN
               DO i=Imin,Imax
-                A(i,ib,ir)=wrk(i,ib,ir)
+                Abry(i,ib,ir)=wrk(i,ib,ir)
               END DO
             END IF
           END IF
@@ -371,7 +371,7 @@
      &                          tindex, pioDesc,                        &
      &                          LBij, UBij, Nrec,                       &
      &                          Ascl, Amin, Amax,                       &
-     &                          A, checksum)  RESULT(status)
+     &                          Abry, checksum)  RESULT(status)
 !***********************************************************************
 !
       USE mod_pio_netcdf
@@ -391,9 +391,9 @@
       character (len=*), intent(in) :: ncvname
 
 # ifdef ASSUMED_SHAPE
-      real(r8), intent(out) :: A(LBij:,:,:)
+      real(r8), intent(out) :: Abry(LBij:,:,:)
 # else
-      real(r8), intent(out) :: A(LBij:UBij,4,Nrec)
+      real(r8), intent(out) :: Abry(LBij:UBij,4,Nrec)
 # endif
 !
       TYPE (File_desc_t), intent(inout) :: pioFile
@@ -608,18 +608,18 @@
 !  Unpack read data.
 !-----------------------------------------------------------------------
 !
-      A=0.0_r8
+      Abry=0.0_r8
 
       DO ir=1,Nrec
         DO ib=1,4
           IF (bounded(ib)) THEN
             IF ((ib.eq.iwest).or.(ib.eq.ieast)) THEN
               DO j=Jmin,Jmax
-                A(j,ib,ir)=wrk(j,ib,ir)
+                Abry(j,ib,ir)=wrk(j,ib,ir)
               END DO
             ELSE IF ((ib.eq.isouth).or.(ib.eq.inorth)) THEN
               DO i=Imin,Imax
-                A(i,ib,ir)=wrk(i,ib,ir)
+                Abry(i,ib,ir)=wrk(i,ib,ir)
               END DO
             END IF
           END IF

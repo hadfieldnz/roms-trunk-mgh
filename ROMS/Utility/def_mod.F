@@ -29,12 +29,10 @@
 !
       USE dateclock_mod,  ONLY : time_string
       USE def_dim_mod,    ONLY : def_dim
-      USE def_info_mod,   ONLY : def_info
       USE def_var_mod,    ONLY : def_var
       USE strings_mod,    ONLY : find_string
       USE strings_mod,    ONLY : FoundError
       USE strings_mod,    ONLY : uppercase
-      USE wrt_info_mod,   ONLY : wrt_info
 !
       implicit none
 !

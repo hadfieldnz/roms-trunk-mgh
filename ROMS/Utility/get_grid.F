@@ -3207,7 +3207,7 @@
             IF (LuvSponge(ng)) THEN
               pioVar%vd=var_desc(i)
               pioVar%gtype=r2dvar
-              IF (KIND(GRID(ng)%visc_factor).eq.8) THEN
+              IF (KIND(MIXING(ng)%visc_factor).eq.8) THEN
                 pioVar%dkind=PIO_double
                 ioDesc => ioDesc_dp_r2dvar(ng)
               ELSE
@@ -3266,7 +3266,7 @@
             IF (ANY(LtracerSponge(:,ng))) THEN
               pioVar%vd=var_desc(i)
               pioVar%gtype=r2dvar
-              IF (KIND(GRID(ng)%diff_factor).eq.8) THEN
+              IF (KIND(MIXING(ng)%diff_factor).eq.8) THEN
                 pioVar%dkind=PIO_double
                 ioDesc => ioDesc_dp_r2dvar(ng)
               ELSE

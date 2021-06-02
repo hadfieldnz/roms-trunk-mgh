@@ -157,7 +157,7 @@
       real(r8), dimension(LBi:UBi,LBj:UBj) :: Jout
 
 #ifdef DISTRIBUTE
-      real(r8), dimension(2) :: buffer
+      real(r8), dimension(2) :: rbuffer
 !
       character (len=3), dimension(2) :: op_handle
 #endif
@@ -349,13 +349,13 @@
 !  Notice that gridded data values are overwritten.
 !
 #ifdef DISTRIBUTE
-      buffer(1)=my_min
-      buffer(2)=my_max
+      rbuffer(1)=my_min
+      rbuffer(2)=my_max
       op_handle(1)='MIN'
       op_handle(2)='MAX'
-      CALL mp_reduce (ng, model, 2, buffer, op_handle)
-      Amin=buffer(1)
-      Amax=buffer(2)
+      CALL mp_reduce (ng, model, 2, rbuffer, op_handle)
+      Amin=rbuffer(1)
+      Amax=rbuffer(2)
 #else
       Amin=my_min
       Amax=my_max
@@ -433,7 +433,7 @@
       real(r8), dimension(LBi:UBi,LBj:UBj) :: Jout
 
 # ifdef DISTRIBUTE
-      real(r8), dimension(2) :: buffer
+      real(r8), dimension(2) :: rbuffer
 !
       character (len=3), dimension(2) :: op_handle
 # endif
@@ -625,13 +625,13 @@
 !  Notice that gridded data values are overwritten.
 !
 # ifdef DISTRIBUTE
-      buffer(1)=my_min
-      buffer(2)=my_max
+      rbuffer(1)=my_min
+      rbuffer(2)=my_max
       op_handle(1)='MIN'
       op_handle(2)='MAX'
-      CALL mp_reduce (ng, model, 2, buffer, op_handle)
-      Amin=buffer(1)
-      Amax=buffer(2)
+      CALL mp_reduce (ng, model, 2, rbuffer, op_handle)
+      Amin=rbuffer(1)
+      Amax=rbuffer(2)
 # else
       Amin=my_min
       Amax=my_max

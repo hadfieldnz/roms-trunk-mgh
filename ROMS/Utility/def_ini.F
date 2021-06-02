@@ -23,10 +23,8 @@
       USE mod_scalars
 !
       USE def_dim_mod,  ONLY : def_dim
-      USE def_info_mod, ONLY : def_info
       USE def_var_mod,  ONLY : def_var
       USE strings_mod,  ONLY : FoundError
-      USE wrt_info_mod, ONLY : wrt_info
 !
       implicit none
 !

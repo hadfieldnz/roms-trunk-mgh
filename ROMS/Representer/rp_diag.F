@@ -135,7 +135,7 @@
       integer :: NSUB, i, j, k, trd
 
 # ifdef DISTRIBUTE
-      real(r8), dimension(3) :: buffer
+      real(r8), dimension(3) :: rbuffer
       character (len=3), dimension(3) :: op_handle
 # else
       integer :: my_threadnum
@@ -255,16 +255,16 @@
         IF (tile_count.eq.NSUB) THEN
           tile_count=0
 # ifdef DISTRIBUTE
-          buffer(1)=volume
-          buffer(2)=avgke
-          buffer(3)=avgpe
+          rbuffer(1)=volume
+          rbuffer(2)=avgke
+          rbuffer(3)=avgpe
           op_handle(1)='SUM'
           op_handle(2)='SUM'
           op_handle(3)='SUM'
-          CALL mp_reduce (ng, iRPM, 3, buffer, op_handle)
-          volume=buffer(1)
-          avgke=buffer(2)
-          avgpe=buffer(3)
+          CALL mp_reduce (ng, iRPM, 3, rbuffer, op_handle)
+          volume=rbuffer(1)
+          avgke=rbuffer(2)
+          avgpe=rbuffer(3)
           trd=MyMaster
 # else
           trd=my_threadnum()

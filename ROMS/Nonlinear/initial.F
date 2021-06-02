@@ -448,7 +448,11 @@
 !
         IF (nrrec(ng).ne.0) THEN
 !$OMP MASTER
-          CALL get_wetdry (ng, iNLM, IniRec(ng))
+# ifdef DISTRIBUTE
+          CALL get_wetdry (ng, MyRank, iNLM, IniRec(ng))
+# else
+          CALL get_wetdry (ng, -1, iNLM, IniRec(ng))
+# endif
 !$OMP END MASTER
 # ifdef DISTRIBUTE
           CALL mp_bcasti (ng, iNLM, exit_flag)
