@@ -459,9 +459,9 @@
 
 # ifdef DISTRIBUTE
       integer :: NptsWE, NptsSN
+# endif
 !
       real(r8), parameter :: Fspv = 0.0_r8
-# endif
 !
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", bry_fluxes"
@@ -483,11 +483,6 @@
 !
       NptsWE=JUB-JLB+1
       NptsSN=IUB-ILB+1
-!
-      F_west =Fspv
-      F_east =Fspv
-      F_south=Fspv
-      F_north=Fspv
 # endif
 !
 !-----------------------------------------------------------------------
@@ -500,36 +495,77 @@
 !
       IF (rg.gt.dg) THEN
 !
+! Reset fluxes to zero for first entry of receiver finer grid.
+!
+        IF (MOD(iic(rg)-1,RefineSteps(rg)).eq.0) THEN
+          F_west =Fspv
+          F_east =Fspv
+          F_south=Fspv
+          F_north=Fspv
+        END IF
+!
 !  Western boundary.
 !
         IF (DOMAIN(dg)%Western_Edge(tile)) THEN
           DO j=Jstr,Jend
-            F_west(j)=FX(Istr,j)*scale
+            F_west(j)=F_west(j)+FX(Istr,j)*scale
           END DO
+          DO j=JLB,Jstr-1
+            F_west(j)=Fspv
+          END DO
+          DO j=Jend+1,JUB
+            F_west(j)=Fspv
+          END DO
+        ELSE
+          F_west=Fspv
         END IF
 !
 !  Eastern boundary.
 !
         IF (DOMAIN(dg)%Eastern_Edge(tile)) THEN
           DO j=Jstr,Jend
-            F_east(j)=FX(Iend+1,j)*scale
+            F_east(j)=F_east(j)+FX(Iend+1,j)*scale
           END DO
+          DO j=JLB,Jstr-1
+            F_east(j)=Fspv
+          END DO
+          DO j=Jend+1,JUB
+            F_east(j)=Fspv
+          END DO
+        ELSE
+          F_east=Fspv
         END IF
 !
 !  Southern boundary.
 !
         IF (DOMAIN(dg)%Southern_Edge(tile)) THEN
           DO i=Istr,Iend
-            F_south(i)=FE(i,Jstr)*scale
+            F_south(i)=F_south(i)+FE(i,Jstr)*scale
           END DO
+          DO i=ILB,Istr-1
+            F_south(i)=Fspv
+          END DO
+          DO i=Iend+1,IUB
+            F_south(i)=Fspv
+          END DO
+        ELSE
+          F_south=Fspv
         END IF
 !
 !  Northern boundary.
 !
         IF (DOMAIN(dg)%Northern_Edge(tile)) THEN
           DO i=Istr,Iend
-            F_north(i)=FE(i,Jend+1)*scale
+            F_north(i)=F_north(i)+FE(i,Jend+1)*scale
           END DO
+          DO i=ILB,Istr-1
+            F_north(i)=Fspv
+          END DO
+          DO i=Iend+1,IUB
+            F_north(i)=Fspv
+          END DO
+        ELSE
+          F_north=Fspv
         END IF
 !
 !-----------------------------------------------------------------------
@@ -544,6 +580,11 @@
       ELSE IF (rg.lt.dg) THEN
 !
 !  Western/Eastern boundaries.
+!
+        F_west =Fspv
+        F_east =Fspv
+        F_south=Fspv
+        F_north=Fspv
 !
         Ib_west=I_left(dg)
         Ib_east=I_right(dg)
@@ -3132,8 +3173,8 @@
 !  is done at the bottom of main3d, we need to use the newest time
 !  index, I think.
 !
-      Tindex=nstp(ngc)                ! HGA: Why this index is stable?
-!!    Tindex=nnew(ngc)                ! Gets a lot of noise at boundary
+!!    Tindex=nstp(ngc)  ! HGA: Why this index is stable? newest is nosy
+      Tindex=nnew(ngc)
 !
 !=======================================================================
 !  Compute vertically integrated horizontal advective tracer flux for
@@ -3185,9 +3226,6 @@
             END DO
 !
 !  Zeroth order correction to fine grid time integral (RIL, 2016).
-!
-            TFF=TFF*dt(ngc)/dt(ngf)
-!
 !  Correct coarse grid tracer at the finer grid western boundary.
 !
             cff=GRID(ngc)%pm(Ibc-1,Jbc)*                                &
@@ -3245,9 +3283,6 @@
             END DO
 !
 !  Zeroth order correction to fine grid time integral (RIL, 2016).
-!
-            TFF=TFF*dt(ngc)/dt(ngf)
-!
 !  Correct coarse grid tracer at the finer grid eastern boundary.
 !
             cff=GRID(ngc)%pm(Ibc,Jbc)*                                  &
@@ -3305,9 +3340,6 @@
             END DO
 !
 !  Zeroth order correction to fine grid time integral (RIL, 2016).
-!
-            TFF=TFF*dt(ngc)/dt(ngf)
-!
 !  Correct coarse grid tracer at the finer grid southern boundary.
 !
             cff=GRID(ngc)%pm(Ibc,Jbc-1)*                                &
@@ -3365,9 +3397,6 @@
             END DO
 !
 !  Zeroth order correction to fine grid time integral.
-!
-            TFF=TFF*dt(ngc)/dt(ngf)
-!
 !  Correct coarse grid tracer at the finer grid northern boundary.
 !
             cff=GRID(ngc)%pm(Ibc,Jbc)*                                  &
@@ -3649,7 +3678,7 @@
      &                            GRID(rg)%pm,                          &
      &                            GRID(rg)%pn,                          &
 #  ifdef MASKING
-     &                            GRID(dg)%rmask,                       &
+     &                            GRID(dg)%rmask_full,                  &
      &                            GRID(rg)%rmask,                       &
 #  endif
      &                            OCEAN(dg)%t(:,:,:,Dindex3d,itrc),     &
@@ -3953,6 +3982,7 @@
 !  Local variable declarations.
 !
       integer :: Iadd, Ic, Jadd, Jc, half, i, j, m
+      integer :: Ib_east, Ib_west, Jb_north, Jb_south
 # ifdef DISTRIBUTE
       integer :: LBi, UBi, LBj, UBj
 # endif
@@ -4119,7 +4149,9 @@
             IF (my_count.gt.0.0_r8) THEN
               my_avg=my_sum/my_count
             ELSE
-              my_avg=C1(Ic,Jc)
+              IF (gtype.eq.r2dvar) THEN
+                my_avg=C1(Ic,Jc)
+              END IF
             END IF
 # ifdef MASKING
             my_avg=my_avg*Cmsk(Ic,Jc)
@@ -4128,6 +4160,119 @@
             IF (PRESENT(C2)) THEN
               C2(Ic,Jc)=my_avg
             END IF
+          END IF
+        END DO
+      END IF
+!
+!-----------------------------------------------------------------------
+!  Average finer grid BOUNDARY data to coarse grid U-type and V-type
+!  variables according to the refinement ratio.
+!-----------------------------------------------------------------------
+!
+!  U-type variables finer grid eastern and western boundaries.
+!
+      IF (gtype.eq.u2dvar) THEN
+!
+!  Get boundary indices of the receiver coarser grid.
+!
+        Ib_west=I_left(dg)
+        Ib_east=I_right(dg)
+        Jb_south=J_bottom(dg)
+        Jb_north=J_top(dg)
+!
+!  Eastern boundary.
+!
+        i=Lm(dg)+1                            ! donor finer grid
+        Ic=Ib_east                            ! receiver coarser grid
+        DO Jc=Jb_south,Jb_north-1
+          j=(Jc-Jb_south)*Rscale+half+1
+          IF (((Istr.le.Ic).and.(Ic.le.Iend)).and.                      &
+     &        ((Jstr.le.Jc).and.(Jc.le.Jend))) THEN
+            my_count=0.0_r8
+            my_avg=0.0_r8
+            my_sum=0.0_r8
+            DO Jadd=-half,half
+              my_sum=my_sum+                                            &
+     &               F(i,j+Jadd)
+              my_count=my_count+1.0_r8
+            END DO
+            my_avg=my_sum/my_count
+            C1(Ic,Jc)=my_avg
+          END IF
+        END DO
+!
+!  Western boundary.
+!
+        i=1                                   ! donor finer grid
+        Ic=Ib_west                            ! receiver coarser grid
+        DO Jc=Jb_south,Jb_north-1
+          j=(Jc-Jb_south)*Rscale+half+1
+          IF (((Istr.le.Ic).and.(Ic.le.Iend)).and.                      &
+     &        ((Jstr.le.Jc).and.(Jc.le.Jend))) THEN
+            my_count=0.0_r8
+            my_avg=0.0_r8
+            my_sum=0.0_r8
+            DO Jadd=-half,half
+              my_sum=my_sum+                                            &
+     &               F(i,j+Jadd)
+              my_count=my_count+1.0_r8
+            END DO
+            my_avg=my_sum/my_count
+            C1(Ic,Jc)=my_avg
+          END IF
+        END DO
+      END IF
+!
+!  V-type variables finer grid northern and southern boundaries.
+!
+      IF (gtype.eq.v2dvar) THEN
+!
+!  Get boundary indices of the receiver coarser grid.
+!
+        Ib_west=I_left(dg)
+        Ib_east=I_right(dg)
+        Jb_south=J_bottom(dg)
+        Jb_north=J_top(dg)
+!
+!  Northern boundary.
+!
+        j=Mm(dg)+1                            ! donor finer grid
+        Jc=Jb_north                           ! receiver coarser grid
+        DO Ic=Ib_west,Ib_east-1
+          i=(Ic-Ib_west)*Rscale+half+1
+          IF (((Istr.le.Ic).and.(Ic.le.Iend)).and.                      &
+     &        ((Jstr.le.Jc).and.(Jc.le.Jend))) THEN
+            my_count=0.0_r8
+            my_avg=0.0_r8
+            my_sum=0.0_r8
+            DO Iadd=-half,half
+              my_sum=my_sum+                                            &
+     &               F(i+Iadd,j)
+              my_count=my_count+1.0_r8
+            END DO
+            my_avg=my_sum/my_count
+            C1(Ic,Jc)=my_avg
+          END IF
+        END DO
+!
+!  Southern boundary.
+!
+        j=1                                   ! donor finer grid
+        Jc=Jb_south                           ! receiver coarser grid
+        DO Ic=Ib_west,Ib_east-1
+          i=(Ic-Ib_west)*Rscale+half+1
+          IF (((Istr.le.Ic).and.(Ic.le.Iend)).and.                      &
+     &        ((Jstr.le.Jc).and.(Jc.le.Jend))) THEN
+            my_count=0.0_r8
+            my_avg=0.0_r8
+            my_sum=0.0_r8
+            DO Iadd=-half,half
+              my_sum=my_sum+                                            &
+     &               F(i+Iadd,j)
+              my_count=my_count+1.0_r8
+            END DO
+            my_avg=my_sum/my_count
+            C1(Ic,Jc)=my_avg
           END IF
         END DO
       END IF
@@ -4316,6 +4461,7 @@
 !  Local variable declarations.
 !
       integer :: Iadd, Ic, Jadd, Jc, half, i, j, k, m
+      integer :: Ib_east, Ib_west, Jb_north, Jb_south
 #  ifdef DISTRIBUTE
       integer :: LBi, UBi, LBj, UBj
 #  endif
@@ -4400,8 +4546,10 @@
 #   endif
 #  endif
 !
-!  Average finer grid data to coarse grid according to the refinement
-!  ratio.
+!-----------------------------------------------------------------------
+!  Average finer grid INTERIOR data to coarse grid according to the
+!  refinement ratio.
+!-----------------------------------------------------------------------
 !
       half=(Rscale-1)/2
       IF (AreaAvg) THEN               ! area averaging
@@ -4480,10 +4628,137 @@
 #  endif
                 END DO
               END DO
-              IF (my_count.gt.0.0_r8) my_avg=my_sum/my_count
+              IF (my_count.gt.0.0_r8) THEN
+                my_avg=my_sum/my_count
+              ELSE
+                IF (gtype.eq.r3dvar) THEN
+!!                my_avg=C(Ic,Jc,k)                ! HGA: Why? Previous
+                END IF                             !      is uncommented
+              END IF
 #  ifdef MASKING
               my_avg=my_avg*Cmsk(Ic,Jc)
 #  endif
+              C(Ic,Jc,k)=my_avg
+            END IF
+          END DO
+        END DO
+      END IF
+!
+!-----------------------------------------------------------------------
+!  Average finer grid BOUNDARY data to coarse grid U-type and V-type
+!  variables according to the refinement ratio.
+!-----------------------------------------------------------------------
+!
+!  U-type variables finer grid eastern and western boundaries.
+!
+      IF (gtype.eq.u3dvar) THEN
+!
+!  Get boundary indices of the receiver coarser grid.
+!
+        Ib_west=I_left(dg)
+        Ib_east=I_right(dg)
+        Jb_south=J_bottom(dg)
+        Jb_north=J_top(dg)
+!
+!  Eastern boundary.
+!
+        DO k=LBkC,UBkC
+          i=Lm(dg)+1                            ! donor finer grid
+          Ic=Ib_east                            ! receiver coarser grid
+          DO Jc=Jb_south,Jb_north-1
+            j=(Jc-Jb_south)*Rscale+half+1
+            IF (((Istr.le.Ic).and.(Ic.le.Iend)).and.                    &
+     &          ((Jstr.le.Jc).and.(Jc.le.Jend))) THEN
+              my_count=0.0_r8
+              my_avg=0.0_r8
+              my_sum=0.0_r8
+              DO Jadd=-half,half
+                my_sum=my_sum+                                          &
+     &                 F(i,j+Jadd,k)
+                my_count=my_count+1.0_r8
+              END DO
+              my_avg=my_sum/my_count
+              C(Ic,Jc,k)=my_avg
+            END IF
+          END DO
+        END DO
+!
+!  Western boundary.
+!
+        DO k=LBkC,UBkC
+          i=1                                   ! donor finer grid
+          Ic=Ib_west                            ! receiver coarser grid
+          DO Jc=Jb_south,Jb_north-1
+            j=(Jc-Jb_south)*Rscale+half+1
+            IF (((Istr.le.Ic).and.(Ic.le.Iend)).and.                    &
+     &          ((Jstr.le.Jc).and.(Jc.le.Jend))) THEN
+              my_count=0.0_r8
+              my_avg=0.0_r8
+              my_sum=0.0_r8
+              DO Jadd=-half,half
+                my_sum=my_sum+                                          &
+     &                 F(i,j+Jadd,k)
+                my_count=my_count+1.0_r8
+              END DO
+              my_avg=my_sum/my_count
+              C(Ic,Jc,k)=my_avg
+            END IF
+          END DO
+        END DO
+      END IF
+!
+!  V-type variables finer grid northern and southern boundaries.
+!
+      IF (gtype.eq.v3dvar) THEN
+!
+!  Get boundary indices of the receiver coarser grid.
+!
+        Ib_west=I_left(dg)
+        Ib_east=I_right(dg)
+        Jb_south=J_bottom(dg)
+        Jb_north=J_top(dg)
+!
+!  Northern boundary.
+!
+        DO k=LBkC,UBkC
+          j=Mm(dg)+1                            ! donor finer grid
+          Jc=Jb_north                           ! receiver coarser grid
+          DO Ic=Ib_west,Ib_east-1
+            i=(Ic-Ib_west)*Rscale+half+1
+            IF (((Istr.le.Ic).and.(Ic.le.Iend)).and.                    &
+     &          ((Jstr.le.Jc).and.(Jc.le.Jend))) THEN
+              my_count=0.0_r8
+              my_avg=0.0_r8
+              my_sum=0.0_r8
+              DO Iadd=-half,half
+                my_sum=my_sum+                                          &
+     &                 F(i+Iadd,j,k)
+                my_count=my_count+1.0_r8
+              END DO
+              my_avg=my_sum/my_count
+              C(Ic,Jc,k)=my_avg
+            END IF
+          END DO
+        END DO
+!
+!  Southern boundary.
+!
+        DO k=LBkC,UBkC
+          j=1                                   ! donor finer grid
+          Jc=Jb_south                           ! receiver coarser grid
+          DO Ic=Ib_west,Ib_east-1
+            i=(Ic-Ib_west)*Rscale+half+1
+            IF (((Istr.le.Ic).and.(Ic.le.Iend)).and.                    &
+     &          ((Jstr.le.Jc).and.(Jc.le.Jend))) THEN
+              my_count=0.0_r8
+              my_avg=0.0_r8
+              my_sum=0.0_r8
+              DO Iadd=-half,half
+                my_sum=my_sum+                                          &
+     &                 F(i+Iadd,j,k)
+                my_count=my_count+1.0_r8
+              END DO
+              my_avg=my_sum/my_count
               C(Ic,Jc,k)=my_avg
             END IF
           END DO
@@ -5639,6 +5914,9 @@
 #  else
             my_value=cff1*REFINED(cr)%DU_avg2(1,m,tnew)/cff
 #  endif
+#  ifdef WEC
+            my_value=my_value-OCEAN(ng)%ubar_stokes(Istr,j)
+#  endif
 #  ifdef MASKING
             my_value=my_value*GRID(ng)%umask(Istr,j)
 #  endif
@@ -5670,6 +5948,9 @@
      &                     Wnew*REFINED(cr)%DU_avg2(1,m,tnew))/cff
 #  else
             my_value=cff1*REFINED(cr)%DU_avg2(1,m,tnew)/cff
+#  endif
+#  ifdef WEC
+            my_value=my_value-OCEAN(ng)%ubar_stokes(Iend+1,j)
 #  endif
 #  ifdef MASKING
             my_value=my_value*GRID(ng)%umask(Iend+1,j)
@@ -5703,6 +5984,9 @@
 #  else
             my_value=cff1*REFINED(cr)%DV_avg2(1,m,tnew)/cff
 #  endif
+#  ifdef WEC
+            my_value=my_value-OCEAN(ng)%vbar_stokes(i,Jstr)
+#  endif
 #  ifdef MASKING
             my_value=my_value*GRID(ng)%vmask(i,Jstr)
 #  endif
@@ -5734,6 +6018,9 @@
      &                     Wnew*REFINED(cr)%DV_avg2(1,m,tnew))/cff
 #  else
             my_value=cff1*REFINED(cr)%DV_avg2(1,m,tnew)/cff
+#  endif
+#  ifdef WEC
+            my_value=my_value-OCEAN(ng)%vbar_stokes(i,Jend+1)
 #  endif
 #  ifdef MASKING
             my_value=my_value*GRID(ng)%vmask(i,Jend+1)

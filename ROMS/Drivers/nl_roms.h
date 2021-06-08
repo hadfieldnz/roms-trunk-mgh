@@ -28,6 +28,9 @@
       USE mod_ncparam
       USE mod_scalars
 !
+#ifdef VERIFICATION
+      USE def_mod_mod,       ONLY : def_mod
+#endif
       USE close_io_mod,      ONLY : close_inp, close_out
       USE inp_par_mod,       ONLY : inp_par
 #ifdef MCT_LIB
