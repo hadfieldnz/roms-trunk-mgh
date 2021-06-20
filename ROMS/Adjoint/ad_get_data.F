@@ -228,9 +228,10 @@
 #  endif
 # endif
 
-# if !defined ANA_PAIR      && \
-     (defined ECOSIM        || defined ATM_PRESS)
-#  if !(defined BULK_FLUXES || defined FRC_COUPLING)
+# if !defined ANA_PAIR       && \
+     (defined ATM_PRESS      || defined BULK_FLUXES  || \
+      defined ECOSIM)
+#  if !(defined FRC_COUPLING || definedFORWARD_FLUXES)
 !
 !-----------------------------------------------------------------------
 !  Surface air pressure from input FRC file.
@@ -248,7 +249,7 @@
      &                 FORCES(ng) % PairG)
       IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
-#  elif defined BULK_FLUXES && defined FORWARD_FLUXES
+#  else
 !
 !-----------------------------------------------------------------------
 !  Surface air pressure from NLM forward file.

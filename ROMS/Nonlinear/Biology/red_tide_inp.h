@@ -59,9 +59,6 @@
 !  parameters.
 !-----------------------------------------------------------------------
 !
-#ifdef ANA_BIOLOGY
-      IF (.not.allocated(BioIni)) allocate ( BioIni(MT,Ngrids) )
-#endif
       DO WHILE (.TRUE.)
         READ (inp,'(a)',ERR=10,END=20) line
         status=decode_line(line, KeyWord, Nval, Cval, Rval)
