@@ -61,11 +61,11 @@
 !
       SELECT CASE (HAR(ng)%IOtype)
         CASE (io_nf90)
-          CALL def_tides_nf90 (ng)
+          CALL def_tides_nf90 (ng, ldef)
 
 # if defined PIO_LIB && defined DISTRIBUTE
         CASE (io_pio)
-          CALL def_tides_pio (ng)
+          CALL def_tides_pio (ng, ldef)
 # endif
         CASE DEFAULT
           IF (Master) THEN
