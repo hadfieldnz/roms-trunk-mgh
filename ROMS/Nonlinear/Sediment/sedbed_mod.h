@@ -1,3 +1,4 @@
+      MODULE mod_sedbed
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -144,11 +145,11 @@
 #endif
 
       END TYPE T_SEDBED
-
+!
       TYPE (T_SEDBED), allocatable :: SEDBED(:)
-
+!
       CONTAINS
-
+!
       SUBROUTINE allocate_sedbed (ng, LBi, UBi, LBj, UBj)
 !
 !=======================================================================
@@ -508,6 +509,8 @@
         END DO
       END IF
 #endif
-
+!
       RETURN
       END SUBROUTINE initialize_sedbed
+
+      END MODULE mod_sedbed

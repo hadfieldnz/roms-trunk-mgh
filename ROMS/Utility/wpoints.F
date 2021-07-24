@@ -497,7 +497,7 @@
      &                       ioDesc_dp_resid(ng),                       &
      &                       'resid', 1)
         CALL state_iodecomp (ng, pioSystem(IpioROMS,ng), PIO_double,    &
-     &                       ioDesc_dp_SworkD(IpioROMS,ng),             &
+     &                       ioDesc_dp_SworkD(ng),                      &
      &                       'SworkD', 1)
       END IF
 # endif

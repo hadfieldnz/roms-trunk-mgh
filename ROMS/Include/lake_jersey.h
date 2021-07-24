@@ -33,7 +33,7 @@
 
 /* Bottom boundary layer options */
 
-#defined SSW_BBL
+#define SSW_BBL
 #ifdef SG_BBL
 # define SG_CALC_ZNOT
 # undef  SG_LOGINT

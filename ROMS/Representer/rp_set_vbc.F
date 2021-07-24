@@ -324,11 +324,11 @@
 !
       DO j=JstrR,JendR
         DO i=IstrR,IendR
-!>        stflx(i,j,itemp)=stflux(i,j,itemp)
-!>
+!^        stflx(i,j,itemp)=stflux(i,j,itemp)
+!^
           tl_stflx(i,j,itemp)=0.0_r8                 ! not needed in TLM
-!>        btflx(i,j,itemp)=btflux(i,j,itemp)
-!>
+!^        btflx(i,j,itemp)=btflux(i,j,itemp)
+!^
           tl_btflx(i,j,itemp)=0.0_r8                 ! not needed in TLM
         END DO
       END DO
@@ -343,9 +343,9 @@
 !
       DO j=JstrR,JendR
         DO i=IstrR,IendR
-!>        stflx(i,j,itemp)=stflx(i,j,itemp)+                            &
-!>   &                     dqdt(i,j)*(t(i,j,N(ng),nrhs,itemp)-sst(i,j))
-!>
+!^        stflx(i,j,itemp)=stflx(i,j,itemp)+                            &
+!^   &                     dqdt(i,j)*(t(i,j,N(ng),nrhs,itemp)-sst(i,j))
+!^
 #   ifdef TL_IOMS
           tl_stflx(i,j,itemp)=tl_stflx(i,j,itemp)+                      &
      &                        dqdt(i,j)*(tl_t(i,j,N(ng),nrhs,itemp)-    &
@@ -382,11 +382,11 @@
           cff2=stflx(i,j,itemp)
           tl_cff2=tl_stflx(i,j,itemp)
           cff3=0.5_r8*(1.0_r8+SIGN(1.0_r8,cff1-t(i,j,N(ng),nrhs,itemp)))
-!>        tl_cff3=0.5_r8*SIGN(1.0_r8, cff1-t(i,j,N(ng),nrhs,itemp))*0.0
-!>        tl_cff3=0.0_r8
-!>
-!>        stflx(i,j,itemp)=cff2-cff3*0.5_r8*(cff2-ABS(cff2))
-!>
+!^        tl_cff3=0.5_r8*SIGN(1.0_r8, cff1-t(i,j,N(ng),nrhs,itemp))*0.0
+!^        tl_cff3=0.0_r8
+!^
+!^        stflx(i,j,itemp)=cff2-cff3*0.5_r8*(cff2-ABS(cff2))
+!^
           tl_stflx(i,j,itemp)=(1.0_r8-                                  &
      &                         cff3*0.5_r8*(1.0_r8-SIGN(1.0_r8,cff2)))* &
      &                        tl_cff2+                                  &
@@ -409,10 +409,10 @@
           EmP=stflux(i,j,isalt)
           tl_EmP=0.0_r8
 #   if defined SCORRECTION
-!>        stflx(i,j,isalt)=Emp*t(i,j,N(ng),nrhs,isalt)-                 &
-!>   &                     Tnudg(isalt,ng)*Hz(i,j,N(ng))*               &
-!>   &                     (t(i,j,N(ng),nrhs,isalt)-sss(i,j))
-!>
+!^        stflx(i,j,isalt)=Emp*t(i,j,N(ng),nrhs,isalt)-                 &
+!^   &                     Tnudg(isalt,ng)*Hz(i,j,N(ng))*               &
+!^   &                     (t(i,j,N(ng),nrhs,isalt)-sss(i,j))
+!^
 #    ifdef TL_IOMS
           tl_stflx(i,j,isalt)=EmP*tl_t(i,j,N(ng),nrhs,isalt)+           &
      &                        tl_EmP*t(i,j,N(ng),nrhs,isalt)-           &
@@ -433,9 +433,9 @@
      &                         tl_t(i,j,N(ng),nrhs,isalt))
 #    endif
 #   elif defined SRELAXATION
-!>        stflx(i,j,isalt)=-Tnudg(isalt,ng)*Hz(i,j,N(ng))*              &
-!>   &                     (t(i,j,N(ng),nrhs,isalt)-sss(i,j))
-!>
+!^        stflx(i,j,isalt)=-Tnudg(isalt,ng)*Hz(i,j,N(ng))*              &
+!^   &                     (t(i,j,N(ng),nrhs,isalt)-sss(i,j))
+!^
 #    ifdef TL_IOMS
           tl_stflx(i,j,isalt)=-Tnudg(isalt,ng)*                         &
      &                        (tl_Hz(i,j,N(ng))*                        &
@@ -451,8 +451,8 @@
      &                         tl_t(i,j,N(ng),nrhs,isalt))
 #    endif
 #   else
-!>        stflx(i,j,isalt)=EmP*t(i,j,N(ng),nrhs,isalt)
-!>
+!^        stflx(i,j,isalt)=EmP*t(i,j,N(ng),nrhs,isalt)
+!^
 #    ifdef TL_IOMS
           tl_stflx(i,j,isalt)=EmP*tl_t(i,j,N(ng),nrhs,isalt)+           &
      &                        (tl_EmP-EmP)*                             &
@@ -462,8 +462,8 @@
      &                        tl_EmP*t(i,j,N(ng),nrhs,isalt)
 #    endif
 #   endif
-!>        btflx(i,j,isalt)=btflx(i,j,isalt)*t(i,j,1,nrhs,isalt)
-!>
+!^        btflx(i,j,isalt)=btflx(i,j,isalt)*t(i,j,1,nrhs,isalt)
+!^
           tl_btflx(i,j,isalt)=btflx(i,j,isalt)*                         &
      &                        tl_t(i,j,1,nrhs,isalt)+                   &
      &                        tl_btflx(i,j,isalt)*                      &
@@ -484,11 +484,11 @@
       DO itrc=NAT+1,NT(ng)
         DO j=JstrR,JendR
           DO i=IstrR,IendR
-!>          stflx(i,j,itrc)=stflux(i,j,itrc)
-!>
+!^          stflx(i,j,itrc)=stflux(i,j,itrc)
+!^
             rp_stflx(i,j,itrc)=0.0_r8
-!>          btflx(i,j,itrc)=btflux(i,j,itrc)
-!>
+!^          btflx(i,j,itrc)=btflux(i,j,itrc)
+!^
             rp_btflx(i,j,itrc)=0.0_r8
           END DO
         END DO
@@ -506,8 +506,8 @@
         DO j=JstrR,JendR
           DO i=IstrR,IendR
             IF (zice(i,j).ne.0.0_r8) THEN
-!>            stflx(i,j,itrc)=0.0_r8
-!>
+!^            stflx(i,j,itrc)=0.0_r8
+!^
               tl_stflx(i,j,itrc)=0.0_r8
             END IF
           END DO
@@ -517,8 +517,8 @@
       DO j=JstrR,JendR
         DO i=IstrR,IendR
           IF (zice(i,j).ne.0.0_r8) THEN
-!>          srflx(i,j)=0.0_r8
-!>
+!^          srflx(i,j)=0.0_r8
+!^
             srflx(i,j)=0.0_r8
           END IF
         END DO
@@ -767,12 +767,12 @@
      &                  tl_svstr)
 
 #   ifdef DISTRIBUTE
-!>    CALL mp_exchange2d (ng, tile, iNLM, 2,                            &
-!>   &                    LBi, UBi, LBj, UBj,                           &
-!>   &                    NghostPoints,                                 &
-!>   &                    EWperiodic(ng), NSperiodic(ng),               &
-!>   &                    sustr, svstr)
-!>
+!^    CALL mp_exchange2d (ng, tile, iNLM, 2,                            &
+!^   &                    LBi, UBi, LBj, UBj,                           &
+!^   &                    NghostPoints,                                 &
+!^   &                    EWperiodic(ng), NSperiodic(ng),               &
+!^   &                    sustr, svstr)
+!^
       CALL mp_exchange2d (ng, tile, iRPM, 4,                            &
      &                    LBi, UBi, LBj, UBj,                           &
      &                    NghostPoints,                                 &
@@ -990,12 +990,12 @@
      &                  tl_bvstr)
 
 #   ifdef DISTRIBUTE
-!>    CALL mp_exchange2d (ng, tile, iNLM, 2,                            &
-!>   &                    LBi, UBi, LBj, UBj,                           &
-!>   &                    NghostPoints,                                 &
-!>   &                    EWperiodic(ng), NSperiodic(ng),               &
-!>   &                    bustr, bvstr)
-!>
+!^    CALL mp_exchange2d (ng, tile, iNLM, 2,                            &
+!^   &                    LBi, UBi, LBj, UBj,                           &
+!^   &                    NghostPoints,                                 &
+!^   &                    EWperiodic(ng), NSperiodic(ng),               &
+!^   &                    bustr, bvstr)
+!^
       CALL mp_exchange2d (ng, tile, iRPM, 4,                            &
      &                    LBi, UBi, LBj, UBj,                           &
      &                    NghostPoints,                                 &
@@ -1234,12 +1234,12 @@
      &                  tl_bvstr)
 
 #  ifdef DISTRIBUTE
-!>    CALL mp_exchange2d (ng, tile, iNLM, 2,                            &
-!>   &                    LBi, UBi, LBj, UBj,                           &
-!>   &                    NghostPoints,                                 &
-!>   &                    EWperiodic(ng), NSperiodic(ng),               &
-!>   &                    bustr, bvstr)
-!>
+!^    CALL mp_exchange2d (ng, tile, iNLM, 2,                            &
+!^   &                    LBi, UBi, LBj, UBj,                           &
+!^   &                    NghostPoints,                                 &
+!^   &                    EWperiodic(ng), NSperiodic(ng),               &
+!^   &                    bustr, bvstr)
+!^
       CALL mp_exchange2d (ng, tile, iRPM, 4,                            &
      &                    LBi, UBi, LBj, UBj,                           &
      &                    NghostPoints,                                 &

@@ -45,20 +45,20 @@
       USE rp_prsgrd_mod, ONLY : rp_prsgrd
 # ifndef TS_FIXED
 #  ifdef TS_DIF2
-      USE rp_t3dmix_mod, ONLY : rp_t3dmix2
+      USE rp_t3dmix2_mod, ONLY : rp_t3dmix2
 #  endif
 #  ifdef TS_DIF4
-      USE rp_t3dmix_mod, ONLY : rp_t3dmix4
+      USE rp_t3dmix4_mod, ONLY : rp_t3dmix4
 #  endif
 # endif
 # ifdef RPM_RELAXATION
       USE rp_t3drelax_mod, ONLY : rp_t3drelax
 # endif
 # ifdef UV_VIS2
-      USE rp_uv3dmix_mod, ONLY : rp_uv3dmix2
+      USE rp_uv3dmix2_mod, ONLY : rp_uv3dmix2
 # endif
 # ifdef UV_VIS4
-      USE rp_uv3dmix_mod, ONLY : rp_uv3dmix4
+      USE rp_uv3dmix4_mod, ONLY : rp_uv3dmix4
 # endif
 # ifdef RPM_RELAXATION
       USE rp_uv3drelax_mod, ONLY : rp_uv3drelax
@@ -508,8 +508,8 @@
      &             cff
 #  endif
 
-!>          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)+cff
-!>
+!^          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)+cff
+!^
             tl_ru(i,j,k,nrhs)=tl_ru(i,j,k,nrhs)+tl_cff
 #  ifdef DIAGNOSTICS_UV
 !!          DiaRU(i,j,k,nrhs,M3vvis)=DiaRU(i,j,k,nrhs,M3vvis)+cff
@@ -528,8 +528,8 @@
 #  ifdef TL_IOMS
      &             cff
 #  endif
-!>          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)+cff
-!>
+!^          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)+cff
+!^
             tl_rv(i,j,k,nrhs)=tl_rv(i,j,k,nrhs)+tl_cff
 #  ifdef DIAGNOSTICS_UV
 !!          DiaRV(i,j,k,nrhs,M3vvis)=DiaRV(i,j,k,nrhs,M3vvis)+cff
@@ -602,8 +602,8 @@
 #  ifdef TL_IOMS
      &             cff
 #  endif
-!>          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)-cff
-!>
+!^          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)-cff
+!^
             tl_ru(i,j,k,nrhs)=tl_ru(i,j,k,nrhs)-tl_cff
 #  ifdef DIAGNOSTICS_UV
 !!          DiaRU(i,j,k,nrhs,M3vvis)=DiaRU(i,j,k,nrhs,M3vvis)-cff
@@ -622,8 +622,8 @@
 #  ifdef TL_IOMS
      &             cff
 #  endif
-!>          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff
-!>
+!^          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff
+!^
             tl_rv(i,j,k,nrhs)=tl_rv(i,j,k,nrhs)-tl_cff
 #  ifdef DIAGNOSTICS_UV
 !!          DiaRV(i,j,k,nrhs,M3vvis)=DiaRV(i,j,k,nrhs,M3vvis)-cff
@@ -692,11 +692,11 @@
         END DO
         DO j=Jstr,Jend
           DO i=IstrU,Iend
-!>          cff1=0.5_r8*(UFx(i,j)+UFx(i-1,j))
-!>
+!^          cff1=0.5_r8*(UFx(i,j)+UFx(i-1,j))
+!^
             tl_cff1=0.5_r8*(tl_UFx(i,j)+tl_UFx(i-1,j))
-!>          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)+cff1
-!>
+!^          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)+cff1
+!^
             tl_ru(i,j,k,nrhs)=tl_ru(i,j,k,nrhs)+tl_cff1
 #  ifdef DIAGNOSTICS_UV
 !!          DiaRU(i,j,k,nrhs,M3fcor)=cff1
@@ -705,11 +705,11 @@
         END DO
         DO j=JstrV,Jend
           DO i=Istr,Iend
-!>          cff1=0.5_r8*(VFe(i,j)+VFe(i,j-1))
-!>
+!^          cff1=0.5_r8*(VFe(i,j)+VFe(i,j-1))
+!^
             tl_cff1=0.5_r8*(tl_VFe(i,j)+tl_VFe(i,j-1))
-!>          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff1
-!>
+!^          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff1
+!^
             tl_rv(i,j,k,nrhs)=tl_rv(i,j,k,nrhs)-tl_cff1
 #  ifdef DIAGNOSTICS_UV
 !!          DiaRV(i,j,k,nrhs,M3fcor)=-cff1
@@ -759,14 +759,14 @@
 #  ifdef TL_IOMS
      &             cff
 #  endif
-!>          UFx(i,j)=cff*cff1
-!>
+!^          UFx(i,j)=cff*cff1
+!^
             tl_UFx(i,j)=tl_cff*cff1+cff*tl_cff1-                        &
 #  ifdef TL_IOMS
      &                  cff*cff1
 #  endif
-!>          VFe(i,j)=cff*cff2
-!>
+!^          VFe(i,j)=cff*cff2
+!^
             tl_VFe(i,j)=tl_cff*cff2+cff*tl_cff2-                        &
 #  ifdef TL_IOMS
      &                  cff*cff2
@@ -780,11 +780,11 @@
         END DO
         DO j=Jstr,Jend
           DO i=IstrU,Iend
-!>          cff1=0.5_r8*(UFx(i,j)+UFx(i-1,j))
-!>
+!^          cff1=0.5_r8*(UFx(i,j)+UFx(i-1,j))
+!^
             tl_cff1=0.5_r8*(tl_UFx(i,j)+tl_UFx(i-1,j))
-!>          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)+cff1
-!>
+!^          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)+cff1
+!^
             tl_ru(i,j,k,nrhs)=tl_ru(i,j,k,nrhs)+tl_cff1
 #  ifdef DIAGNOSTICS_UV
 !!          cff2=0.5_r8*(Uwrk(i,j)+Uwrk(i-1,j))
@@ -796,11 +796,11 @@
         END DO
         DO j=JstrV,Jend
           DO i=Istr,Iend
-!>          cff1=0.5_r8*(VFe(i,j)+VFe(i,j-1))
-!>
+!^          cff1=0.5_r8*(VFe(i,j)+VFe(i,j-1))
+!^
             tl_cff1=0.5_r8*(tl_VFe(i,j)+tl_VFe(i,j-1))
-!>          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff1
-!>
+!^          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff1
+!^
             tl_rv(i,j,k,nrhs)=tl_rv(i,j,k,nrhs)-tl_cff1
 #  ifdef DIAGNOSTICS_UV
 !!          cff2=0.5_r8*(Vwrk(i,j)+Vwrk(i,j-1))
@@ -822,11 +822,11 @@
               cff=0.25_r8*(CLIMA(ng)%M3nudgcof(i-1,j,k)+                &
      &                     CLIMA(ng)%M3nudgcof(i  ,j,k))*               &
      &            om_u(i,j)*on_u(i,j)
-!>            ru(i,j,k,nrhs)=ru(i,j,k,nrhs)+                            &
-!>   &                       cff*(Hz(i-1,j,k)+Hz(i,j,k))*               &
-!>   &                           (CLIMA(ng)%uclm(i,j,k)-
-!>   &                            u(i,j,k,nrhs))
-!>
+!^            ru(i,j,k,nrhs)=ru(i,j,k,nrhs)+                            &
+!^   &                       cff*(Hz(i-1,j,k)+Hz(i,j,k))*               &
+!^   &                           (CLIMA(ng)%uclm(i,j,k)-
+!^   &                            u(i,j,k,nrhs))
+!^
               tl_ru(i,j,k,nrhs)=tl_ru(i,j,k,nrhs)+                      &
      &                          cff*((Hz(i-1,j,k)+Hz(i,j,k))*           &
      &                               (-tl_u(i,j,k,nrhs))+               &
@@ -844,11 +844,11 @@
               cff=0.25_r8*(CLIMA(ng)%M3nudgcof(i,j-1,k)+                &
      &                     CLIMA(ng)%M3nudgcof(i,j  ,k))*               &
      &            om_v(i,j)*on_v(i,j)
-!>            rv(i,j,k,nrhs)=rv(i,j,k,nrhs)+                            &
-!>   &                       cff*(Hz(i,j-1,k)+Hz(i,j,k))*               &
-!>   &                           (CLIMA(ng)%vclm(i,j,k)-                &
-!>   &                            v(i,j,k,nrhs))
-!>
+!^            rv(i,j,k,nrhs)=rv(i,j,k,nrhs)+                            &
+!^   &                       cff*(Hz(i,j-1,k)+Hz(i,j,k))*               &
+!^   &                           (CLIMA(ng)%vclm(i,j,k)-                &
+!^   &                            v(i,j,k,nrhs))
+!^
               tl_rv(i,j,k,nrhs)=tl_rv(i,j,k,nrhs)+                      &
      &                          cff*((Hz(i,j-1,k)+Hz(i,j,k))*           &
      &                               (-tl_v(i,j,k,nrhs))+               &
@@ -1529,17 +1529,17 @@
 !
         DO j=Jstr,Jend
           DO i=IstrU,Iend
-!>          cff1=UFx(i,j)-UFx(i-1,j)
-!>
+!^          cff1=UFx(i,j)-UFx(i-1,j)
+!^
             tl_cff1=tl_UFx(i,j)-tl_UFx(i-1,j)
-!>          cff2=UFe(i,j+1)-UFe(i,j)
-!>
+!^          cff2=UFe(i,j+1)-UFe(i,j)
+!^
             tl_cff2=tl_UFe(i,j+1)-tl_UFe(i,j)
-!>          cff=cff1+cff2
-!>
+!^          cff=cff1+cff2
+!^
             tl_cff=tl_cff1+tl_cff2
-!>          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)-cff
-!>
+!^          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)-cff
+!^
             tl_ru(i,j,k,nrhs)=tl_ru(i,j,k,nrhs)-tl_cff
 #  ifdef DIAGNOSTICS_UV
 #   ifdef CURVGRID
@@ -1556,17 +1556,17 @@
         END DO
         DO j=JstrV,Jend
           DO i=Istr,Iend
-!>          cff1=VFx(i+1,j)-VFx(i,j)
-!>
+!^          cff1=VFx(i+1,j)-VFx(i,j)
+!^
             tl_cff1=tl_VFx(i+1,j)-tl_VFx(i,j)
-!>          cff2=VFe(i,j)-VFe(i,j-1)
-!>
+!^          cff2=VFe(i,j)-VFe(i,j-1)
+!^
             tl_cff2=tl_VFe(i,j)-tl_VFe(i,j-1)
-!>          cff=cff1+cff2
-!>
+!^          cff=cff1+cff2
+!^
             tl_cff=tl_cff1+tl_cff2
-!>          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff
-!>
+!^          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff
+!^
             tl_rv(i,j,k,nrhs)=tl_rv(i,j,k,nrhs)-tl_cff
 #  ifdef DIAGNOSTICS_UV
 #   ifdef CURVGRID
@@ -1590,10 +1590,10 @@
 !
         DO j=Jstr,Jend
           DO i=IstrU,Iend
-!>          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)-                              &
-!>   &                     rustr3d(i,j,k)*om_u(i,j)*on_u(i,j)-          &
-!>   &                     rulag3d(i,j,k)
-!>
+!^          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)-                              &
+!^   &                     rustr3d(i,j,k)*om_u(i,j)*on_u(i,j)-          &
+!^   &                     rulag3d(i,j,k)
+!^
             tl_ru(i,j,k,nrhs)=tl_ru(i,j,k,nrhs)-                        &
      &                        tl_rustr3d(i,j,k)*om_u(i,j)*on_u(i,j)-    &
      &                        tl_rulag3d(i,j,k)
@@ -1601,10 +1601,10 @@
         END DO
         DO j=JstrV,Jend
           DO i=Istr,Iend
-!>          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-                              &
-!>   &                     rvstr3d(i,j,k)*om_v(i,j)*on_v(i,j)-          &
-!>   &                     rvlag3d(i,j,k)
-!>
+!^          rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-                              &
+!^   &                     rvstr3d(i,j,k)*om_v(i,j)*on_v(i,j)-          &
+!^   &                     rvlag3d(i,j,k)
+!^
             tl_rv(i,j,k,nrhs)=tl_rv(i,j,k,nrhs)-                        &
      &                        tl_rvstr3d(i,j,k)*om_v(i,j)*on_v(i,j)-    &
      &                        tl_rvlag3d(i,j,k)
@@ -1774,11 +1774,11 @@
           END DO
         END DO
         DO i=IstrU,Iend
-!>        FC(i,N(ng))=0.0_r8
-!>
+!^        FC(i,N(ng))=0.0_r8
+!^
           tl_FC(i,N(ng))=0.0_r8
-!>        FC(i,0)=0.0_r8
-!>
+!^        FC(i,0)=0.0_r8
+!^
           tl_FC(i,0)=0.0_r8
         END DO
 #  elif defined UV_C2ADVECTION
@@ -1845,12 +1845,12 @@
 #     endif
 #    endif
 #   else
-!>        FC(i,0)=0.0_r8
-!>
+!^        FC(i,0)=0.0_r8
+!^
           tl_FC(i,0)=0.0_r8
 #   endif
-!>        FC(i,N(ng))=0.0_r8
-!>
+!^        FC(i,N(ng))=0.0_r8
+!^
           tl_FC(i,N(ng))=0.0_r8
         END DO
 #  elif defined UV_C4ADVECTION
@@ -1906,8 +1906,8 @@
           END DO
         END DO
         DO i=IstrU,Iend
-!>        FC(i,N(ng))=0.0_r8
-!>
+!^        FC(i,N(ng))=0.0_r8
+!^
           tl_FC(i,N(ng))=0.0_r8
           FC(i,N(ng)-1)=(cff1*(u(i,j,N(ng)-1,nrhs)+                     &
 #   ifdef NEARSHORE_MELLOR
@@ -2038,8 +2038,8 @@
 #     endif
 #    endif
 #   else
-!>        FC(i,0)=0.0_r8
-!>
+!^        FC(i,0)=0.0_r8
+!^
           tl_FC(i,0)=0.0_r8
 #   endif
         END DO
@@ -2102,8 +2102,8 @@
           END DO
         END DO
         DO i=IstrU,Iend
-!>        FC(i,N(ng))=0.0_r8
-!>
+!^        FC(i,N(ng))=0.0_r8
+!^
           tl_FC(i,N(ng))=0.0_r8
           FC(i,N(ng)-1)=(cff1*(u(i,j,N(ng)-1,nrhs)+                     &
 #   ifdef NEARSHORE_MELLOR
@@ -2258,19 +2258,19 @@
 #     endif
 #    endif
 #   else
-!>        FC(i,0)=0.0_r8
-!>
+!^        FC(i,0)=0.0_r8
+!^
           tl_FC(i,0)=0.0_r8
 #   endif
         END DO
 #  endif
         DO k=1,N(ng)
           DO i=IstrU,Iend
-!>          cff=FC(i,k)-FC(i,k-1)
-!>
+!^          cff=FC(i,k)-FC(i,k-1)
+!^
             tl_cff=tl_FC(i,k)-tl_FC(i,k-1)
-!>          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)-cff
-!>
+!^          ru(i,j,k,nrhs)=ru(i,j,k,nrhs)-cff
+!^
             tl_ru(i,j,k,nrhs)=tl_ru(i,j,k,nrhs)-tl_cff
 #  ifdef DIAGNOSTICS_UV
 !!          DiaRU(i,j,k,nrhs,M3vadv)=-cff
@@ -2432,11 +2432,11 @@
             END DO
           END DO
           DO i=Istr,Iend
-!>          FC(i,N(ng))=0.0_r8
-!>
+!^          FC(i,N(ng))=0.0_r8
+!^
             tl_FC(i,N(ng))=0.0_r8
-!>          FC(i,0)=0.0_r8
-!>
+!^          FC(i,0)=0.0_r8
+!^
             tl_FC(i,0)=0.0_r8
           END DO
 #  elif defined UV_C2ADVECTION
@@ -2506,12 +2506,12 @@
 #     endif
 #    endif
 #   else
-!>          FC(i,0)=0.0_r8
-!>
+!^          FC(i,0)=0.0_r8
+!^
             tl_FC(i,0)=0.0_r8
 #   endif
-!>          FC(i,N(ng))=0.0_r8
-!>
+!^          FC(i,N(ng))=0.0_r8
+!^
             tl_FC(i,N(ng))=0.0_r8
           END DO
 #  elif defined UV_C4ADVECTION
@@ -2570,8 +2570,8 @@
             END DO
           END DO
           DO i=Istr,Iend
-!>          FC(i,N(ng))=0.0_r8
-!>
+!^          FC(i,N(ng))=0.0_r8
+!^
             tl_FC(i,N(ng))=0.0_r8
             FC(i,N(ng)-1)=(cff1*(v(i,j,N(ng)-1,nrhs)+                   &
 #   ifdef NEARSHORE_MELLOR
@@ -2702,8 +2702,8 @@
 #     endif
 #    endif
 #   else
-!>          FC(i,0)=0.0_r8
-!>
+!^          FC(i,0)=0.0_r8
+!^
             tl_FC(i,0)=0.0_r8
 #   endif
           END DO
@@ -2766,8 +2766,8 @@
             END DO
           END DO
           DO i=Istr,Iend
-!>          FC(i,N(ng))=0.0_r8
-!>
+!^          FC(i,N(ng))=0.0_r8
+!^
             tl_FC(i,N(ng))=0.0_r8
             FC(i,N(ng)-1)=(cff1*(v(i,j,N(ng)-1,nrhs)+                   &
 #   ifdef NEARSHORE_MELLOR
@@ -2922,19 +2922,19 @@
 #     endif
 #    endif
 #   else
-!>          FC(i,0)=0.0_r8
-!>
+!^          FC(i,0)=0.0_r8
+!^
             tl_FC(i,0)=0.0_r8
 #   endif
           END DO
 #  endif
           DO k=1,N(ng)
             DO i=Istr,Iend
-!>            cff=FC(i,k)-FC(i,k-1)
-!>
+!^            cff=FC(i,k)-FC(i,k-1)
+!^
               tl_cff=tl_FC(i,k)-tl_FC(i,k-1)
-!>            rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff
-!>
+!^            rv(i,j,k,nrhs)=rv(i,j,k,nrhs)-cff
+!^
               tl_rv(i,j,k,nrhs)=tl_rv(i,j,k,nrhs)-tl_cff
 #  ifdef DIAGNOSTICS_UV
 !!            DiaRV(i,j,k,nrhs,M3vadv)=-cff
@@ -2953,8 +2953,8 @@
 !  bottom stresses.
 !
         DO i=IstrU,Iend
-!>        rufrc(i,j)=ru(i,j,1,nrhs)
-!>
+!^        rufrc(i,j)=ru(i,j,1,nrhs)
+!^
           tl_rufrc(i,j)=tl_ru(i,j,1,nrhs)
 # ifdef DIAGNOSTICS_UV
 !!        DiaRUfrc(i,j,3,M2pgrd)=DiaRU(i,j,1,nrhs,M3pgrd)
@@ -2981,8 +2981,8 @@
         END DO
         DO k=2,N(ng)
           DO i=IstrU,Iend
-!>          rufrc(i,j)=rufrc(i,j)+ru(i,j,k,nrhs)
-!>
+!^          rufrc(i,j)=rufrc(i,j)+ru(i,j,k,nrhs)
+!^
             tl_rufrc(i,j)=tl_rufrc(i,j)+tl_ru(i,j,k,nrhs)
 # ifdef DIAGNOSTICS_UV
 !!          DiaRUfrc(i,j,3,M2pgrd)=DiaRUfrc(i,j,3,M2pgrd)+              &
@@ -3013,14 +3013,14 @@
 # ifndef BODYFORCE
         DO i=IstrU,Iend
           cff=om_u(i,j)*on_u(i,j)
-!>        cff1= sustr(i,j)*cff
-!>
+!^        cff1= sustr(i,j)*cff
+!^
           tl_cff1= tl_sustr(i,j)*cff
-!>        cff2=-bustr(i,j)*cff
-!>
+!^        cff2=-bustr(i,j)*cff
+!^
           tl_cff2=-tl_bustr(i,j)*cff
-!>        rufrc(i,j)=rufrc(i,j)+cff1+cff2
-!>
+!^        rufrc(i,j)=rufrc(i,j)+cff1+cff2
+!^
           tl_rufrc(i,j)=tl_rufrc(i,j)+tl_cff1+tl_cff2
 #  ifdef DIAGNOSTICS_UV
 !!        DiaRUfrc(i,j,3,M2sstr)=cff1
@@ -3030,8 +3030,8 @@
 # endif
         IF (j.ge.JstrV) THEN
           DO i=Istr,Iend
-!>          rvfrc(i,j)=rv(i,j,1,nrhs)
-!>
+!^          rvfrc(i,j)=rv(i,j,1,nrhs)
+!^
             tl_rvfrc(i,j)=tl_rv(i,j,1,nrhs)
 # ifdef DIAGNOSTICS_UV
 !!          DiaRVfrc(i,j,3,M2pgrd)=DiaRV(i,j,1,nrhs,M3pgrd)
@@ -3058,8 +3058,8 @@
           END DO
           DO k=2,N(ng)
             DO i=Istr,Iend
-!>            rvfrc(i,j)=rvfrc(i,j)+rv(i,j,k,nrhs)
-!>
+!^            rvfrc(i,j)=rvfrc(i,j)+rv(i,j,k,nrhs)
+!^
               tl_rvfrc(i,j)=tl_rvfrc(i,j)+tl_rv(i,j,k,nrhs)
 # ifdef DIAGNOSTICS_UV
 !!            DiaRVfrc(i,j,3,M2pgrd)=DiaRVfrc(i,j,3,M2pgrd)+            &
@@ -3090,14 +3090,14 @@
 # ifndef BODYFORCE
           DO i=Istr,Iend
             cff=om_v(i,j)*on_v(i,j)
-!>          cff1= svstr(i,j)*cff
-!>
+!^          cff1= svstr(i,j)*cff
+!^
             tl_cff1= tl_svstr(i,j)*cff
-!>          cff2=-bvstr(i,j)*cff
-!>
+!^          cff2=-bvstr(i,j)*cff
+!^
             tl_cff2=-tl_bvstr(i,j)*cff
-!>          rvfrc(i,j)=rvfrc(i,j)+cff1+cff2
-!>
+!^          rvfrc(i,j)=rvfrc(i,j)+cff1+cff2
+!^
             tl_rvfrc(i,j)=tl_rvfrc(i,j)+tl_cff1+tl_cff2
 #  ifdef DIAGNOSTICS_UV
 !!          DiaRVfrc(i,j,3,M2sstr)=cff1

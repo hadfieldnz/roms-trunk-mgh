@@ -445,11 +445,6 @@ ifdef USE_COAMPS
  includes +=	$(COAMPS_LIB_DIR)
 endif
 
-ifdef USE_SWAN
- modules  +=	Waves/SWAN/Src
- includes +=	Waves/SWAN/Src
-endif
-
 ifdef USE_WRF
  ifeq "$(strip $(WRF_LIB_DIR))" "$(WRF_SRC_DIR)"
   includes +=	$(addprefix $(WRF_LIB_DIR)/,$(WRF_MOD_DIRS))

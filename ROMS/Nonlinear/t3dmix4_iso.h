@@ -1,15 +1,26 @@
-      SUBROUTINE t3dmix4 (ng, tile)
+      MODULE t3dmix4_mod
 !
 !svn $Id$
-!***********************************************************************
+!=======================================================================
 !  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                           Hernan G. Arango   !
-!****************************************** Alexander F. Shchepetkin ***
+!========================================== Alexander F. Shchepetkin ===
 !                                                                      !
 !  This subroutine computes horizontal biharmonic mixing of tracers    !
 !  along isopycnic surfaces.                                           !
 !                                                                      !
+!=======================================================================
+!
+      implicit none
+!
+      PRIVATE
+      PUBLIC t3dmix4
+!
+      CONTAINS
+!
+!***********************************************************************
+      SUBROUTINE t3dmix4 (ng, tile)
 !***********************************************************************
 !
       USE mod_param
@@ -38,42 +49,42 @@
 #ifdef PROFILE
       CALL wclock_on (ng, iNLM, 29, __LINE__, MyFile)
 #endif
-      CALL t3dmix4_tile (ng, tile,                                      &
-     &                   LBi, UBi, LBj, UBj,                            &
-     &                   IminS, ImaxS, JminS, JmaxS,                    &
-     &                   nrhs(ng), nstp(ng), nnew(ng),                  &
+      CALL t3dmix4_iso_tile (ng, tile,                                  &
+     &                       LBi, UBi, LBj, UBj,                        &
+     &                       IminS, ImaxS, JminS, JmaxS,                &
+     &                       nrhs(ng), nstp(ng), nnew(ng),              &
 #ifdef MASKING
-     &                   GRID(ng) % umask,                              &
-     &                   GRID(ng) % vmask,                              &
+     &                       GRID(ng) % umask,                          &
+     &                       GRID(ng) % vmask,                          &
 #endif
 #ifdef WET_DRY
-     &                   GRID(ng) % umask_wet,                          &
-     &                   GRID(ng) % vmask_wet,                          &
+     &                       GRID(ng) % umask_wet,                      &
+     &                       GRID(ng) % vmask_wet,                      &
 #endif
-     &                   GRID(ng) % om_v,                               &
-     &                   GRID(ng) % on_u,                               &
-     &                   GRID(ng) % pm,                                 &
-     &                   GRID(ng) % pn,                                 &
-     &                   GRID(ng) % Hz,                                 &
-     &                   GRID(ng) % z_r,                                &
+     &                       GRID(ng) % om_v,                           &
+     &                       GRID(ng) % on_u,                           &
+     &                       GRID(ng) % pm,                             &
+     &                       GRID(ng) % pn,                             &
+     &                       GRID(ng) % Hz,                             &
+     &                       GRID(ng) % z_r,                            &
 #ifdef DIFF_3DCOEF
 # ifdef TS_U3ADV_SPLIT
-     &                   MIXING(ng) % diff3d_u,                         &
-     &                   MIXING(ng) % diff3d_v,                         &
+     &                       MIXING(ng) % diff3d_u,                     &
+     &                       MIXING(ng) % diff3d_v,                     &
 # else
-     &                   MIXING(ng) % diff3d_r,                         &
+     &                       MIXING(ng) % diff3d_r,                     &
 # endif
 #else
-     &                   MIXING(ng) % diff4,                            &
+     &                       MIXING(ng) % diff4,                        &
 #endif
-     &                   OCEAN(ng) % pden,                              &
+     &                       OCEAN(ng) % pden,                          &
 #ifdef TS_MIX_CLIMA
-     &                   CLIMA(ng) % tclm,                              &
+     &                       CLIMA(ng) % tclm,                          &
 #endif
 #ifdef DIAGNOSTICS_TS
-     &                   DIAGS(ng) % DiaTwrk,                           &
+     &                       DIAGS(ng) % DiaTwrk,                       &
 #endif
-     &                   OCEAN(ng) % t)
+     &                       OCEAN(ng) % t)
 #ifdef PROFILE
       CALL wclock_off (ng, iNLM, 29, __LINE__, MyFile)
 #endif
@@ -82,35 +93,35 @@
       END SUBROUTINE t3dmix4
 !
 !***********************************************************************
-      SUBROUTINE t3dmix4_tile (ng, tile,                                &
-     &                         LBi, UBi, LBj, UBj,                      &
-     &                         IminS, ImaxS, JminS, JmaxS,              &
-     &                         nrhs, nstp, nnew,                        &
+      SUBROUTINE t3dmix4_iso_tile (ng, tile,                            &
+     &                             LBi, UBi, LBj, UBj,                  &
+     &                             IminS, ImaxS, JminS, JmaxS,          &
+     &                             nrhs, nstp, nnew,                    &
 #ifdef MASKING
-     &                         umask, vmask,                            &
+     &                             umask, vmask,                        &
 #endif
 #ifdef WET_DRY
-     &                         umask_wet, vmask_wet,                    &
+     &                             umask_wet, vmask_wet,                &
 #endif
-     &                         om_v, on_u, pm, pn,                      &
-     &                         Hz, z_r,                                 &
+     &                             om_v, on_u, pm, pn,                  &
+     &                             Hz, z_r,                             &
 #ifdef DIFF_3DCOEF
 # ifdef TS_U3ADV_SPLIT
-     &                         diff3d_u, diff3d_v,                      &
+     &                             diff3d_u, diff3d_v,                  &
 # else
-     &                         diff3d_r,                                &
+     &                             diff3d_r,                            &
 # endif
 #else
-     &                         diff4,                                   &
+     &                             diff4,                               &
 #endif
-     &                         pden,                                    &
+     &                             pden,                                &
 #ifdef TS_MIX_CLIMA
-     &                         tclm,                                    &
+     &                             tclm,                                &
 #endif
 #ifdef DIAGNOSTICS_TS
-     &                         DiaTwrk,                                 &
+     &                             DiaTwrk,                             &
 #endif
-     &                         t)
+     &                             t)
 !***********************************************************************
 !
       USE mod_param
@@ -798,4 +809,6 @@
       END DO T_LOOP
 !
       RETURN
-      END SUBROUTINE t3dmix4_tile
+      END SUBROUTINE t3dmix4_iso_tile
+
+      END MODULE t3dmix4_mod

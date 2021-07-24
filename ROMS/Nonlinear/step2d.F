@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-      MODULE step2d_mod
 #ifdef NONLINEAR
 !
 !svn $Id$
@@ -18,14 +17,8 @@
 !                                                                      !
 !=======================================================================
 !
-      implicit none
-!
-      PRIVATE
-      PUBLIC  :: step2d
-!
-      CONTAINS
-!
 # include "step2d_LF_AM3.h"
-
-#endif
+#else
+      MODULE step2d_mod
       END MODULE step2d_mod
+#endif

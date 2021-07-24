@@ -1,3 +1,4 @@
+      MODULE mod_behavior
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -252,6 +253,8 @@
         allocate ( turb_slop(Ngrids) )
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
-
+!
       RETURN
       END SUBROUTINE allocate_behavior
+
+      END MODULE mod_behavior

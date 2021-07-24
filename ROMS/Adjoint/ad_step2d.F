@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-      MODULE ad_step2d_mod
 #ifdef ADJOINT
 !
 !svn $Id$
@@ -18,14 +17,8 @@
 !                                                                      !
 !=======================================================================
 !
-      implicit none
-!
-      PRIVATE
-      PUBLIC  :: ad_step2d
-!
-      CONTAINS
-!
 # include "ad_step2d_LF_AM3.h"
-
-#endif
+#else
+      MODULE ad_step2d_mod
       END MODULE ad_step2d_mod
+#endif

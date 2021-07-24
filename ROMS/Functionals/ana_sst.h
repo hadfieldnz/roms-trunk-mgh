@@ -1,3 +1,4 @@
+!!
       SUBROUTINE ana_sst (ng, tile, model)
 !
 !! svn $Id$

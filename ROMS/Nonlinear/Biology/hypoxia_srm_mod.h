@@ -1,3 +1,4 @@
+      MODULE mod_biology
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -30,9 +31,9 @@
       integer, allocatable :: BioIter(:)
 
       real(r8), allocatable :: ResRate(:)   ! repiration rate (1/day)
-
+!
       CONTAINS
-
+!
       SUBROUTINE initialize_biology
 !
 !=======================================================================
@@ -109,6 +110,8 @@
       END DO
       ic=ic+1
       iOxyg=ic
-
+!
       RETURN
       END SUBROUTINE initialize_biology
+
+      END MODULE mod_biology

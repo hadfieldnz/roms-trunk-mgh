@@ -84,8 +84,6 @@
 !
       CALL mpi_comm_rank (OCN_COMM_WORLD, MyRank, MyError)
       CALL mpi_comm_size (OCN_COMM_WORLD, nprocs, MyError)
-
-#ifndef WAVES_OCEAN
 !
 !  Initialize MCT coupled model registry.
 !

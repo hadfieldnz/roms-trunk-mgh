@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-      MODULE biology_floats_mod
 #if defined NONLINEAR && defined FLOATS && defined FLOAT_BIOLOGY
 !
 !svn $Id$
@@ -13,17 +12,10 @@
 !                                                                      !
 !=======================================================================
 !
-      implicit none
-
-      PRIVATE
-      PUBLIC  :: biology_floats
-
-      CONTAINS
-
 # ifdef FLOAT_OYSTER
 #  include <oyster_floats.h>
 # endif
-
-#endif
-
+#else
+      MODULE biology_floats_mod
       END MODULE biology_floats_mod
+#endif

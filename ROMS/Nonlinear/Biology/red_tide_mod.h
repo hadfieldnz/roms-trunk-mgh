@@ -1,3 +1,4 @@
+      MODULE mod_biology
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -93,9 +94,9 @@
 ! Normalized montly mean germination potential.
 !
       real(r8), dimension(12) :: GPN
-
+!
       CONTAINS
-
+!
       SUBROUTINE initialize_biology
 !
 !=======================================================================
@@ -248,6 +249,8 @@
       DO i=1,12
         GPN(i)=GP(i)/GPmax
       END DO
-
+!
       RETURN
       END SUBROUTINE initialize_biology
+
+      END MODULE mod_biology

@@ -1,12 +1,12 @@
 # undef NEUMANN
-      SUBROUTINE prsgrd (ng, tile)
+      MODULE prsgrd_mod
 !
 !svn $Id$
-!***********************************************************************
+!=======================================================================
 !  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                           Hernan G. Arango   !
-!****************************************** Alexander F. Shchepetkin ***
+!========================================== Alexander F. Shchepetkin ===
 !                                                                      !
 !  This subroutine evaluates the baroclinic,  hydrostatic pressure     !
 !  gradient term using a  finite-volume  pressure Jacobian scheme.     !
@@ -29,6 +29,17 @@
 !      model with non-aligned vertical coordinate, JGR, 108,           !
 !      1-34.                                                           !
 !                                                                      !
+!=======================================================================
+!
+      implicit none
+!
+      PRIVATE
+      PUBLIC  :: prsgrd
+!
+      CONTAINS
+!
+!***********************************************************************
+      SUBROUTINE prsgrd (ng, tile)
 !***********************************************************************
 !
       USE mod_param
@@ -56,28 +67,28 @@
 # ifdef PROFILE
       CALL wclock_on (ng, iNLM, 23, __LINE__, MyFile)
 # endif
-      CALL prsgrd_tile (ng, tile,                                       &
-     &                  LBi, UBi, LBj, UBj,                             &
-     &                  IminS, ImaxS, JminS, JmaxS,                     &
-     &                  nrhs(ng),                                       &
+      CALL prsgrd44_tile (ng, tile,                                     &
+     &                    LBi, UBi, LBj, UBj,                           &
+     &                    IminS, ImaxS, JminS, JmaxS,                   &
+     &                    nrhs(ng),                                     &
 # ifdef WET_DRY
-     &                  GRID(ng)%umask_wet,                             &
-     &                  GRID(ng)%vmask_wet,                             &
+     &                    GRID(ng)%umask_wet,                           &
+     &                    GRID(ng)%vmask_wet,                           &
 # endif
-     &                  GRID(ng) % Hz,                                  &
-     &                  GRID(ng) % om_v,                                &
-     &                  GRID(ng) % on_u,                                &
-     &                  GRID(ng) % z_w,                                 &
-     &                  OCEAN(ng) % rho,                                &
+     &                    GRID(ng) % Hz,                                &
+     &                    GRID(ng) % om_v,                              &
+     &                    GRID(ng) % on_u,                              &
+     &                    GRID(ng) % z_w,                               &
+     &                    OCEAN(ng) % rho,                              &
 # ifdef ATM_PRESS
-     &                  FORCES(ng) % Pair,                              &
+     &                    FORCES(ng) % Pair,                            &
 # endif
 # ifdef DIAGNOSTICS_UV
-     &                  DIAGS(ng) % DiaRU,                              &
-     &                  DIAGS(ng) % DiaRV,                              &
+     &                    DIAGS(ng) % DiaRU,                            &
+     &                    DIAGS(ng) % DiaRV,                            &
 # endif
-     &                  OCEAN(ng) % ru,                                 &
-     &                  OCEAN(ng) % rv)
+     &                    OCEAN(ng) % ru,                               &
+     &                    OCEAN(ng) % rv)
 # ifdef PROFILE
       CALL wclock_off (ng, iNLM, 23, __LINE__, MyFile)
 # endif
@@ -86,22 +97,22 @@
       END SUBROUTINE prsgrd
 !
 !***********************************************************************
-      SUBROUTINE prsgrd_tile (ng, tile,                                 &
-     &                        LBi, UBi, LBj, UBj,                       &
-     &                        IminS, ImaxS, JminS, JmaxS,               &
-     &                        nrhs,                                     &
+      SUBROUTINE prsgrd44_tile (ng, tile,                               &
+     &                          LBi, UBi, LBj, UBj,                     &
+     &                          IminS, ImaxS, JminS, JmaxS,             &
+     &                          nrhs,                                   &
 # ifdef WET_DRY
-     &                        umask_wet, vmask_wet,                     &
+     &                          umask_wet, vmask_wet,                   &
 # endif
-     &                        Hz, om_v, on_u, z_w,                      &
-     &                        rho,                                      &
+     &                          Hz, om_v, on_u, z_w,                    &
+     &                          rho,                                    &
 # ifdef ATM_PRESS
-     &                        Pair,                                     &
+     &                          Pair,                                   &
 # endif
 # ifdef DIAGNOSTICS_UV
-     &                        DiaRU, DiaRV,                             &
+     &                          DiaRU, DiaRV,                           &
 # endif
-     &                        ru, rv)
+     &                          ru, rv)
 !***********************************************************************
 !
       USE mod_param
@@ -466,4 +477,6 @@
       END DO
 !
       RETURN
-      END SUBROUTINE prsgrd_tile
+      END SUBROUTINE prsgrd44_tile
+
+      END MODULE prsgrd_mod

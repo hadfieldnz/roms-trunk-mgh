@@ -147,11 +147,11 @@
 !
             DO j=Jstr,Jend
               DO i=Istr,Iend
-!>              tl_t(i,j,k,nnew,itrc)=tl_t(i,j,k,nnew,itrc)+            &
-!>   &                                dt(ng)*pm(i,j)*pn(i,j)*           &
-!>   &                                (FX(i+1,j)-FX(i,j)+               &
-!>   &                                 FE(i,j+1)-FE(i,j))
-!>
+!^              tl_t(i,j,k,nnew,itrc)=tl_t(i,j,k,nnew,itrc)+            &
+!^   &                                dt(ng)*pm(i,j)*pn(i,j)*           &
+!^   &                                (FX(i+1,j)-FX(i,j)+               &
+!^   &                                 FE(i,j+1)-FE(i,j))
+!^
                 adfac=dt(ng)*pm(i,j)*pn(i,j)*ad_t(i,j,k,nnew,itrc)
                 ad_FX(i+1,j)=ad_FX(i+1,j)+adfac
                 ad_FX(i,j)=ad_FX(i,j)-adfac
@@ -166,15 +166,15 @@
             DO j=Jstr,Jend+1
               DO i=Istr,Iend
 # ifdef MASKING
-!>              FE(i,j)=FE(i,j)*vmask(i,j)
-!>
+!^              FE(i,j)=FE(i,j)*vmask(i,j)
+!^
                 ad_FE(i,j)=ad_FE(i,j)*vmask(i,j)
 # endif
-!>              FE(i,j)=0.5_r8*tl_Tdiff(itrc,ng)*pnom_v(i,j)*           &
-!>   &                  (Hz(i,j,k)+Hz(i,j-1,k))*                        &
-!>   &                  (tl_t(i,j  ,k,nrhs,itrc)-t(i,j  ,k,nrhs,itrc)-  &
-!>   &                   tl_t(i,j-1,k,nrhs,itrc)+t(i,j-1,k,nrhs,itrc))
-!>
+!^              FE(i,j)=0.5_r8*tl_Tdiff(itrc,ng)*pnom_v(i,j)*           &
+!^   &                  (Hz(i,j,k)+Hz(i,j-1,k))*                        &
+!^   &                  (tl_t(i,j  ,k,nrhs,itrc)-t(i,j  ,k,nrhs,itrc)-  &
+!^   &                   tl_t(i,j-1,k,nrhs,itrc)+t(i,j-1,k,nrhs,itrc))
+!^
                 adfac=0.5_r8*tl_Tdiff(itrc,ng)*pnom_v(i,j)*             &
      &                (Hz(i,j,k)+Hz(i,j-1,k))*ad_FE(i,j)
                 ad_t(i,j  ,k,nrhs,itrc)=ad_t(i,j  ,k,nrhs,itrc)+adfac
@@ -186,15 +186,15 @@
             DO j=Jstr,Jend
               DO i=Istr,Iend+1
 # ifdef MASKING
-!>              FX(i,j)=FX(i,j)*umask(i,j)
-!>
+!^              FX(i,j)=FX(i,j)*umask(i,j)
+!^
                 ad_FX(i,j)=ad_FX(i,j)*umask(i,j)
 # endif
-!>              FX(i,j)=0.5_r8*tl_Tdiff(itrc,ng)*pmon_u(i,j)*           &
-!>   &                  (Hz(i,j,k)+Hz(i-1,j,k))*                        &
-!>   &                  (tl_t(i  ,j,k,nrhs,itrc)-t(i  ,j,k,nrhs,itrc)-  &
-!>   &                   tl_t(i-1,j,k,nrhs,itrc)+t(i-1,j,k,nrhs,itrc))
-!>
+!^              FX(i,j)=0.5_r8*tl_Tdiff(itrc,ng)*pmon_u(i,j)*           &
+!^   &                  (Hz(i,j,k)+Hz(i-1,j,k))*                        &
+!^   &                  (tl_t(i  ,j,k,nrhs,itrc)-t(i  ,j,k,nrhs,itrc)-  &
+!^   &                   tl_t(i-1,j,k,nrhs,itrc)+t(i-1,j,k,nrhs,itrc))
+!^
                 adfac=0.5_r8*tl_Tdiff(itrc,ng)*pmon_u(i,j)*             &
      &                (Hz(i,j,k)+Hz(i-1,j,k))*ad_FX(i,j)
                 ad_t(i  ,j,k,nrhs,itrc)=ad_t(i  ,j,k,nrhs,itrc)+adfac

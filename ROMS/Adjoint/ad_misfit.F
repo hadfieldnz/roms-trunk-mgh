@@ -1,5 +1,6 @@
 #include "cppdefs.h"
       MODULE ad_misfit_mod
+
 #if  defined ADJOINT && defined FOUR_DVAR  && defined OBSERVATIONS && \
     !defined WEAK_CONSTRAINT
 !
@@ -20,7 +21,7 @@
 !=======================================================================
 !
       implicit none
-
+!
       CONTAINS
 !
 !***********************************************************************

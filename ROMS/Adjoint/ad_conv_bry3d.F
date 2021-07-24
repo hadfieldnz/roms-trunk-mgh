@@ -261,22 +261,22 @@
 !-----------------------------------------------------------------------
 !
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij, 1, N(ng),                     &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij, 1, N(ng),                     &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange3d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij, 1, N(ng),                  &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_r3d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij, 1, N(ng),                       &
-!>   &                      tl_A)
-!>
+!^    CALL bc_r3d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij, 1, N(ng),                       &
+!^   &                      tl_A)
+!^
       CALL ad_bc_r3d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij, 1, N(ng),                    &
      &                         ad_A)
@@ -284,8 +284,8 @@
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO k=1,N(ng)
             DO j=Jstr,Jend
-!>            tl_A(j,k)=tl_Awrk(j,k,Nold)
-!>
+!^            tl_A(j,k)=tl_Awrk(j,k,Nold)
+!^
               ad_Awrk(j,k,Nold)=ad_Awrk(j,k,Nold)+                      &
      &                          ad_A(j,k)
               ad_A(j,k)=0.0_r8
@@ -294,8 +294,8 @@
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO k=1,N(ng)
             DO i=Istr,Iend
-!>            tl_A(i,k)=tl_Awrk(i,k,Nold)
-!>
+!^            tl_A(i,k)=tl_Awrk(i,k,Nold)
+!^
               ad_Awrk(i,k,Nold)=ad_Awrk(i,k,Nold)+                      &
      &                          ad_A(i,k)
               ad_A(i,k)=0.0_r8
@@ -388,62 +388,62 @@
             i=edge(boundary)
             DO k=1,N(ng)
               DO j=Jstr,Jend
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
-!>   &                            DTsizeV*oHz(j,k)*                     &
-!>   &                            (tl_DC(j,k)-tl_DC(j,k-1))
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
+!^   &                            DTsizeV*oHz(j,k)*                     &
+!^   &                            (tl_DC(j,k)-tl_DC(j,k-1))
+!^
                 adfac=DTsizeV*oHz(j,k)*ad_Awrk(j,k,Nnew)
                 ad_DC(j,k-1)=ad_DC(j,k-1)-adfac
                 ad_DC(j,k  )=ad_DC(j,k  )+adfac
                 ad_Awrk(j,k,Nold)=ad_Awrk(j,k,Nold)+                    &
      &                            ad_Awrk(j,k,Nnew)
                 ad_Awrk(j,k,Nnew)=0.0_r8
-!>              tl_DC(j,k)=tl_DC(j,k)*Kv(i,j,k)
-!>
+!^              tl_DC(j,k)=tl_DC(j,k)*Kv(i,j,k)
+!^
                 ad_DC(j,k)=ad_DC(j,k)*Kv(i,j,k)
               END DO
             END DO
             DO k=1,N(ng)-1
               DO j=Jstr,Jend
-!>              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
-!>
+!^              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
+!^
                 ad_DC(j,k+1)=ad_DC(j,k+1)-CF(j,k)*ad_DC(j,k)
               END DO
             END DO
             DO j=Jstr,Jend
-!>            tl_DC(j,N(ng))=0.0_r8
-!>
+!^            tl_DC(j,N(ng))=0.0_r8
+!^
               ad_DC(j,N(ng))=0.0_r8
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
             DO k=1,N(ng)
               DO i=Istr,Iend
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
-!>   &                            DTsizeV*oHz(i,k)*                     &
-!>   &                            (tl_DC(i,k)-tl_DC(i,k-1))
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
+!^   &                            DTsizeV*oHz(i,k)*                     &
+!^   &                            (tl_DC(i,k)-tl_DC(i,k-1))
+!^
                 adfac=DTsizeV*oHz(i,k)*ad_Awrk(i,k,Nnew)
                 ad_DC(i,k-1)=ad_DC(i,k-1)-adfac
                 ad_DC(i,k  )=ad_DC(i,k  )+adfac
                 ad_Awrk(i,k,Nold)=ad_Awrk(i,k,Nold)+                    &
      &                            ad_Awrk(i,k,Nnew)
                 ad_Awrk(i,k,Nnew)=0.0_r8
-!>              tl_DC(i,k)=tl_DC(i,k)*Kv(i,j,k)
-!>
+!^              tl_DC(i,k)=tl_DC(i,k)*Kv(i,j,k)
+!^
                 ad_DC(i,k)=ad_DC(i,k)*Kv(i,j,k)
               END DO
             END DO
             DO k=1,N(ng)-1
               DO i=Istr,Iend
-!>              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
-!>
+!^              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
+!^
                 ad_DC(i,k+1)=ad_DC(i,k+1)-CF(i,k)*ad_DC(i,k)
               END DO
             END DO
             DO i=Istr,Iend
-!>            tl_DC(i,N(ng))=0.0_r8
-!>
+!^            tl_DC(i,N(ng))=0.0_r8
+!^
               ad_DC(i,N(ng))=0.0_r8
             END DO
           END IF
@@ -455,10 +455,10 @@
             DO k=N(ng)-1,1,-1
               DO j=Jstr,Jend
                 cff=1.0_r8/(BC(j,k)-FC(j,k)*CF(j,k-1))
-!>              tl_DC(j,k)=cff*(tl_Awrk(j,k+1,Nold)-                    &
-!>   &                          tl_Awrk(j,k  ,Nold)-                    &
-!>   &                          FC(j,k)*tl_DC(j,k-1))
-!>
+!^              tl_DC(j,k)=cff*(tl_Awrk(j,k+1,Nold)-                    &
+!^   &                          tl_Awrk(j,k  ,Nold)-                    &
+!^   &                          FC(j,k)*tl_DC(j,k-1))
+!^
                 adfac=cff*ad_DC(j,k)
                 ad_Awrk(j,k  ,Nold)=ad_Awrk(j,k  ,Nold)-adfac
                 ad_Awrk(j,k+1,Nold)=ad_Awrk(j,k+1,Nold)+adfac
@@ -467,8 +467,8 @@
               END DO
             END DO
             DO j=Jstr,Jend
-!>            tl_DC(j,0)=0.0_r8
-!>
+!^            tl_DC(j,0)=0.0_r8
+!^
               ad_DC(j,0)=0.0_r8
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
@@ -476,10 +476,10 @@
             DO k=N(ng)-1,1,-1
               DO i=Istr,Iend
                 cff=1.0_r8/(BC(i,k)-FC(i,k)*CF(i,k-1))
-!>              tl_DC(i,k)=cff*(tl_Awrk(i,k+1,Nold)-                    &
-!>   &                          tl_Awrk(i,k  ,Nold)-                    &
-!>   &                          FC(i,k)*tl_DC(i,k-1))
-!>
+!^              tl_DC(i,k)=cff*(tl_Awrk(i,k+1,Nold)-                    &
+!^   &                          tl_Awrk(i,k  ,Nold)-                    &
+!^   &                          FC(i,k)*tl_DC(i,k-1))
+!^
                 adfac=cff*ad_DC(i,k)
                 ad_Awrk(i,k  ,Nold)=ad_Awrk(i,k  ,Nold)-adfac
                 ad_Awrk(i,k+1,Nold)=ad_Awrk(i,k+1,Nold)+adfac
@@ -488,8 +488,8 @@
               END DO
             END DO
             DO i=Istr,Iend
-!>            tl_DC(i,0)=0.0_r8
-!>
+!^            tl_DC(i,0)=0.0_r8
+!^
               ad_DC(i,0)=0.0_r8
             END DO
           END IF
@@ -553,42 +553,42 @@
 !
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             i=edge(boundary)
-!>          DO k=N(ng)-1,1,-1
-!>
+!^          DO k=N(ng)-1,1,-1
+!^
             DO k=1,N(ng)-1
               DO j=Jstr,Jend
 #    ifdef MASKING
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nnew)*rmask(i,j)
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nnew)*rmask(i,j)
+!^
                 ad_Awrk(j,k,Nnew)=ad_Awrk(j,k,Nnew)*rmask(i,j)
 #    endif
-!>              tl_Awrk(j,k,Nnew)=tl_DC(j,k)
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_DC(j,k)
+!^
                 ad_DC(j,k)=ad_DC(j,k)+                                  &
      &                     ad_Awrk(j,k,Nnew)
                 ad_Awrk(j,k,Nnew)=0.0_r8
-!>              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
-!>
+!^              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
+!^
                 ad_DC(j,k+1)=-CF(j,k)*ad_DC(j,k)
               END DO
             END DO
             DO j=Jstr,Jend
 #    ifdef MASKING
-!>            tl_Awrk(j,N(ng),Nnew)=tl_Awrk(j,N(ng),Nnew)*rmask(i,j)
-!>
+!^            tl_Awrk(j,N(ng),Nnew)=tl_Awrk(j,N(ng),Nnew)*rmask(i,j)
+!^
               ad_Awrk(j,N(ng),Nnew)=ad_Awrk(j,N(ng),Nnew)*rmask(i,j)
 
 #    endif
-!>            tl_Awrk(j,N(ng),Nnew)=tl_DC(j,N(ng))
-!>
+!^            tl_Awrk(j,N(ng),Nnew)=tl_DC(j,N(ng))
+!^
               ad_DC(j,N(ng))=ad_DC(j,N(ng))+                            &
      &                       ad_Awrk(j,N(ng),Nnew)
               ad_Awrk(j,N(ng),Nnew)=0.0_r8
-!>            tl_DC(j,N(ng))=(tl_DC(j,N(ng))-                           &
-!>   &                        FC(j,N(ng)-1)*tl_DC(j,N(ng)-1))/          &
-!>   &                       (BC(j,N(ng))-                              &
-!>   &                        FC(j,N(ng)-1)*CF(j,N(ng)-1))
-!>
+!^            tl_DC(j,N(ng))=(tl_DC(j,N(ng))-                           &
+!^   &                        FC(j,N(ng)-1)*tl_DC(j,N(ng)-1))/          &
+!^   &                       (BC(j,N(ng))-                              &
+!^   &                        FC(j,N(ng)-1)*CF(j,N(ng)-1))
+!^
               adfac=ad_DC(j,N(ng))/                                     &
      &              (BC(j,N(ng))-                                       &
      &               FC(j,N(ng)-1)*CF(j,N(ng)-1))
@@ -598,41 +598,41 @@
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
-!>          DO k=N(ng)-1,1,-1
-!>
+!^          DO k=N(ng)-1,1,-1
+!^
             DO k=1,N(ng)-1
               DO i=Istr,Iend
 #    ifdef MASKING
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nnew)*rmask(i,j)
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nnew)*rmask(i,j)
+!^
                 ad_Awrk(i,k,Nnew)=ad_Awrk(i,k,Nnew)*rmask(i,j)
 #    endif
-!>              tl_Awrk(i,k,Nnew)=tl_DC(i,k)
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_DC(i,k)
+!^
                 ad_DC(i,k)=ad_DC(i,k)+                                  &
      &                     ad_Awrk(i,k,Nnew)
                 ad_Awrk(i,k,Nnew)=0.0_r8
-!>              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
-!>
+!^              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
+!^
                 ad_DC(i,k+1)=-CF(i,k)*ad_DC(i,k)
               END DO
             END DO
             DO i=Istr,Iend
 #    ifdef MASKING
-!>            tl_Awrk(i,N(ng),Nnew)=tl_Awrk(i,N(ng),Nnew)*rmask(i,j)
-!>
+!^            tl_Awrk(i,N(ng),Nnew)=tl_Awrk(i,N(ng),Nnew)*rmask(i,j)
+!^
               ad_Awrk(i,N(ng),Nnew)=ad_Awrk(i,N(ng),Nnew)*rmask(i,j)
 #    endif
-!>            tl_Awrk(i,N(ng),Nnew)=tl_DC(i,N(ng))
-!>
+!^            tl_Awrk(i,N(ng),Nnew)=tl_DC(i,N(ng))
+!^
               ad_DC(i,N(ng))=ad_DC(i,N(ng))+                            &
      &                       ad_Awrk(i,N(ng),Nnew)
               ad_Awrk(i,N(ng),Nnew)=0.0_r8
-!>            tl_DC(i,N(ng))=(tl_DC(i,N(ng))-                           &
-!>   &                        FC(i,N(ng)-1)*tl_DC(i,N(ng)-1))/          &
-!>   &                       (BC(i,N(ng))-                              &
-!>   &                        FC(i,N(ng)-1)*CF(i,N(ng)-1))
-!>
+!^            tl_DC(i,N(ng))=(tl_DC(i,N(ng))-                           &
+!^   &                        FC(i,N(ng)-1)*tl_DC(i,N(ng)-1))/          &
+!^   &                       (BC(i,N(ng))-                              &
+!^   &                        FC(i,N(ng)-1)*CF(i,N(ng)-1))
+!^
               adfac=ad_DC(i,N(ng))/                                     &
      &              (BC(i,N(ng))-                                       &
      &               FC(i,N(ng)-1)*CF(i,N(ng)-1))
@@ -645,13 +645,13 @@
 !  Solve the adjoint tridiagonal system.
 !
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
-!>          DO k=2,N(ng)-1
-!>
+!^          DO k=2,N(ng)-1
+!^
             DO k=N(ng)-1,2,-1
               DO j=Jstr,Jend
                 cff=1.0_r8/(BC(j,k)-FC(j,k-1)*CF(j,k-1))
-!>              tl_DC(j,k)=cff*(tl_DC(j,k)-FC(j,k-1)*tl_DC(j,k-1))
-!>
+!^              tl_DC(j,k)=cff*(tl_DC(j,k)-FC(j,k-1)*tl_DC(j,k-1))
+!^
                 adfac=cff*ad_DC(j,k)
                 ad_DC(j,k-1)=ad_DC(j,k-1)-FC(j,k-1)*adfac
                 ad_DC(j,k  )=adfac
@@ -659,18 +659,18 @@
             END DO
             DO j=Jstr,Jend
               cff=1.0_r8/BC(j,1)
-!>            tl_DC(j,1)=cff*tl_DC(j,1)
-!>
+!^            tl_DC(j,1)=cff*tl_DC(j,1)
+!^
               ad_DC(j,1)=cff*ad_DC(j,1)
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
-!>          DO k=2,N(ng)-1
-!>
+!^          DO k=2,N(ng)-1
+!^
             DO k=N(ng)-1,2,-1
               DO i=Istr,Iend
                 cff=1.0_r8/(BC(i,k)-FC(i,k-1)*CF(i,k-1))
-!>              tl_DC(i,k)=cff*(tl_DC(i,k)-FC(i,k-1)*tl_DC(i,k-1))
-!>
+!^              tl_DC(i,k)=cff*(tl_DC(i,k)-FC(i,k-1)*tl_DC(i,k-1))
+!^
                 adfac=cff*ad_DC(i,k)
                 ad_DC(i,k-1)=ad_DC(i,k-1)-FC(i,k-1)*adfac
                 ad_DC(i,k  )=adfac
@@ -678,8 +678,8 @@
             END DO
             DO i=Istr,Iend
               cff=1.0_r8/BC(i,1)
-!>            tl_DC(i,1)=cff*tl_DC(i,1)
-!>
+!^            tl_DC(i,1)=cff*tl_DC(i,1)
+!^
               ad_DC(i,1)=cff*ad_DC(i,1)
             END DO
           END IF
@@ -690,8 +690,8 @@
             i=edge(boundary)
             DO k=1,N(ng)
               DO j=Jstr,Jend
-!>              tl_DC(j,k)=tl_Awrk(j,k,Nold)*Hz(i,j,k)
-!>
+!^              tl_DC(j,k)=tl_Awrk(j,k,Nold)*Hz(i,j,k)
+!^
                 ad_Awrk(j,k,Nold)=ad_Awrk(j,k,Nold)+                    &
      &                            Hz(i,j,k)*ad_DC(j,k)
                 ad_DC(j,k)=0.0_r8
@@ -701,8 +701,8 @@
             j=edge(boundary)
             DO k=1,N(ng)
               DO i=Istr,Iend
-!>              tl_DC(i,k)=tl_Awrk(i,k,Nold)*Hz(i,j,k)
-!>
+!^              tl_DC(i,k)=tl_Awrk(i,k,Nold)*Hz(i,j,k)
+!^
                 ad_Awrk(i,k,Nold)=ad_Awrk(i,k,Nold)+                    &
      &                            Hz(i,j,k)*ad_DC(i,k)
                 ad_DC(i,k)=0.0_r8
@@ -734,10 +734,10 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             DO k=1,N(ng)
               DO j=Jstr,Jend
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
-!>   &                            oHz(j,k)*(tl_FS(j,k  )-               &
-!>   &                                      tl_FS(j,k-1))
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
+!^   &                            oHz(j,k)*(tl_FS(j,k  )-               &
+!^   &                                      tl_FS(j,k-1))
+!^
                 adfac=oHz(j,k)*ad_Awrk(j,k,Nnew)
                 ad_FS(j,k-1)=ad_FS(j,k-1)-adfac
                 ad_FS(j,k  )=ad_FS(j,k  )+adfac
@@ -749,10 +749,10 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             DO k=1,N(ng)
               DO i=Istr,Iend
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
-!>   &                            oHz(i,k)*(tl_FS(i,k  )-               &
-!>   &                                      tl_FS(i,k-1))
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
+!^   &                            oHz(i,k)*(tl_FS(i,k  )-               &
+!^   &                                      tl_FS(i,k-1))
+!^
                 adfac=oHz(i,k)*ad_Awrk(i,k,Nnew)
                 ad_FS(i,k-1)=ad_FS(i,k-1)-adfac
                 ad_FS(i,k  )=ad_FS(i,k  )+adfac
@@ -769,21 +769,21 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             i=edge(boundary)
             DO j=Jstr,Jend
-!>            tl_FS(j,N(ng))=0.0_r8
-!>
+!^            tl_FS(j,N(ng))=0.0_r8
+!^
               ad_FS(j,N(ng))=0.0_r8
-!>            tl_FS(j,0)=0.0_r8
-!>
+!^            tl_FS(j,0)=0.0_r8
+!^
               ad_FS(j,0)=0.0_r8
               DO k=1,N(ng)-1
 #   ifdef MASKING
-!>              tl_FS(j,k)=tl_FS(j,k)*rmask(i,j)
-!>
+!^              tl_FS(j,k)=tl_FS(j,k)*rmask(i,j)
+!^
                 ad_FS(j,k)=ad_FS(j,k)*rmask(i,j)
 #   endif
-!>              tl_FS(j,k)=FC(j,k)*(tl_Awrk(j,k+1,Nold)-                &
-!>   &                              tl_Awrk(j,k  ,Nold))
-!>
+!^              tl_FS(j,k)=FC(j,k)*(tl_Awrk(j,k+1,Nold)-                &
+!^   &                              tl_Awrk(j,k  ,Nold))
+!^
                 adfac=FC(j,k)*ad_FS(j,k)
                 ad_Awrk(j,k  ,Nold)=ad_Awrk(j,k  ,Nold)-adfac
                 ad_Awrk(j,k+1,Nold)=ad_Awrk(j,k+1,Nold)+adfac
@@ -793,21 +793,21 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
             DO i=Istr,Iend
-!>            tl_FS(i,N(ng))=0.0_r8
-!>
+!^            tl_FS(i,N(ng))=0.0_r8
+!^
               ad_FS(i,N(ng))=0.0_r8
-!>            tl_FS(i,0)=0.0_r8
-!>
+!^            tl_FS(i,0)=0.0_r8
+!^
               ad_FS(i,0)=0.0_r8
               DO k=1,N(ng)-1
 #   ifdef MASKING
-!>              tl_FS(i,k)=tl_FS(i,k)*rmask(i,j)
-!>
+!^              tl_FS(i,k)=tl_FS(i,k)*rmask(i,j)
+!^
                 ad_FS(i,k)=ad_FS(i,k)*rmask(i,j)
 #   endif
-!>              tl_FS(i,k)=FC(i,k)*(tl_Awrk(i,k+1,Nold)-                &
-!>   &                              tl_Awrk(i,k  ,Nold))
-!>
+!^              tl_FS(i,k)=FC(i,k)*(tl_Awrk(i,k+1,Nold)-                &
+!^   &                              tl_Awrk(i,k  ,Nold))
+!^
                 adfac=FC(i,k)*ad_FS(i,k)
                 ad_Awrk(i,k  ,Nold)=ad_Awrk(i,k  ,Nold)-adfac
                 ad_Awrk(i,k+1,Nold)=ad_Awrk(i,k+1,Nold)+adfac
@@ -835,22 +835,22 @@
 !  Apply adjoint boundary conditions.
 !
 # ifdef DISTRIBUTE
-!>      CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,           &
-!>   &                          LBij, UBij, 1, N(ng),                   &
-!>   &                          Nghost,                                 &
-!>   &                          EWperiodic(ng), NSperiodic(ng),         &
-!>   &                          tl_Awrk(:,:,Nnew))
-!>
+!^      CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,           &
+!^   &                          LBij, UBij, 1, N(ng),                   &
+!^   &                          Nghost,                                 &
+!^   &                          EWperiodic(ng), NSperiodic(ng),         &
+!^   &                          tl_Awrk(:,:,Nnew))
+!^
         CALL ad_mp_exchange3d_bry (ng, tile, model, 1, boundary,        &
      &                             LBij, UBij, 1, N(ng),                &
      &                             Nghost,                              &
      &                             EWperiodic(ng), NSperiodic(ng),      &
      &                             ad_Awrk(:,:,Nnew))
 # endif
-!>      CALL bc_r3d_bry_tile (ng, tile, boundary,                       &
-!>   &                        LBij, UBij, 1, N(ng),                     &
-!>   &                        tl_Awrk(:,:,Nnew))
-!>
+!^      CALL bc_r3d_bry_tile (ng, tile, boundary,                       &
+!^   &                        LBij, UBij, 1, N(ng),                     &
+!^   &                        tl_Awrk(:,:,Nnew))
+!^
         CALL ad_bc_r3d_bry_tile (ng, tile, boundary,                    &
      &                           LBij, UBij, 1, N(ng),                  &
      &                           ad_Awrk(:,:,Nnew))
@@ -861,10 +861,10 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             DO k=1,N(ng)
               DO j=Jstr,Jend
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
-!>   &                            Hfac(j)*                              &
-!>   &                            (tl_FE(j+1,k)-tl_FE(j,k))
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
+!^   &                            Hfac(j)*                              &
+!^   &                            (tl_FE(j+1,k)-tl_FE(j,k))
+!^
                 adfac=Hfac(j)*ad_Awrk(j,k,Nnew)
                 ad_FE(j  ,k)=ad_FE(j  ,k)-adfac
                 ad_FE(j+1,k)=ad_FE(j+1,k)+adfac
@@ -876,10 +876,10 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             DO k=1,N(ng)
               DO i=Istr,Iend
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
-!>   &                            Hfac(i)*                              &
-!>   &                            (tl_FX(i+1,k)-tl_FX(i,k))
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
+!^   &                            Hfac(i)*                              &
+!^   &                            (tl_FX(i+1,k)-tl_FX(i,k))
+!^
                 adfac=Hfac(i)*ad_Awrk(i,k,Nnew)
                 ad_FX(i  ,k)=ad_FX(i  ,k)-adfac
                 ad_FX(i+1,k)=ad_FX(i+1,k)+adfac
@@ -897,14 +897,14 @@
             DO k=1,N(ng)
               DO j=Jstr,Jend+1
 # ifdef MASKING
-!>              tl_FE(j,k)=tl_FE(j,k)*vmask(i,j)
-!>
+!^              tl_FE(j,k)=tl_FE(j,k)*vmask(i,j)
+!^
                 ad_FE(j,k)=ad_FE(j,k)*vmask(i,j)
 # endif
-!>              tl_FE(j,k)=pnom_v(i,j)*0.5_r8*(Kh(i,j-1)+Kh(i,j))*      &
-!>   &                     (tl_Awrk(j  ,k,Nold)-                        &
-!>   &                      tl_Awrk(j-1,k,Nold))
-!>
+!^              tl_FE(j,k)=pnom_v(i,j)*0.5_r8*(Kh(i,j-1)+Kh(i,j))*      &
+!^   &                     (tl_Awrk(j  ,k,Nold)-                        &
+!^   &                      tl_Awrk(j-1,k,Nold))
+!^
                 adfac=pnom_v(i,j)*0.5_r8*(Kh(i,j-1)+Kh(i,j))*ad_FE(j,k)
                 ad_Awrk(j-1,k,Nold)=ad_Awrk(j-1,k,Nold)-adfac
                 ad_Awrk(j  ,k,Nold)=ad_Awrk(j  ,k,Nold)+adfac
@@ -916,14 +916,14 @@
             DO k=1,N(ng)
               DO i=Istr,Iend+1
 # ifdef MASKING
-!>              tl_FX(i,k)=tl_FX(i,k)*umask(i,j)
-!>
+!^              tl_FX(i,k)=tl_FX(i,k)*umask(i,j)
+!^
                 ad_FX(i,k)=ad_FX(i,k)*umask(i,j)
 # endif
-!>              tl_FX(i,k)=pmon_u(i,j)*0.5_r8*(Kh(i-1,j)+Kh(i,j))*      &
-!>   &                     (tl_Awrk(i  ,k,Nold)-                        &
-!>   &                      tl_Awrk(i-1,k,Nold))
-!>
+!^              tl_FX(i,k)=pmon_u(i,j)*0.5_r8*(Kh(i-1,j)+Kh(i,j))*      &
+!^   &                     (tl_Awrk(i  ,k,Nold)-                        &
+!^   &                      tl_Awrk(i-1,k,Nold))
+!^
                 adfac=pmon_u(i,j)*0.5_r8*(Kh(i-1,j)+Kh(i,j))*ad_FX(i,k)
                 ad_Awrk(i-1,k,Nold)=ad_Awrk(i-1,k,Nold)-adfac
                 ad_Awrk(i  ,k,Nold)=ad_Awrk(i  ,k,Nold)+adfac
@@ -942,8 +942,8 @@
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO k=1,N(ng)
             DO j=Jstr-1,Jend+1
-!>            tl_Awrk(j,k,Nold)=tl_A(j,k)
-!>
+!^            tl_Awrk(j,k,Nold)=tl_A(j,k)
+!^
               ad_A(j,k)=ad_A(j,k)+ad_Awrk(j,k,Nold)
               ad_Awrk(j,k,Nold)=0.0_r8
             END DO
@@ -951,8 +951,8 @@
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO k=1,N(ng)
             DO i=Istr-1,Iend+1
-!>            tl_Awrk(i,k,Nold)=tl_A(i,k)
-!>
+!^            tl_Awrk(i,k,Nold)=tl_A(i,k)
+!^
               ad_A(i,k)=ad_A(i,k)+ad_Awrk(i,k,Nold)
               ad_Awrk(i,k,Nold)=0.0_r8
             END DO
@@ -960,22 +960,22 @@
         END IF
       END IF
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij, 1, N(ng),                     &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij, 1, N(ng),                     &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange3d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij, 1, N(ng),                  &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_r3d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij, 1, N(ng),                       &
-!>   &                      tl_A)
-!>
+!^    CALL bc_r3d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij, 1, N(ng),                       &
+!^   &                      tl_A)
+!^
       CALL ad_bc_r3d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij, 1, N(ng),                    &
      &                         ad_A)
@@ -1184,22 +1184,22 @@
 !-----------------------------------------------------------------------
 !
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij, 1, N(ng),                     &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij, 1, N(ng),                     &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange3d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij, 1, N(ng),                  &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_u3d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij, 1, N(ng),                       &
-!>   &                      tl_A)
-!>
+!^    CALL bc_u3d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij, 1, N(ng),                       &
+!^   &                      tl_A)
+!^
       CALL ad_bc_u3d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij, 1, N(ng),                    &
      &                         ad_A)
@@ -1207,8 +1207,8 @@
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO k=1,N(ng)
             DO j=Jstr,Jend
-!>            tl_A(j,k)=tl_Awrk(j,k,Nold)
-!>
+!^            tl_A(j,k)=tl_Awrk(j,k,Nold)
+!^
               ad_Awrk(j,k,Nold)=ad_Awrk(j,k,Nold)+                      &
      &                          ad_A(j,k)
               ad_A(j,k)=0.0_r8
@@ -1217,8 +1217,8 @@
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO k=1,N(ng)
             DO i=Istr,Iend
-!>            tl_A(i,k)=tl_Awrk(i,k,Nold)
-!>
+!^            tl_A(i,k)=tl_Awrk(i,k,Nold)
+!^
               ad_Awrk(i,k,Nold)=ad_Awrk(i,k,Nold)+                      &
      &                          ad_A(i,k)
               ad_A(i,k)=0.0_r8
@@ -1313,62 +1313,62 @@
             i=edge(boundary)
             DO k=1,N(ng)
               DO j=Jstr,Jend
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
-!>   &                            DTsizeV*oHz(j,k)*                     &
-!>   &                            (tl_DC(j,k)-tl_DC(j,k-1))
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
+!^   &                            DTsizeV*oHz(j,k)*                     &
+!^   &                            (tl_DC(j,k)-tl_DC(j,k-1))
+!^
                 adfac=DTsizeV*oHz(j,k)*ad_Awrk(j,k,Nnew)
                 ad_DC(j,k-1)=ad_DC(j,k-1)-adfac
                 ad_DC(j,k  )=ad_DC(j,k  )+adfac
                 ad_Awrk(j,k,Nold)=ad_Awrk(j,k,Nold)+                    &
      &                            ad_Awrk(j,k,Nnew)
                 ad_Awrk(j,k,Nnew)=0.0_r8
-!>              tl_DC(j,k)=tl_DC(j,k)*Kv(i,j,k)
-!>
+!^              tl_DC(j,k)=tl_DC(j,k)*Kv(i,j,k)
+!^
                 ad_DC(j,k)=ad_DC(j,k)*Kv(i,j,k)
               END DO
             END DO
             DO k=N(ng)-1,1,-1
               DO j=Jstr,Jend
-!>              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
-!>
+!^              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
+!^
                 ad_DC(j,k+1)=ad_DC(j,k+1)-CF(j,k)*ad_DC(j,k)
               END DO
             END DO
             DO j=Jstr,Jend
-!>            tl_DC(j,N(ng))=0.0_r8
-!>
+!^            tl_DC(j,N(ng))=0.0_r8
+!^
               ad_DC(j,N(ng))=0.0_r8
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
             DO k=1,N(ng)
               DO i=IstrU,Iend
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
-!>   &                            DTsizeV*oHz(i,k)*                     &
-!>   &                            (tl_DC(i,k)-tl_DC(i,k-1))
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
+!^   &                            DTsizeV*oHz(i,k)*                     &
+!^   &                            (tl_DC(i,k)-tl_DC(i,k-1))
+!^
                 adfac=DTsizeV*oHz(i,k)*ad_Awrk(i,k,Nnew)
                 ad_DC(i,k-1)=ad_DC(i,k-1)-adfac
                 ad_DC(i,k  )=ad_DC(i,k  )+adfac
                 ad_Awrk(i,k,Nold)=ad_Awrk(i,k,Nold)+                    &
      &                            ad_Awrk(i,k,Nnew)
                 ad_Awrk(i,k,Nnew)=0.0_r8
-!>              tl_DC(i,k)=tl_DC(i,k)*Kv(i,j,k)
-!>
+!^              tl_DC(i,k)=tl_DC(i,k)*Kv(i,j,k)
+!^
                 ad_DC(i,k)=ad_DC(i,k)*Kv(i,j,k)
               END DO
             END DO
             DO k=N(ng)-1,1,-1
               DO i=IstrU,Iend
-!>              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
-!>
+!^              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
+!^
                 ad_DC(i,k+1)=ad_DC(i,k+1)-CF(i,k)*ad_DC(i,k)
               END DO
             END DO
             DO i=IstrU,Iend
-!>            tl_DC(i,N(ng))=0.0_r8
-!>
+!^            tl_DC(i,N(ng))=0.0_r8
+!^
               ad_DC(i,N(ng))=0.0_r8
             END DO
           END IF
@@ -1380,10 +1380,10 @@
             DO k=N(ng)-1,1,-1
               DO j=Jstr,Jend
                 cff=1.0_r8/(BC(j,k)-FC(j,k)*CF(j,k-1))
-!>              tl_DC(j,k)=cff*(tl_Awrk(j,k+1,Nold)-                    &
-!>   &                          tl_Awrk(j,k  ,Nold)-                    &
-!>   &                          FC(j,k)*tl_DC(j,k-1))
-!>
+!^              tl_DC(j,k)=cff*(tl_Awrk(j,k+1,Nold)-                    &
+!^   &                          tl_Awrk(j,k  ,Nold)-                    &
+!^   &                          FC(j,k)*tl_DC(j,k-1))
+!^
                 adfac=cff*ad_DC(j,k)
                 ad_Awrk(j,k  ,Nold)=ad_Awrk(j,k  ,Nold)-adfac
                 ad_Awrk(j,k+1,Nold)=ad_Awrk(j,k+1,Nold)+adfac
@@ -1392,8 +1392,8 @@
               END DO
             END DO
             DO j=Jstr,Jend
-!>            tl_DC(j,0)=0.0_r8
-!>
+!^            tl_DC(j,0)=0.0_r8
+!^
               ad_DC(j,0)=0.0_r8
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
@@ -1401,10 +1401,10 @@
             DO k=N(ng)-1,1,-1
               DO i=IstrU,Iend
                 cff=1.0_r8/(BC(i,k)-FC(i,k)*CF(i,k-1))
-!>              tl_DC(i,k)=cff*(tl_Awrk(i,k+1,Nold)-                    &
-!>   &                          tl_Awrk(i,k  ,Nold)-                    &
-!>   &                          FC(i,k)*tl_DC(i,k-1))
-!>
+!^              tl_DC(i,k)=cff*(tl_Awrk(i,k+1,Nold)-                    &
+!^   &                          tl_Awrk(i,k  ,Nold)-                    &
+!^   &                          FC(i,k)*tl_DC(i,k-1))
+!^
                 adfac=cff*ad_DC(i,k)
                 ad_Awrk(i,k  ,Nold)=ad_Awrk(i,k  ,Nold)-adfac
                 ad_Awrk(i,k+1,Nold)=ad_Awrk(i,k+1,Nold)+adfac
@@ -1413,8 +1413,8 @@
               END DO
             END DO
             DO i=IstrU,Iend
-!>            tl_DC(i,0)=0.0_r8
-!>
+!^            tl_DC(i,0)=0.0_r8
+!^
               ad_DC(i,0)=0.0_r8
             END DO
           END IF
@@ -1480,41 +1480,41 @@
 !
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             i=edge(boundary)
-!>          DO k=N(ng)-1,1,-1
-!>
+!^          DO k=N(ng)-1,1,-1
+!^
             DO k=1,N(ng)-1
               DO j=Jstr,Jend
 #    ifdef MASKING
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nnew)*umask(i,j)
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nnew)*umask(i,j)
+!^
                 ad_Awrk(j,k,Nnew)=ad_Awrk(j,k,Nnew)*umask(i,j)
 #    endif
-!>              tl_Awrk(j,k,Nnew)=tl_DC(j,k)
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_DC(j,k)
+!^
                 ad_DC(j,k)=ad_DC(j,k)+                                  &
      &                     ad_Awrk(j,k,Nnew)
                 ad_Awrk(j,k,Nnew)=0.0_r8
-!>              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
-!>
+!^              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
+!^
                 ad_DC(j,k+1)=-CF(j,k)*ad_DC(j,k)
               END DO
             END DO
             DO j=Jstr,Jend
 #    ifdef MASKING
-!>            tl_Awrk(j,N(ng),Nnew)=tl_Awrk(j,N(ng),Nnew)*umask(i,j)
-!>
+!^            tl_Awrk(j,N(ng),Nnew)=tl_Awrk(j,N(ng),Nnew)*umask(i,j)
+!^
               ad_Awrk(j,N(ng),Nnew)=ad_Awrk(j,N(ng),Nnew)*umask(i,j)
 #    endif
-!>            tl_Awrk(j,N(ng),Nnew)=tl_DC(j,N(ng))
-!>
+!^            tl_Awrk(j,N(ng),Nnew)=tl_DC(j,N(ng))
+!^
               ad_DC(j,N(ng))=ad_DC(j,N(ng))+                            &
      &                       ad_Awrk(j,N(ng),Nnew)
               ad_Awrk(j,N(ng),Nnew)=0.0_r8
-!>            tl_DC(j,N(ng))=(tl_DC(j,N(ng))-                           &
-!>   &                        FC(j,N(ng)-1)*tl_DC(j,N(ng)-1))/          &
-!>   &                       (BC(j,N(ng))-                              &
-!>   &                        FC(j,N(ng)-1)*CF(j,N(ng)-1))
-!>
+!^            tl_DC(j,N(ng))=(tl_DC(j,N(ng))-                           &
+!^   &                        FC(j,N(ng)-1)*tl_DC(j,N(ng)-1))/          &
+!^   &                       (BC(j,N(ng))-                              &
+!^   &                        FC(j,N(ng)-1)*CF(j,N(ng)-1))
+!^
               adfac=ad_DC(j,N(ng))/                                     &
      &              (BC(j,N(ng))-                                       &
      &               FC(j,N(ng)-1)*CF(j,N(ng)-1))
@@ -1524,41 +1524,41 @@
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
-!>          DO k=N(ng)-1,1,-1
-!>
+!^          DO k=N(ng)-1,1,-1
+!^
             DO k=1,N(ng)-1
               DO i=IstrU,Iend
 #    ifdef MASKING
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nnew)*umask(i,j)
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nnew)*umask(i,j)
+!^
                 ad_Awrk(i,k,Nnew)=ad_Awrk(i,k,Nnew)*umask(i,j)
 #    endif
-!>              tl_Awrk(i,k,Nnew)=tl_DC(i,k)
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_DC(i,k)
+!^
                 ad_DC(i,k)=ad_DC(i,k)+                                  &
      &                     ad_Awrk(i,k,Nnew)
                 ad_Awrk(i,k,Nnew)=0.0_r8
-!>              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
-!>
+!^              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
+!^
                 ad_DC(i,k+1)=-CF(i,k)*ad_DC(i,k)
               END DO
             END DO
             DO i=IstrU,Iend
 #    ifdef MASKING
-!>            tl_Awrk(i,N(ng),Nnew)=tl_Awrk(i,N(ng),Nnew)*umask(i,j)
-!>
+!^            tl_Awrk(i,N(ng),Nnew)=tl_Awrk(i,N(ng),Nnew)*umask(i,j)
+!^
               ad_Awrk(i,N(ng),Nnew)=ad_Awrk(i,N(ng),Nnew)*umask(i,j)
 #    endif
-!>            tl_Awrk(i,N(ng),Nnew)=tl_DC(i,N(ng))
-!>
+!^            tl_Awrk(i,N(ng),Nnew)=tl_DC(i,N(ng))
+!^
               ad_DC(i,N(ng))=ad_DC(i,N(ng))+                            &
      &                       ad_Awrk(i,N(ng),Nnew)
               ad_Awrk(i,N(ng),Nnew)=0.0_r8
-!>            tl_DC(i,N(ng))=(tl_DC(i,N(ng))-                           &
-!>   &                        FC(i,N(ng)-1)*tl_DC(i,N(ng)-1))/          &
-!>   &                       (BC(i,N(ng))-                              &
-!>   &                        FC(i,N(ng)-1)*CF(i,N(ng)-1))
-!>
+!^            tl_DC(i,N(ng))=(tl_DC(i,N(ng))-                           &
+!^   &                        FC(i,N(ng)-1)*tl_DC(i,N(ng)-1))/          &
+!^   &                       (BC(i,N(ng))-                              &
+!^   &                        FC(i,N(ng)-1)*CF(i,N(ng)-1))
+!^
               adfac=ad_DC(i,N(ng))/                                     &
      &              (BC(i,N(ng))-                                       &
      &               FC(i,N(ng)-1)*CF(i,N(ng)-1))
@@ -1571,13 +1571,13 @@
 !  Adjoint of solve the tridiagonal system.
 !
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
-!>          DO k=2,N(ng)-1
-!>
+!^          DO k=2,N(ng)-1
+!^
             DO k=N(ng)-1,2,-1
               DO j=Jstr,Jend
                 cff=1.0_r8/(BC(j,k)-FC(j,k-1)*CF(j,k-1))
-!>              tl_DC(j,k)=cff*(tl_DC(j,k)-FC(j,k-1)*tl_DC(j,k-1))
-!>
+!^              tl_DC(j,k)=cff*(tl_DC(j,k)-FC(j,k-1)*tl_DC(j,k-1))
+!^
                 adfac=cff*ad_DC(j,k)
                 ad_DC(j,k-1)=ad_DC(j,k-1)-FC(j,k-1)*adfac
                 ad_DC(j,k  )=adfac
@@ -1585,18 +1585,18 @@
             END DO
             DO j=Jstr,Jend
               cff=1.0_r8/BC(j,1)
-!>            tl_DC(j,1)=cff*tl_DC(j,1)
-!>
+!^            tl_DC(j,1)=cff*tl_DC(j,1)
+!^
               ad_DC(j,1)=cff*ad_DC(j,1)
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
-!>          DO k=2,N(ng)-1
-!>
+!^          DO k=2,N(ng)-1
+!^
             DO k=N(ng)-1,2,-1
               DO i=IstrU,Iend
                 cff=1.0_r8/(BC(i,k)-FC(i,k-1)*CF(i,k-1))
-!>              tl_DC(i,k)=cff*(tl_DC(i,k)-FC(i,k-1)*tl_DC(i,k-1))
-!>
+!^              tl_DC(i,k)=cff*(tl_DC(i,k)-FC(i,k-1)*tl_DC(i,k-1))
+!^
                 adfac=cff*ad_DC(i,k)
                 ad_DC(i,k-1)=ad_DC(i,k-1)-FC(i,k-1)*adfac
                 ad_DC(i,k  )=adfac
@@ -1604,8 +1604,8 @@
             END DO
             DO i=IstrU,Iend
               cff=1.0_r8/BC(i,1)
-!>            tl_DC(i,1)=cff*tl_DC(i,1)
-!>
+!^            tl_DC(i,1)=cff*tl_DC(i,1)
+!^
               ad_DC(i,1)=cff*ad_DC(i,1)
             END DO
           END IF
@@ -1617,8 +1617,8 @@
             DO k=1,N(ng)
               DO j=Jstr,Jend
                 cff=0.5_r8*(Hz(i-1,j,k)+Hz(i,j,k))
-!>              tl_DC(j,k)=tl_Awrk(j,k,Nold)*cff
-!>
+!^              tl_DC(j,k)=tl_Awrk(j,k,Nold)*cff
+!^
                 ad_Awrk(j,k,Nold)=ad_Awrk(j,k,Nold)+                    &
      &                            cff*ad_DC(j,k)
                 ad_DC(j,k)=0.0_r8
@@ -1629,8 +1629,8 @@
             DO k=1,N(ng)
               DO i=IstrU,Iend
                 cff=0.5_r8*(Hz(i-1,j,k)+Hz(i,j,k))
-!>              tl_DC(i,k)=tl_Awrk(i,k,Nold)*cff
-!>
+!^              tl_DC(i,k)=tl_Awrk(i,k,Nold)*cff
+!^
                 ad_Awrk(i,k,Nold)=ad_Awrk(i,k,Nold)+                    &
      &                            cff*ad_DC(i,k)
                 ad_DC(i,k)=0.0_r8
@@ -1662,10 +1662,10 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             DO k=1,N(ng)
               DO j=Jstr,Jend
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
-!>   &                            oHz(j,k)*(tl_FS(j,k  )-               &
-!>   &                                      tl_FS(j,k-1))
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
+!^   &                            oHz(j,k)*(tl_FS(j,k  )-               &
+!^   &                                      tl_FS(j,k-1))
+!^
                 adfac=oHz(j,k)*ad_Awrk(j,k,Nnew)
                 ad_FS(j,k-1)=ad_FS(j,k-1)-adfac
                 ad_FS(j,k  )=ad_FS(j,k  )+adfac
@@ -1677,10 +1677,10 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             DO k=1,N(ng)
               DO i=IstrU,Iend
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
-!>   &                            oHz(i,k)*(tl_FS(i,k  )-               &
-!>   &                                      tl_FS(i,k-1))
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
+!^   &                            oHz(i,k)*(tl_FS(i,k  )-               &
+!^   &                                      tl_FS(i,k-1))
+!^
                 adfac=oHz(i,k)*ad_Awrk(i,k,Nnew)
                 ad_FS(i,k-1)=ad_FS(i,k-1)-adfac
                 ad_FS(i,k  )=ad_FS(i,k  )+adfac
@@ -1697,21 +1697,21 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             i=edge(boundary)
             DO j=Jstr,Jend
-!>            tl_FS(j,N(ng))=0.0_r8
-!>
+!^            tl_FS(j,N(ng))=0.0_r8
+!^
               ad_FS(j,N(ng))=0.0_r8
-!>            tl_FS(j,0)=0.0_r8
-!>
+!^            tl_FS(j,0)=0.0_r8
+!^
               ad_FS(j,0)=0.0_r8
               DO k=1,N(ng)-1
 #   ifdef MASKING
-!>              tl_FS(j,k)=tl_FS(j,k)*umask(i,j)
-!>
+!^              tl_FS(j,k)=tl_FS(j,k)*umask(i,j)
+!^
                 ad_FS(j,k)=ad_FS(j,k)*umask(i,j)
 #   endif
-!>              tl_FS(j,k)=FC(j,k)*(tl_Awrk(j,k+1,Nold)-                &
-!>   &                              tl_Awrk(j,k  ,Nold))
-!>
+!^              tl_FS(j,k)=FC(j,k)*(tl_Awrk(j,k+1,Nold)-                &
+!^   &                              tl_Awrk(j,k  ,Nold))
+!^
                 adfac=FC(j,k)*ad_FS(j,k)
                 ad_Awrk(j,k  ,Nold)=ad_Awrk(j,k  ,Nold)-adfac
                 ad_Awrk(j,k+1,Nold)=ad_Awrk(j,k+1,Nold)+adfac
@@ -1721,21 +1721,21 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
             DO i=IstrU,Iend
-!>            tl_FS(i,N(ng))=0.0_r8
-!>
+!^            tl_FS(i,N(ng))=0.0_r8
+!^
               ad_FS(i,N(ng))=0.0_r8
-!>            tl_FS(i,0)=0.0_r8
-!>
+!^            tl_FS(i,0)=0.0_r8
+!^
               ad_FS(i,0)=0.0_r8
               DO k=1,N(ng)-1
 #   ifdef MASKING
-!>              tl_FS(i,k)=tl_FS(i,k)*umask(i,j)
-!>
+!^              tl_FS(i,k)=tl_FS(i,k)*umask(i,j)
+!^
                 ad_FS(i,k)=ad_FS(i,k)*umask(i,j)
 #   endif
-!>              tl_FS(i,k)=FC(i,k)*(tl_Awrk(i,k+1,Nold)-                &
-!>   &                              tl_Awrk(i,k  ,Nold))
-!>
+!^              tl_FS(i,k)=FC(i,k)*(tl_Awrk(i,k+1,Nold)-                &
+!^   &                              tl_Awrk(i,k  ,Nold))
+!^
                 adfac=FC(i,k)*ad_FS(i,k)
                 ad_Awrk(i,k  ,Nold)=ad_Awrk(i,k  ,Nold)-adfac
                 ad_Awrk(i,k+1,Nold)=ad_Awrk(i,k+1,Nold)+adfac
@@ -1763,22 +1763,22 @@
 !  Apply boundary conditions.
 !
 # ifdef DISTRIBUTE
-!>      CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,           &
-!>   &                          LBij, UBij, 1, N(ng),                   &
-!>   &                          Nghost,                                 &
-!>   &                          EWperiodic(ng), NSperiodic(ng),         &
-!>   &                          tl_Awrk(:,:,Nnew))
-!>
+!^      CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,           &
+!^   &                          LBij, UBij, 1, N(ng),                   &
+!^   &                          Nghost,                                 &
+!^   &                          EWperiodic(ng), NSperiodic(ng),         &
+!^   &                          tl_Awrk(:,:,Nnew))
+!^
         CALL ad_mp_exchange3d_bry (ng, tile, model, 1, boundary,        &
      &                             LBij, UBij, 1, N(ng),                &
      &                             Nghost,                              &
      &                             EWperiodic(ng), NSperiodic(ng),      &
      &                             ad_Awrk(:,:,Nnew))
 # endif
-!>      CALL bc_u3d_bry_tile (ng, tile, boundary,                       &
-!>   &                        LBij, UBij, 1, N(ng),                     &
-!>   &                        tl_Awrk(:,:,Nnew))
-!>
+!^      CALL bc_u3d_bry_tile (ng, tile, boundary,                       &
+!^   &                        LBij, UBij, 1, N(ng),                     &
+!^   &                        tl_Awrk(:,:,Nnew))
+!^
         CALL ad_bc_u3d_bry_tile (ng, tile, boundary,                    &
      &                           LBij, UBij, 1, N(ng),                  &
      &                           ad_Awrk(:,:,Nnew))
@@ -1789,10 +1789,10 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             DO k=1,N(ng)
               DO j=Jstr,Jend
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
-!>   &                            Hfac(j)*                              &
-!>   &                            (tl_FE(j+1,k)-tl_FE(j,k))
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
+!^   &                            Hfac(j)*                              &
+!^   &                            (tl_FE(j+1,k)-tl_FE(j,k))
+!^
                 adfac=Hfac(j)*ad_Awrk(j,k,Nnew)
                 ad_FE(j  ,k)=ad_FE(j  ,k)-adfac
                 ad_FE(j+1,k)=ad_FE(j+1,k)+adfac
@@ -1804,10 +1804,10 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             DO k=1,N(ng)
               DO i=IstrU,Iend
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
-!>   &                            Hfac(i)*                              &
-!>   &                            (tl_FX(i,k)-tl_FX(i-1,k))
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
+!^   &                            Hfac(i)*                              &
+!^   &                            (tl_FX(i,k)-tl_FX(i-1,k))
+!^
                 adfac=Hfac(i)*ad_Awrk(i,k,Nnew)
                 ad_FX(i-1,k)=ad_FX(i-1,k)-adfac
                 ad_FX(i  ,k)=ad_FX(i  ,k)+adfac
@@ -1825,16 +1825,16 @@
             DO k=1,N(ng)
               DO j=Jstr,Jend+1
 # ifdef MASKING
-!>              tl_FE(j,k)=tl_FE(j,k)*pmask(i,j)
-!>
+!^              tl_FE(j,k)=tl_FE(j,k)*pmask(i,j)
+!^
                 ad_FE(j,k)=ad_FE(j,k)*pmask(i,j)
 # endif
-!>              tl_FE(j,k)=pnom_p(i,j)*                                 &
-!>   &                     0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+              &
-!>   &                              Kh(i-1,j-1)+Kh(i,j-1))*             &
-!>   &                     (tl_Awrk(j  ,k,Nold)-                        &
-!>   &                      tl_Awrk(j-1,k,Nold))
-!>
+!^              tl_FE(j,k)=pnom_p(i,j)*                                 &
+!^   &                     0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+              &
+!^   &                              Kh(i-1,j-1)+Kh(i,j-1))*             &
+!^   &                     (tl_Awrk(j  ,k,Nold)-                        &
+!^   &                      tl_Awrk(j-1,k,Nold))
+!^
                 adfac=pnom_p(i,j)*                                      &
      &                0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+                   &
      &                         Kh(i-1,j-1)+Kh(i,j-1))*ad_FE(j,k)
@@ -1847,10 +1847,10 @@
             j=edge(boundary)
             DO k=1,N(ng)
               DO i=IstrU-1,Iend
-!>              tl_FX(i,k)=pmon_r(i,j)*Kh(i,j)*                         &
-!>   &                     (tl_Awrk(i+1,k,Nold)-                        &
-!>   &                      tl_Awrk(i  ,k,Nold))
-!>
+!^              tl_FX(i,k)=pmon_r(i,j)*Kh(i,j)*                         &
+!^   &                     (tl_Awrk(i+1,k,Nold)-                        &
+!^   &                      tl_Awrk(i  ,k,Nold))
+!^
                 adfac=pmon_r(i,j)*Kh(i,j)*ad_FX(i,k)
                 ad_Awrk(i  ,k,Nold)=ad_Awrk(i  ,k,Nold)-adfac
                 ad_Awrk(i+1,k,Nold)=ad_Awrk(i+1,k,Nold)+adfac
@@ -1869,8 +1869,8 @@
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO k=1,N(ng)
             DO j=Jstr-1,Jend+1
-!>            tl_Awrk(j,k,Nold)=tl_A(j,k)
-!>
+!^            tl_Awrk(j,k,Nold)=tl_A(j,k)
+!^
               ad_A(j,k)=ad_A(j,k)+ad_Awrk(j,k,Nold)
               ad_Awrk(j,k,Nold)=0.0_r8
             END DO
@@ -1878,8 +1878,8 @@
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO k=1,N(ng)
             DO i=IstrU-1,Iend+1
-!>            tl_Awrk(i,k,Nold)=tl_A(i,k)
-!>
+!^            tl_Awrk(i,k,Nold)=tl_A(i,k)
+!^
               ad_A(i,k)=ad_A(i,k)+ad_Awrk(i,k,Nold)
               ad_Awrk(i,k,Nold)=0.0_r8
             END DO
@@ -1887,22 +1887,22 @@
         END IF
       END IF
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij, 1, N(ng),                     &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij, 1, N(ng),                     &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange3d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij, 1, N(ng),                  &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_u3d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij, 1, N(ng),                       &
-!>   &                      tl_A)
-!>
+!^    CALL bc_u3d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij, 1, N(ng),                       &
+!^   &                      tl_A)
+!^
       CALL ad_bc_u3d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij, 1, N(ng),                    &
      &                         ad_A)
@@ -2110,22 +2110,22 @@
 !-----------------------------------------------------------------------
 !
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij, 1, N(ng),                     &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij, 1, N(ng),                     &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange3d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij, 1, N(ng),                  &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_v3d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij, 1, N(ng),                       &
-!>   &                      tl_A)
-!>
+!^    CALL bc_v3d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij, 1, N(ng),                       &
+!^   &                      tl_A)
+!^
       CALL ad_bc_v3d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij, 1, N(ng),                    &
      &                         ad_A)
@@ -2133,8 +2133,8 @@
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO k=1,N(ng)
             DO j=JstrV,Jend
-!>            tl_A(j,k)=tl_Awrk(j,k,Nold)
-!>
+!^            tl_A(j,k)=tl_Awrk(j,k,Nold)
+!^
               ad_Awrk(j,k,Nold)=ad_Awrk(j,k,Nold)+                      &
      &                          ad_A(j,k)
               ad_A(j,k)=0.0_r8
@@ -2143,8 +2143,8 @@
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO k=1,N(ng)
             DO i=Istr,Iend
-!>            tl_A(i,k)=tl_Awrk(i,k,Nold)
-!>
+!^            tl_A(i,k)=tl_Awrk(i,k,Nold)
+!^
               ad_Awrk(i,k,Nold)=ad_Awrk(i,k,Nold)+                      &
      &                          ad_A(i,k)
               ad_A(i,k)=0.0_r8
@@ -2239,62 +2239,62 @@
             i=edge(boundary)
             DO k=1,N(ng)
               DO j=JstrV,Jend
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
-!>   &                            DTsizeV*oHz(j,k)*                     &
-!>   &                            (tl_DC(j,k)-tl_DC(j,k-1))
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
+!^   &                            DTsizeV*oHz(j,k)*                     &
+!^   &                            (tl_DC(j,k)-tl_DC(j,k-1))
+!^
                 adfac=DTsizeV*oHz(j,k)*ad_Awrk(j,k,Nnew)
                 ad_DC(j,k-1)=ad_DC(j,k-1)-adfac
                 ad_DC(j,k  )=ad_DC(j,k  )+adfac
                 ad_Awrk(j,k,Nold)=ad_Awrk(j,k,Nold)+                    &
      &                            ad_Awrk(j,k,Nnew)
                 ad_Awrk(j,k,Nnew)=0.0_r8
-!>              tl_DC(j,k)=tl_DC(j,k)*Kv(i,j,k)
-!>
+!^              tl_DC(j,k)=tl_DC(j,k)*Kv(i,j,k)
+!^
                 ad_DC(j,k)=ad_DC(j,k)*Kv(i,j,k)
               END DO
             END DO
             DO k=1,N(ng)-1
               DO j=JstrV,Jend
-!>              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
-!>
+!^              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
+!^
                 ad_DC(j,k+1)=ad_DC(j,k+1)-CF(j,k)*ad_DC(j,k)
               END DO
             END DO
             DO j=JstrV,Jend
-!>            tl_DC(j,N(ng))=0.0_r8
-!>
+!^            tl_DC(j,N(ng))=0.0_r8
+!^
               ad_DC(j,N(ng))=0.0_r8
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
             DO k=1,N(ng)
               DO i=Istr,Iend
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
-!>   &                            DTsizeV*oHz(i,k)*                     &
-!>   &                            (tl_DC(i,k)-tl_DC(i,k-1))
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
+!^   &                            DTsizeV*oHz(i,k)*                     &
+!^   &                            (tl_DC(i,k)-tl_DC(i,k-1))
+!^
                 adfac=DTsizeV*oHz(i,k)*ad_Awrk(i,k,Nnew)
                 ad_DC(i,k-1)=ad_DC(i,k-1)-adfac
                 ad_DC(i,k  )=ad_DC(i,k  )+adfac
                 ad_Awrk(i,k,Nold)=ad_Awrk(i,k,Nold)+                    &
      &                            ad_Awrk(i,k,Nnew)
                 ad_Awrk(i,k,Nnew)=0.0_r8
-!>              tl_DC(i,k)=tl_DC(i,k)*Kv(i,j,k)
-!>
+!^              tl_DC(i,k)=tl_DC(i,k)*Kv(i,j,k)
+!^
                 ad_DC(i,k)=ad_DC(i,k)*Kv(i,j,k)
               END DO
             END DO
             DO k=1,N(ng)-1
               DO i=Istr,Iend
-!>              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
-!>
+!^              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
+!^
                 ad_DC(i,k+1)=ad_DC(i,k+1)-CF(i,k)*ad_DC(i,k)
               END DO
             END DO
             DO i=Istr,Iend
-!>            tl_DC(i,N(ng))=0.0_r8
-!>
+!^            tl_DC(i,N(ng))=0.0_r8
+!^
               ad_DC(i,N(ng))=0.0_r8
             END DO
           END IF
@@ -2306,10 +2306,10 @@
             DO k=N(ng)-1,1,-1
               DO j=JstrV,Jend
                 cff=1.0_r8/(BC(j,k)-FC(j,k)*CF(j,k-1))
-!>              tl_DC(j,k)=cff*(tl_Awrk(j,k+1,Nold)-                    &
-!>   &                          tl_Awrk(j,k  ,Nold)-                    &
-!>   &                          FC(j,k)*tl_DC(j,k-1))
-!>
+!^              tl_DC(j,k)=cff*(tl_Awrk(j,k+1,Nold)-                    &
+!^   &                          tl_Awrk(j,k  ,Nold)-                    &
+!^   &                          FC(j,k)*tl_DC(j,k-1))
+!^
                 adfac=cff*ad_DC(j,k)
                 ad_Awrk(j,k  ,Nold)=ad_Awrk(j,k  ,Nold)-adfac
                 ad_Awrk(j,k+1,Nold)=ad_Awrk(j,k+1,Nold)+adfac
@@ -2318,8 +2318,8 @@
               END DO
             END DO
             DO j=JstrV,Jend
-!>            tl_DC(j,0)=0.0_r8
-!>
+!^            tl_DC(j,0)=0.0_r8
+!^
               ad_DC(j,0)=0.0_r8
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
@@ -2327,10 +2327,10 @@
             DO k=N(ng)-1,1,-1
               DO i=Istr,Iend
                 cff=1.0_r8/(BC(i,k)-FC(i,k)*CF(i,k-1))
-!>              tl_DC(i,k)=cff*(tl_Awrk(i,k+1,Nold)-                    &
-!>   &                          tl_Awrk(i,k  ,Nold)-                    &
-!>   &                          FC(i,k)*tl_DC(i,k-1))
-!>
+!^              tl_DC(i,k)=cff*(tl_Awrk(i,k+1,Nold)-                    &
+!^   &                          tl_Awrk(i,k  ,Nold)-                    &
+!^   &                          FC(i,k)*tl_DC(i,k-1))
+!^
                 adfac=cff*ad_DC(i,k)
                 ad_Awrk(i,k  ,Nold)=ad_Awrk(i,k  ,Nold)-adfac
                 ad_Awrk(i,k+1,Nold)=ad_Awrk(i,k+1,Nold)+adfac
@@ -2339,8 +2339,8 @@
               END DO
             END DO
             DO i=Istr,Iend
-!>            tl_DC(i,0)=0.0_r8
-!>
+!^            tl_DC(i,0)=0.0_r8
+!^
               ad_DC(i,0)=0.0_r8
             END DO
           END IF
@@ -2406,40 +2406,40 @@
 !
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             i=edge(boundary)
-!>          DO k=N(ng)-1,1,-1
-!>
+!^          DO k=N(ng)-1,1,-1
+!^
             DO k=1,N(ng)-1
               DO j=JstrV,Jend
 #    ifdef MASKING
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nnew)*vmask(i,j)
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nnew)*vmask(i,j)
+!^
                 ad_Awrk(j,k,Nnew)=ad_Awrk(j,k,Nnew)*vmask(i,j)
 #    endif
-!>              tl_Awrk(j,k,Nnew)=tl_DC(j,k)
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_DC(j,k)
+!^
                 ad_DC(j,k)=ad_DC(j,k)+                                  &
      &                     ad_Awrk(j,k,Nnew)
                 ad_Awrk(j,k,Nnew)=0.0_r8
-!>              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
-!>
+!^              tl_DC(j,k)=tl_DC(j,k)-CF(j,k)*tl_DC(j,k+1)
+!^
                 ad_DC(j,k+1)=-CF(j,k)*ad_DC(j,k)
               END DO
             END DO
             DO j=JstrV,Jend
 #    ifdef MASKING
-!>            tl_Awrk(j,N(ng),Nnew)=tl_Awrk(j,N(ng),Nnew)*vmask(i,j)
-!>
+!^            tl_Awrk(j,N(ng),Nnew)=tl_Awrk(j,N(ng),Nnew)*vmask(i,j)
+!^
               ad_Awrk(j,N(ng),Nnew)=ad_Awrk(j,N(ng),Nnew)*vmask(i,j)
 #    endif
-!>            tl_Awrk(j,N(ng),Nnew)=tl_DC(j,N(ng))
+!^            tl_Awrk(j,N(ng),Nnew)=tl_DC(j,N(ng))
               ad_DC(j,N(ng))=ad_DC(j,N(ng))+ad_Awrk(j,N(ng),Nnew)
               ad_Awrk(j,N(ng),Nnew)=0.0_r8
 
-!>            tl_DC(j,N(ng))=(tl_DC(j,N(ng))-                           &
-!>   &                        FC(j,N(ng)-1)*tl_DC(j,N(ng)-1))/          &
-!>   &                       (BC(j,N(ng))-                              &
-!>   &                        FC(j,N(ng)-1)*CF(j,N(ng)-1))
-!>
+!^            tl_DC(j,N(ng))=(tl_DC(j,N(ng))-                           &
+!^   &                        FC(j,N(ng)-1)*tl_DC(j,N(ng)-1))/          &
+!^   &                       (BC(j,N(ng))-                              &
+!^   &                        FC(j,N(ng)-1)*CF(j,N(ng)-1))
+!^
               adfac=ad_DC(j,N(ng))/                                     &
      &                       (BC(j,N(ng))-                              &
      &                        FC(j,N(ng)-1)*CF(j,N(ng)-1))
@@ -2448,41 +2448,41 @@
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
-!>          DO k=N(ng)-1,1,-1
-!>
+!^          DO k=N(ng)-1,1,-1
+!^
             DO k=1,N(ng)-1
               DO i=Istr,Iend
 #    ifdef MASKING
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nnew)*vmask(i,j)
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nnew)*vmask(i,j)
+!^
                 ad_Awrk(i,k,Nnew)=ad_Awrk(i,k,Nnew)*vmask(i,j)
 #    endif
-!>              tl_Awrk(i,k,Nnew)=tl_DC(i,k)
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_DC(i,k)
+!^
                 ad_DC(i,k)=ad_DC(i,k)+                                  &
      &                     ad_Awrk(i,k,Nnew)
                 ad_Awrk(i,k,Nnew)=0.0_r8
-!>              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
-!>
+!^              tl_DC(i,k)=tl_DC(i,k)-CF(i,k)*tl_DC(i,k+1)
+!^
                 ad_DC(i,k+1)=-CF(i,k)*ad_DC(i,k)
               END DO
             END DO
             DO i=Istr,Iend
 #    ifdef MASKING
-!>            tl_Awrk(i,N(ng),Nnew)=tl_Awrk(i,N(ng),Nnew)*vmask(i,j)
-!>
+!^            tl_Awrk(i,N(ng),Nnew)=tl_Awrk(i,N(ng),Nnew)*vmask(i,j)
+!^
               ad_Awrk(i,N(ng),Nnew)=ad_Awrk(i,N(ng),Nnew)*vmask(i,j)
 #    endif
-!>            tl_Awrk(i,N(ng),Nnew)=tl_DC(i,N(ng))
-!>
+!^            tl_Awrk(i,N(ng),Nnew)=tl_DC(i,N(ng))
+!^
               ad_DC(i,N(ng))=ad_DC(i,N(ng))+                            &
      &                       ad_Awrk(i,N(ng),Nnew)
               ad_Awrk(i,N(ng),Nnew)=0.0_r8
-!>            tl_DC(i,N(ng))=(tl_DC(i,N(ng))-                           &
-!>   &                        FC(i,N(ng)-1)*tl_DC(i,N(ng)-1))/          &
-!>   &                       (BC(i,N(ng))-                              &
-!>   &                        FC(i,N(ng)-1)*CF(i,N(ng)-1))
-!>
+!^            tl_DC(i,N(ng))=(tl_DC(i,N(ng))-                           &
+!^   &                        FC(i,N(ng)-1)*tl_DC(i,N(ng)-1))/          &
+!^   &                       (BC(i,N(ng))-                              &
+!^   &                        FC(i,N(ng)-1)*CF(i,N(ng)-1))
+!^
               adfac=ad_DC(i,N(ng))/                                     &
      &              (BC(i,N(ng))-                                       &
      &               FC(i,N(ng)-1)*CF(i,N(ng)-1))
@@ -2495,13 +2495,13 @@
 !  Solve the adjoint tridiagonal system.
 !
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
-!>          DO k=2,N(ng)-1
-!>
+!^          DO k=2,N(ng)-1
+!^
             DO k=N(ng)-1,2,-1
               DO j=JstrV,Jend
                 cff=1.0_r8/(BC(j,k)-FC(j,k-1)*CF(j,k-1))
-!>              tl_DC(j,k)=cff*(tl_DC(j,k)-FC(j,k-1)*tl_DC(j,k-1))
-!>
+!^              tl_DC(j,k)=cff*(tl_DC(j,k)-FC(j,k-1)*tl_DC(j,k-1))
+!^
                 adfac=cff*ad_DC(j,k)
                 ad_DC(j,k-1)=ad_DC(j,k-1)-FC(j,k-1)*adfac
                 ad_DC(j,k  )=adfac
@@ -2509,18 +2509,18 @@
             END DO
             DO j=JstrV,Jend
               cff=1.0_r8/BC(j,1)
-!>            tl_DC(j,1)=cff*tl_DC(j,1)
-!>
+!^            tl_DC(j,1)=cff*tl_DC(j,1)
+!^
               ad_DC(j,1)=cff*ad_DC(j,1)
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
-!>          DO k=2,N(ng)-1
-!>
+!^          DO k=2,N(ng)-1
+!^
             DO k=N(ng)-1,2,-1
               DO i=Istr,Iend
                 cff=1.0_r8/(BC(i,k)-FC(i,k-1)*CF(i,k-1))
-!>              tl_DC(i,k)=cff*(tl_DC(i,k)-FC(i,k-1)*tl_DC(i,k-1))
-!>
+!^              tl_DC(i,k)=cff*(tl_DC(i,k)-FC(i,k-1)*tl_DC(i,k-1))
+!^
                 adfac=cff*ad_DC(i,k)
                 ad_DC(i,k-1)=ad_DC(i,k-1)-FC(i,k-1)*adfac
                 ad_DC(i,k  )=adfac
@@ -2528,8 +2528,8 @@
             END DO
             DO i=Istr,Iend
               cff=1.0_r8/BC(i,1)
-!>            tl_DC(i,1)=cff*tl_DC(i,1)
-!>
+!^            tl_DC(i,1)=cff*tl_DC(i,1)
+!^
               ad_DC(i,1)=cff*ad_DC(i,1)
             END DO
           END IF
@@ -2541,8 +2541,8 @@
             DO k=1,N(ng)
               DO j=JstrV,Jend
                 cff=0.5_r8*(Hz(i,j-1,k)+Hz(i,j,k))
-!>              tl_DC(j,k)=tl_Awrk(j,k,Nold)*cff
-!>
+!^              tl_DC(j,k)=tl_Awrk(j,k,Nold)*cff
+!^
                 ad_Awrk(j,k,Nold)=ad_Awrk(j,k,Nold)+                    &
      &                            cff*ad_DC(j,k)
                 ad_DC(j,k)=0.0_r8
@@ -2553,8 +2553,8 @@
             DO k=1,N(ng)
               DO i=Istr,Iend
                 cff=0.5_r8*(Hz(i,j-1,k)+Hz(i,j,k))
-!>              tl_DC(i,k)=tl_Awrk(i,k,Nold)*cff
-!>
+!^              tl_DC(i,k)=tl_Awrk(i,k,Nold)*cff
+!^
                 ad_Awrk(i,k,Nold)=ad_Awrk(i,k,Nold)+                    &
      &                            cff*ad_DC(i,k)
                 ad_DC(i,k)=0.0
@@ -2586,10 +2586,10 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             DO k=1,N(ng)
               DO j=JstrV,Jend
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
-!>   &                            oHz(j,k)*(tl_FS(j,k  )-               &
-!>   &                                      tl_FS(j,k-1))
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
+!^   &                            oHz(j,k)*(tl_FS(j,k  )-               &
+!^   &                                      tl_FS(j,k-1))
+!^
                 adfac=oHz(j,k)*ad_Awrk(j,k,Nnew)
                 ad_FS(j,k-1)=ad_FS(j,k-1)-adfac
                 ad_FS(j,k  )=ad_FS(j,k  )+adfac
@@ -2601,10 +2601,10 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             DO k=1,N(ng)
               DO i=Istr,Iend
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
-!>   &                            oHz(i,k)*(tl_FS(i,k  )-               &
-!>   &                                      tl_FS(i,k-1))
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
+!^   &                            oHz(i,k)*(tl_FS(i,k  )-               &
+!^   &                                      tl_FS(i,k-1))
+!^
                 adfac=oHz(i,k)*ad_Awrk(i,k,Nnew)
                 ad_FS(i,k-1)=ad_FS(i,k-1)-adfac
                 ad_FS(i,k  )=ad_FS(i,k  )+adfac
@@ -2621,21 +2621,21 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             i=edge(boundary)
             DO j=JstrV,Jend
-!>            tl_FS(j,N(ng))=0.0_r8
-!>
+!^            tl_FS(j,N(ng))=0.0_r8
+!^
               ad_FS(j,N(ng))=0.0_r8
-!>            tl_FS(j,0)=0.0_r8
-!>
+!^            tl_FS(j,0)=0.0_r8
+!^
               ad_FS(j,0)=0.0_r8
               DO k=1,N(ng)-1
 #   ifdef MASKING
-!>              tl_FS(j,k)=tl_FS(j,k)*vmask(i,j)
-!>
+!^              tl_FS(j,k)=tl_FS(j,k)*vmask(i,j)
+!^
                 ad_FS(j,k)=ad_FS(j,k)*vmask(i,j)
 #   endif
-!>              tl_FS(j,k)=FC(j,k)*(tl_Awrk(j,k+1,Nold)-                &
-!>   &                              tl_Awrk(j,k  ,Nold))
-!>
+!^              tl_FS(j,k)=FC(j,k)*(tl_Awrk(j,k+1,Nold)-                &
+!^   &                              tl_Awrk(j,k  ,Nold))
+!^
                 adfac=FC(j,k)*ad_FS(j,k)
                 ad_Awrk(j,k  ,Nold)=ad_Awrk(j,k  ,Nold)-adfac
                 ad_Awrk(j,k+1,Nold)=ad_Awrk(j,k+1,Nold)+adfac
@@ -2645,21 +2645,21 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
             DO i=Istr,Iend
-!>            tl_FS(i,N(ng))=0.0_r8
-!>
+!^            tl_FS(i,N(ng))=0.0_r8
+!^
               ad_FS(i,N(ng))=0.0_r8
-!>            tl_FS(i,0)=0.0_r8
-!>
+!^            tl_FS(i,0)=0.0_r8
+!^
               ad_FS(i,0)=0.0_r8
               DO k=1,N(ng)-1
 #   ifdef MASKING
-!>              tl_FS(i,k)=tl_FS(i,k)*vmask(i,j)
-!>
+!^              tl_FS(i,k)=tl_FS(i,k)*vmask(i,j)
+!^
                 ad_FS(i,k)=ad_FS(i,k)*vmask(i,j)
 #   endif
-!>              tl_FS(i,k)=FC(i,k)*(tl_Awrk(i,k+1,Nold)-                &
-!>   &                              tl_Awrk(i,k  ,Nold))
-!>
+!^              tl_FS(i,k)=FC(i,k)*(tl_Awrk(i,k+1,Nold)-                &
+!^   &                              tl_Awrk(i,k  ,Nold))
+!^
                 adfac=FC(i,k)*ad_FS(i,k)
                 ad_Awrk(i,k  ,Nold)=ad_Awrk(i,k  ,Nold)-adfac
                 ad_Awrk(i,k+1,Nold)=ad_Awrk(i,k+1,Nold)+adfac
@@ -2687,22 +2687,22 @@
 !  Apply boundary conditions.
 !
 # ifdef DISTRIBUTE
-!>      CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,           &
-!>   &                          LBij, UBij, 1, N(ng),                   &
-!>   &                          Nghost,                                 &
-!>   &                          EWperiodic(ng), NSperiodic(ng),         &
-!>   &                          tl_Awrk(:,:,Nnew))
-!>
+!^      CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,           &
+!^   &                          LBij, UBij, 1, N(ng),                   &
+!^   &                          Nghost,                                 &
+!^   &                          EWperiodic(ng), NSperiodic(ng),         &
+!^   &                          tl_Awrk(:,:,Nnew))
+!^
         CALL ad_mp_exchange3d_bry (ng, tile, model, 1, boundary,        &
      &                             LBij, UBij, 1, N(ng),                &
      &                             Nghost,                              &
      &                             EWperiodic(ng), NSperiodic(ng),      &
      &                             ad_Awrk(:,:,Nnew))
 # endif
-!>      CALL bc_v3d_bry_tile (ng, tile, boundary,                       &
-!>   &                        LBij, UBij, 1, N(ng),                     &
-!>   &                        tl_Awrk(:,:,Nnew))
-!>
+!^      CALL bc_v3d_bry_tile (ng, tile, boundary,                       &
+!^   &                        LBij, UBij, 1, N(ng),                     &
+!^   &                        tl_Awrk(:,:,Nnew))
+!^
         CALL ad_bc_v3d_bry_tile (ng, tile, boundary,                    &
      &                           LBij, UBij, 1, N(ng),                  &
      &                           ad_Awrk(:,:,Nnew))
@@ -2713,10 +2713,10 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             DO k=1,N(ng)
               DO j=JstrV,Jend
-!>              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
-!>   &                            Hfac(j)*                              &
-!>   &                            (tl_FE(j,k)-tl_FE(j-1,k))
-!>
+!^              tl_Awrk(j,k,Nnew)=tl_Awrk(j,k,Nold)+                    &
+!^   &                            Hfac(j)*                              &
+!^   &                            (tl_FE(j,k)-tl_FE(j-1,k))
+!^
                 adfac=Hfac(j)*ad_Awrk(j,k,Nnew)
                 ad_FE(j-1,k)=ad_FE(j-1,k)-adfac
                 ad_FE(j  ,k)=ad_FE(j  ,k)+adfac
@@ -2728,10 +2728,10 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             DO k=1,N(ng)
               DO i=Istr,Iend
-!>              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
-!>   &                            Hfac(i)*                              &
-!>   &                            (tl_FX(i+1,k)-tl_FX(i,k))
-!>
+!^              tl_Awrk(i,k,Nnew)=tl_Awrk(i,k,Nold)+                    &
+!^   &                            Hfac(i)*                              &
+!^   &                            (tl_FX(i+1,k)-tl_FX(i,k))
+!^
                 adfac=Hfac(i)*ad_Awrk(i,k,Nnew)
                 ad_FX(i  ,k)=ad_FX(i  ,k)-adfac
                 ad_FX(i+1,k)=ad_FX(i+1,k)+adfac
@@ -2748,10 +2748,10 @@
             i=edge(boundary)
             DO k=1,N(ng)
               DO j=JstrV-1,Jend
-!>              tl_FE(j,k)=pnom_r(i,j)*Kh(i,j)*                         &
-!>   &                     (tl_Awrk(j+1,k,Nold)-                        &
-!>   &                      tl_Awrk(j  ,k,Nold))
-!>
+!^              tl_FE(j,k)=pnom_r(i,j)*Kh(i,j)*                         &
+!^   &                     (tl_Awrk(j+1,k,Nold)-                        &
+!^   &                      tl_Awrk(j  ,k,Nold))
+!^
                 adfac=pnom_r(i,j)*Kh(i,j)*ad_FE(j,k)
                 ad_Awrk(j  ,k,Nold)=ad_Awrk(j  ,k,Nold)-adfac
                 ad_Awrk(j+1,k,Nold)=ad_Awrk(j+1,k,Nold)+adfac
@@ -2763,16 +2763,16 @@
             DO k=1,N(ng)
               DO i=Istr,Iend+1
 # ifdef MASKING
-!>              tl_FX(i,k)=tl_FX(i,k)*pmask(i,j)
-!>
+!^              tl_FX(i,k)=tl_FX(i,k)*pmask(i,j)
+!^
                 ad_FX(i,k)=ad_FX(i,k)*pmask(i,j)
 # endif
-!>              tl_FX(i,k)=pmon_p(i,j)*                                 &
-!>   &                     0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+              &
-!>   &                              Kh(i-1,j-1)+Kh(i,j-1))*             &
-!>   &                     (tl_Awrk(i  ,k,Nold)-                        &
-!>   &                      tl_Awrk(i-1,k,Nold))
-!>
+!^              tl_FX(i,k)=pmon_p(i,j)*                                 &
+!^   &                     0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+              &
+!^   &                              Kh(i-1,j-1)+Kh(i,j-1))*             &
+!^   &                     (tl_Awrk(i  ,k,Nold)-                        &
+!^   &                      tl_Awrk(i-1,k,Nold))
+!^
                 adfac=pmon_p(i,j)*                                      &
      &                0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+                   &
      &                         Kh(i-1,j-1)+Kh(i,j-1))*ad_FX(i,k)
@@ -2793,8 +2793,8 @@
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO k=1,N(ng)
             DO j=JstrV-1,Jend+1
-!>            tl_Awrk(j,k,Nold)=tl_A(j,k)
-!>
+!^            tl_Awrk(j,k,Nold)=tl_A(j,k)
+!^
               ad_A(j,k)=ad_A(j,k)+ad_Awrk(j,k,Nold)
               ad_Awrk(j,k,Nold)=0.0_r8
             END DO
@@ -2802,8 +2802,8 @@
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO k=1,N(ng)
             DO i=Istr-1,Iend+1
-!>            tl_Awrk(i,k,Nold)=tl_A(i,k)
-!>
+!^            tl_Awrk(i,k,Nold)=tl_A(i,k)
+!^
               ad_A(i,k)=ad_A(i,k)+ad_Awrk(i,k,Nold)
               ad_Awrk(i,k,Nold)=0.0_r8
             END DO
@@ -2811,22 +2811,22 @@
         END IF
       END IF
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij, 1, N(ng),                     &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange3d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij, 1, N(ng),                     &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange3d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij, 1, N(ng),                  &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_v3d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij, 1, N(ng),                       &
-!>   &                      tl_A)
-!>
+!^    CALL bc_v3d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij, 1, N(ng),                       &
+!^   &                      tl_A)
+!^
       CALL ad_bc_v3d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij, 1, N(ng),                    &
      &                         ad_A)

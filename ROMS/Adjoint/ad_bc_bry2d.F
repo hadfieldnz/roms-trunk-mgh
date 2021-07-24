@@ -52,14 +52,14 @@
 !
       IF (boundary.eq.inorth) THEN
         IF (DOMAIN(ng)%NorthEast_Corner(tile)) THEN
-!>        tl_A(Iend+1)=tl_A(Iend)
-!>
+!^        tl_A(Iend+1)=tl_A(Iend)
+!^
           ad_A(Iend)=ad_A(Iend)+ad_A(Iend+1)
           ad_A(Iend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%NorthWest_Corner(tile)) THEN
-!>        tl_A(Istr-1)=tl_A(Istr)
-!>
+!^        tl_A(Istr-1)=tl_A(Istr)
+!^
           ad_A(Istr)=ad_A(Istr)+ad_A(Istr-1)
           ad_A(Istr-1)=0.0_r8
         END IF
@@ -67,14 +67,14 @@
 
       IF (boundary.eq.isouth) THEN
         IF (DOMAIN(ng)%SouthEast_Corner(tile)) THEN
-!>        tl_A(Iend+1)=tl_A(Iend)
-!>
+!^        tl_A(Iend+1)=tl_A(Iend)
+!^
           ad_A(Iend)=ad_A(Iend)+ad_A(Iend+1)
           ad_A(Iend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%SouthWest_Corner(tile)) THEN
-!>        tl_A(Istr-1)=tl_A(Istr)
-!>
+!^        tl_A(Istr-1)=tl_A(Istr)
+!^
           ad_A(Istr)=ad_A(Istr)+ad_A(Istr-1)
           ad_A(Istr-1)=0.0_r8
         END IF
@@ -86,14 +86,14 @@
 !
       IF (boundary.eq.ieast) THEN
         IF (DOMAIN(ng)%NorthEast_Corner(tile)) THEN
-!>        tl_A(Jend+1)=tl_A(Jend)
-!>
+!^        tl_A(Jend+1)=tl_A(Jend)
+!^
           ad_A(Jend)=ad_A(Jend)+ad_A(Jend+1)
           ad_A(Jend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%SouthEast_Corner(tile)) THEN
-!>        tl_A(Jstr-1)=tl_A(Jstr)
-!>
+!^        tl_A(Jstr-1)=tl_A(Jstr)
+!^
           ad_A(Jstr)=ad_A(Jstr)+ad_A(Jstr-1)
           ad_A(Jstr-1)=0.0_r8
         END IF
@@ -101,14 +101,14 @@
 
       IF (boundary.eq.iwest) THEN
         IF (DOMAIN(ng)%NorthWest_Corner(tile)) THEN
-!>        tl_A(Jend+1)=tl_A(Jend)
-!>
+!^        tl_A(Jend+1)=tl_A(Jend)
+!^
           ad_A(Jend)=ad_A(Jend)+ad_A(Jend+1)
           ad_A(Jend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%SouthWest_Corner(tile)) THEN
-!>        tl_A(Jstr-1)=tl_A(Jstr)
-!>
+!^        tl_A(Jstr-1)=tl_A(Jstr)
+!^
           ad_A(Jstr)=ad_A(Jstr)+ad_A(Jstr-1)
           ad_A(Jstr-1)=0.0_r8
         END IF
@@ -146,14 +146,14 @@
 !
       IF (boundary.eq.inorth) THEN
         IF (DOMAIN(ng)%NorthEast_Corner(tile)) THEN
-!>        tl_A(Iend+1)=tl_A(Iend)
-!>
+!^        tl_A(Iend+1)=tl_A(Iend)
+!^
           ad_A(Iend)=ad_A(Iend)+ad_A(Iend+1)
           ad_A(Iend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%NorthWest_Corner(tile)) THEN
-!>        tl_A(IstrU-1)=tl_A(IstrU)
-!>
+!^        tl_A(IstrU-1)=tl_A(IstrU)
+!^
           ad_A(IstrU)=ad_A(IstrU)+ad_A(IstrU-1)
           ad_A(IstrU-1)=0.0_r8
         END IF
@@ -161,14 +161,14 @@
 
       IF (boundary.eq.isouth) THEN
         IF (DOMAIN(ng)%SouthEast_Corner(tile)) THEN
-!>        tl_A(Iend+1)=tl_A(Iend)
-!>
+!^        tl_A(Iend+1)=tl_A(Iend)
+!^
           ad_A(Iend)=ad_A(Iend)+ad_A(Iend+1)
           ad_A(Iend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%SouthWest_Corner(tile)) THEN
-!>        tl_A(IstrU-1)=tl_A(IstrU)
-!>
+!^        tl_A(IstrU-1)=tl_A(IstrU)
+!^
           ad_A(IstrU)=ad_A(IstrU)+ad_A(IstrU-1)
           ad_A(IstrU-1)=0.0_r8
         END IF
@@ -180,14 +180,14 @@
 !
       IF (boundary.eq.ieast) THEN
         IF (DOMAIN(ng)%NorthEast_Corner(tile)) THEN
-!>        tl_A(Jend+1)=tl_A(Jend)
-!>
+!^        tl_A(Jend+1)=tl_A(Jend)
+!^
           ad_A(Jend)=ad_A(Jend)+ad_A(Jend+1)
           ad_A(Jend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%SouthEast_Corner(tile)) THEN
-!>        tl_A(Jstr-1)=tl_A(Jstr)
-!>
+!^        tl_A(Jstr-1)=tl_A(Jstr)
+!^
           ad_A(Jstr)=ad_A(Jstr)+ad_A(Jstr-1)
           ad_A(Jstr-1)=0.0_r8
         END IF
@@ -195,14 +195,14 @@
 
       IF (boundary.eq.iwest) THEN
         IF (DOMAIN(ng)%NorthWest_Corner(tile)) THEN
-!>        tl_A(Jend+1)=tl_A(Jend)
-!>
+!^        tl_A(Jend+1)=tl_A(Jend)
+!^
           ad_A(Jend)=ad_A(Jend)+ad_A(Jend+1)
           ad_A(Jend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%SouthWest_Corner(tile)) THEN
-!>        tl_A(Jstr-1)=tl_A(Jstr)
-!>
+!^        tl_A(Jstr-1)=tl_A(Jstr)
+!^
           ad_A(Jstr)=ad_A(Jstr)+ad_A(Jstr-1)
           ad_A(Jstr-1)=0.0_r8
         END IF
@@ -240,14 +240,14 @@
 !
       IF (boundary.eq.inorth) THEN
         IF (DOMAIN(ng)%NorthEast_Corner(tile)) THEN
-!>        tl_A(Iend+1)=tl_A(Iend)
-!>
+!^        tl_A(Iend+1)=tl_A(Iend)
+!^
           ad_A(Iend)=ad_A(Iend)+ad_A(Iend+1)
           ad_A(Iend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%NorthWest_Corner(tile)) THEN
-!>        tl_A(Istr-1)=tl_A(Istr)
-!>
+!^        tl_A(Istr-1)=tl_A(Istr)
+!^
           ad_A(Istr)=ad_A(Istr)+ad_A(Istr-1)
           ad_A(Istr-1)=0.0_r8
         END IF
@@ -255,14 +255,14 @@
 
       IF (boundary.eq.isouth) THEN
         IF (DOMAIN(ng)%SouthEast_Corner(tile)) THEN
-!>        tl_A(Iend+1)=tl_A(Iend)
-!>
+!^        tl_A(Iend+1)=tl_A(Iend)
+!^
           ad_A(Iend)=ad_A(Iend)+ad_A(Iend+1)
           ad_A(Iend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%SouthWest_Corner(tile)) THEN
-!>        tl_A(Istr-1)=tl_A(Istr)
-!>
+!^        tl_A(Istr-1)=tl_A(Istr)
+!^
           ad_A(Istr)=ad_A(Istr)+ad_A(Istr-1)
           ad_A(Istr-1)=0.0_r8
         END IF
@@ -274,14 +274,14 @@
 !
       IF (boundary.eq.ieast) THEN
         IF (DOMAIN(ng)%NorthEast_Corner(tile)) THEN
-!>        tl_A(Jend+1)=tl_A(Jend)
-!>
+!^        tl_A(Jend+1)=tl_A(Jend)
+!^
           ad_A(Jend)=ad_A(Jend)+ad_A(Jend+1)
           ad_A(Jend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%SouthEast_Corner(tile)) THEN
-!>        tl_A(JstrV-1)=tl_A(JstrV)
-!>
+!^        tl_A(JstrV-1)=tl_A(JstrV)
+!^
           ad_A(JstrV)=ad_A(JstrV)+ad_A(JstrV-1)
           ad_A(JstrV-1)=0.0_r8
         END IF
@@ -289,14 +289,14 @@
 
       IF (boundary.eq.iwest) THEN
         IF (DOMAIN(ng)%NorthWest_Corner(tile)) THEN
-!>        tl_A(Jend+1)=tl_A(Jend)
-!>
+!^        tl_A(Jend+1)=tl_A(Jend)
+!^
           ad_A(Jend)=ad_A(Jend)+ad_A(Jend+1)
           ad_A(Jend+1)=0.0_r8
         END IF
         IF (DOMAIN(ng)%SouthWest_Corner(tile)) THEN
-!>        tl_A(JstrV-1)=tl_A(JstrV)
-!>
+!^        tl_A(JstrV-1)=tl_A(JstrV)
+!^
           ad_A(JstrV)=ad_A(JstrV)+ad_A(JstrV-1)
           ad_A(JstrV-1)=0.0_r8
         END IF

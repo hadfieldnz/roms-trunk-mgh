@@ -1,3 +1,4 @@
+      MODULE mod_biology
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -352,3 +353,5 @@
 
       RETURN
       END SUBROUTINE initialize_biology
+
+      END MODULE mod_biology

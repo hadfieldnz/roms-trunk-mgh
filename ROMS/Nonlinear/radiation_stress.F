@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-      MODULE radiation_stress_mod
 #if defined NONLINEAR && defined NEARSHORE
 !
 !svn $Id$
@@ -14,18 +13,12 @@
 !                                                                      !
 !=======================================================================
 !
-      implicit none
-
-      PRIVATE
-      PUBLIC  :: radiation_stress
-
-      CONTAINS
-
 # if defined NEARSHORE_MELLOR05
 #  include <nearshore_mellor05.h>
 # elif defined NEARSHORE_MELLOR08
 #  include <nearshore_mellor08.h>
 # endif
-
-#endif
+#else
+      MODULE radiation_stress_mod
       END MODULE radiation_stress_mod
+#endif

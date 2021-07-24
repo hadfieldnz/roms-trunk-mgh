@@ -369,16 +369,16 @@
               next_indx1=3-indx1(ng)
               IF (.not.PREDICTOR_2D_STEP(ng)) THEN
                 PREDICTOR_2D_STEP(ng)=.TRUE.
-!>              knew(ng)=next_indx1
-!>              kstp(ng)=3-knew(ng)
-!>              krhs(ng)=3
-!>
+!^              knew(ng)=next_indx1
+!^              kstp(ng)=3-knew(ng)
+!^              krhs(ng)=3
+!^
                 kt=knew(ng)
                 ks=kstp(ng)
                 knew(ng)=krhs(ng)
                 kstp(ng)=kt
                 krhs(ng)=ks
-!>              IF (my_iif.lt.(nfast(ng)+1)) indx1(ng)=next_indx1
+!^              IF (my_iif.lt.(nfast(ng)+1)) indx1(ng)=next_indx1
               END IF
             END DO
 !
@@ -402,14 +402,14 @@
               IF (PREDICTOR_2D_STEP(ng).and.                            &
      &            my_iif.le.(nfast(ng)+1)) THEN
                 PREDICTOR_2D_STEP(ng)=.FALSE.
-!>              IF (FIRST_2D_STEP) THEN
-!>                kstp(ng)=indx1(ng)
-!>              ELSE
-!>                kstp(ng)=3-indx1(ng)
-!>              END IF
-!>              knew(ng)=3
-!>              krhs(ng)=indx1(ng)
-!>
+!^              IF (FIRST_2D_STEP) THEN
+!^                kstp(ng)=indx1(ng)
+!^              ELSE
+!^                kstp(ng)=3-indx1(ng)
+!^              END IF
+!^              knew(ng)=3
+!^              krhs(ng)=indx1(ng)
+!^
                 ks=knew(ng)
                 knew(ng)=krhs(ng)
                 krhs(ng)=ks

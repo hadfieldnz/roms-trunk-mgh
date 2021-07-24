@@ -1,4 +1,4 @@
-      SUBROUTINE bblm (ng, tile)
+      MODULE bbl_mod
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -19,6 +19,17 @@
 !    105, 24119-24139.                                                 !
 !                                                                      !
 !=======================================================================
+!
+      implicit none
+!
+      PRIVATE
+      PUBLIC  :: bblm
+!
+      CONTAINS
+!
+!***********************************************************************
+      SUBROUTINE bblm (ng, tile)
+!***********************************************************************
 !
       USE mod_param
       USE mod_bbl
@@ -42,39 +53,39 @@
 #ifdef PROFILE
       CALL wclock_on (ng, iNLM, 37, __LINE__, MyFile)
 #endif
-      CALL bblm_tile (ng, tile,                                         &
-     &                LBi, UBi, LBj, UBj,                               &
-     &                IminS, ImaxS, JminS, JmaxS,                       &
-     &                nrhs(ng),                                         &
-     &                GRID(ng) % h,                                     &
-     &                GRID(ng) % z_r,                                   &
-     &                GRID(ng) % z_w,                                   &
-     &                GRID(ng) % angler,                                &
-     &                GRID(ng) % ZoBot,                                 &
+      CALL sg_bbl_tile (ng, tile,                                       &
+     &                  LBi, UBi, LBj, UBj,                             &
+     &                  IminS, ImaxS, JminS, JmaxS,                     &
+     &                  nrhs(ng),                                       &
+     &                  GRID(ng) % h,                                   &
+     &                  GRID(ng) % z_r,                                 &
+     &                  GRID(ng) % z_w,                                 &
+     &                  GRID(ng) % angler,                              &
+     &                  GRID(ng) % ZoBot,                               &
 #if defined SG_CALC_UB
-     &                FORCES(ng) % Hwave,                               &
+     &                  FORCES(ng) % Hwave,                             &
 #else
-     &                FORCES(ng) % Ub_swan,                             &
+     &                  FORCES(ng) % Ub_swan,                           &
 #endif
-     &                FORCES(ng) % Dwave,                               &
-     &                FORCES(ng) % Pwave_bot,                           &
-     &                OCEAN(ng) % rho,                                  &
-     &                OCEAN(ng) % u,                                    &
-     &                OCEAN(ng) % v,                                    &
-     &                SEDBED(ng) % bottom,                              &
-     &                BBL(ng) % Iconv,                                  &
-     &                BBL(ng) % Ubot,                                   &
-     &                BBL(ng) % Vbot,                                   &
-     &                BBL(ng) % Ur,                                     &
-     &                BBL(ng) % Vr,                                     &
-     &                BBL(ng) % bustrc,                                 &
-     &                BBL(ng) % bvstrc,                                 &
-     &                BBL(ng) % bustrw,                                 &
-     &                BBL(ng) % bvstrw,                                 &
-     &                BBL(ng) % bustrcwmax,                             &
-     &                BBL(ng) % bvstrcwmax,                             &
-     &                FORCES(ng) % bustr,                               &
-     &                FORCES(ng) % bvstr)
+     &                  FORCES(ng) % Dwave,                             &
+     &                  FORCES(ng) % Pwave_bot,                         &
+     &                  OCEAN(ng) % rho,                                &
+     &                  OCEAN(ng) % u,                                  &
+     &                  OCEAN(ng) % v,                                  &
+     &                  SEDBED(ng) % bottom,                            &
+     &                  BBL(ng) % Iconv,                                &
+     &                  BBL(ng) % Ubot,                                 &
+     &                  BBL(ng) % Vbot,                                 &
+     &                  BBL(ng) % Ur,                                   &
+     &                  BBL(ng) % Vr,                                   &
+     &                  BBL(ng) % bustrc,                               &
+     &                  BBL(ng) % bvstrc,                               &
+     &                  BBL(ng) % bustrw,                               &
+     &                  BBL(ng) % bvstrw,                               &
+     &                  BBL(ng) % bustrcwmax,                           &
+     &                  BBL(ng) % bvstrcwmax,                           &
+     &                  FORCES(ng) % bustr,                             &
+     &                  FORCES(ng) % bvstr)
 #ifdef PROFILE
       CALL wclock_off (ng, iNLM, 37, __LINE__, MyFile)
 #endif
@@ -83,25 +94,25 @@
       END SUBROUTINE bblm
 !
 !***********************************************************************
-      SUBROUTINE bblm_tile (ng, tile,                                   &
-     &                      LBi, UBi, LBj, UBj,                         &
-     &                      IminS, ImaxS, JminS, JmaxS,                 &
-     &                      nrhs,                                       &
-     &                      h, z_r, z_w, angler, ZoBot,                 &
+      SUBROUTINE sg_bbl_tile (ng, tile,                                 &
+     &                        LBi, UBi, LBj, UBj,                       &
+     &                        IminS, ImaxS, JminS, JmaxS,               &
+     &                        nrhs,                                     &
+     &                        h, z_r, z_w, angler, ZoBot,               &
 #if defined SG_CALC_UB
-     &                      Hwave,                                      &
+     &                        Hwave,                                    &
 #else
-     &                      Ub_swan,                                    &
+     &                        Ub_swan,                                  &
 #endif
-     &                      Dwave, Pwave_bot,                           &
-     &                      rho, u, v,                                  &
-     &                      bottom,                                     &
-     &                      Iconv,                                      &
-     &                      Ubot, Vbot, Ur, Vr,                         &
-     &                      bustrc, bvstrc,                             &
-     &                      bustrw, bvstrw,                             &
-     &                      bustrcwmax, bvstrcwmax,                     &
-     &                      bustr, bvstr)
+     &                        Dwave, Pwave_bot,                         &
+     &                        rho, u, v,                                &
+     &                        bottom,                                   &
+     &                        Iconv,                                    &
+     &                        Ubot, Vbot, Ur, Vr,                       &
+     &                        bustrc, bvstrc,                           &
+     &                        bustrw, bvstrw,                           &
+     &                        bustrcwmax, bvstrcwmax,                   &
+     &                        bustr, bvstr)
 !***********************************************************************
 !
       USE mod_param
@@ -673,7 +684,7 @@
 #endif
 !
       RETURN
-      END SUBROUTINE bblm_tile
+      END SUBROUTINE sg_bbl_tile
 !
       SUBROUTINE sg_bstress (sg_row, sg_zrozn, sg_phicw, sg_ubokur,     &
      &                       sg_ubouc, sg_mu, sg_epsilon, sg_ro,        &
@@ -1122,3 +1133,5 @@
 !
       RETURN
       END SUBROUTINE sg_kelvin8p
+
+      END MODULE bbl_mod

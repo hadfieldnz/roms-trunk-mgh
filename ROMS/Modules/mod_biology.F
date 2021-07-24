@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-      MODULE mod_biology
 /*
 ** svn $Id$
 *************************************************** Hernan G. Arango ***
@@ -122,7 +121,11 @@
 #  include <npzd_Powell_mod.h>
 # elif defined RED_TIDE
 #  include <red_tide_mod.h>
-# endif
-#endif
-
+# else
+      MODULE mod_biology
       END MODULE mod_biology
+# endif
+#else
+      MODULE mod_biology
+      END MODULE mod_biology
+#endif

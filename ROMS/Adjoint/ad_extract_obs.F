@@ -241,11 +241,11 @@
             END DO
           END IF
 # endif
-!>        Aobs(iobs)=Hmat(1)*A(i1,j1)+                                  &
-!>   &               Hmat(2)*A(i2,j1)+                                  &
-!>   &               Hmat(3)*A(i2,j2)+                                  &
-!>   &               Hmat(4)*A(i1,j2)
-!>
+!^        Aobs(iobs)=Hmat(1)*A(i1,j1)+                                  &
+!^   &               Hmat(2)*A(i2,j1)+                                  &
+!^   &               Hmat(3)*A(i2,j2)+                                  &
+!^   &               Hmat(4)*A(i1,j2)
+!^
           ad_A(i1,j1)=ad_A(i1,j1)+Hmat(1)*ad_Aobs(iobs)
           ad_A(i2,j1)=ad_A(i2,j1)+Hmat(2)*ad_Aobs(iobs)
           ad_A(i2,j2)=ad_A(i2,j2)+Hmat(3)*ad_Aobs(iobs)
@@ -432,15 +432,15 @@
               END DO
             END IF
 #  endif
-!>          Aobs(iobs)=Hmat(1)*A(i1,j1,k1)+                             &
-!>   &                 Hmat(2)*A(i2,j1,k1)+                             &
-!>   &                 Hmat(3)*A(i2,j2,k1)+                             &
-!>   &                 Hmat(4)*A(i1,j2,k1)+                             &
-!>   &                 Hmat(5)*A(i1,j1,k2)+                             &
-!>   &                 Hmat(6)*A(i2,j1,k2)+                             &
-!>   &                 Hmat(7)*A(i2,j2,k2)+                             &
-!>   &                 Hmat(8)*A(i1,j2,k2)
-!>
+!^          Aobs(iobs)=Hmat(1)*A(i1,j1,k1)+                             &
+!^   &                 Hmat(2)*A(i2,j1,k1)+                             &
+!^   &                 Hmat(3)*A(i2,j2,k1)+                             &
+!^   &                 Hmat(4)*A(i1,j2,k1)+                             &
+!^   &                 Hmat(5)*A(i1,j1,k2)+                             &
+!^   &                 Hmat(6)*A(i2,j1,k2)+                             &
+!^   &                 Hmat(7)*A(i2,j2,k2)+                             &
+!^   &                 Hmat(8)*A(i1,j2,k2)
+!^
             ad_A(i1,j1,k1)=ad_A(i1,j1,k1)+Hmat(1)*ad_Aobs(iobs)
             ad_A(i2,j1,k1)=ad_A(i2,j1,k1)+Hmat(2)*ad_Aobs(iobs)
             ad_A(i2,j2,k1)=ad_A(i2,j2,k1)+Hmat(3)*ad_Aobs(iobs)

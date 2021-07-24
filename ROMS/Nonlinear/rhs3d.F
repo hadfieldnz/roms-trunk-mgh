@@ -42,17 +42,17 @@
       USE prsgrd_mod, ONLY : prsgrd
 # ifndef TS_FIXED
 #  ifdef TS_DIF2
-      USE t3dmix_mod, ONLY : t3dmix2
+      USE t3dmix2_mod, ONLY : t3dmix2
 #  endif
 #  ifdef TS_DIF4
-      USE t3dmix_mod, ONLY : t3dmix4
+      USE t3dmix4_mod, ONLY : t3dmix4
 #  endif
 # endif
 # ifdef UV_VIS2
-      USE uv3dmix_mod, ONLY : uv3dmix2
+      USE uv3dmix2_mod, ONLY : uv3dmix2
 # endif
 # ifdef UV_VIS4
-      USE uv3dmix_mod, ONLY : uv3dmix4
+      USE uv3dmix4_mod, ONLY : uv3dmix4
 # endif
 !
 !  Imported variable declarations.

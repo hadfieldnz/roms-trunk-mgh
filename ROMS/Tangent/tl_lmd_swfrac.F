@@ -88,9 +88,9 @@
           tl_cff1=fac1(i)*tl_Z(i,j)*cff1
           cff2=EXP(Z(i,j)*fac2(i))
           tl_cff2=fac2(i)*tl_Z(i,j)*cff2
-!>        swdk(i,j)=cff1*fac3(i)+                                       &
-!>   &              cff2*(1.0_r8-fac3(i))
-!>
+!^        swdk(i,j)=cff1*fac3(i)+                                       &
+!^   &              cff2*(1.0_r8-fac3(i))
+!^
           tl_swdk(i,j)=tl_cff1*fac3(i)+                                 &
      &                 tl_cff2*(1.0_r8-fac3(i))
         END DO
