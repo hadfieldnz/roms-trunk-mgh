@@ -860,7 +860,9 @@
 !  Turn on time clocks.
 !-----------------------------------------------------------------------
 !
-      CALL wclock_on (ng, model, 64, __LINE__, MyFile)
+      IF (Lwclock) THEN
+        CALL wclock_on (ng, model, 64, __LINE__, MyFile)
+      END IF
 # endif
 # ifdef MPI
 !
@@ -898,7 +900,9 @@
 !  Turn off time clocks.
 !-----------------------------------------------------------------------
 !
-      CALL wclock_off (ng, model, 64, __LINE__, MyFile)
+      IF (Lwclock) THEN
+        CALL wclock_off (ng, model, 64, __LINE__, MyFile)
+      END IF
 # endif
 !
       RETURN

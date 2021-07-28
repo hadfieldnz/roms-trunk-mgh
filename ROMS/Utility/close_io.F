@@ -179,8 +179,10 @@
 !
       logical :: First
 !
-      integer :: Fcount, MyError, i, ng
+      integer :: Fcount, MyError, i, ivalue, ng
 !
+      character (len=256) :: ana_string
+
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", close_out"
 !
@@ -343,12 +345,16 @@
       IF (Master) THEN
         First=.TRUE.
         DO i=1,39
-          IF ((LEN_TRIM(ANANAME(i)).gt.0).and.(exit_flag.ne.5)) THEN
-            IF (First) THEN
-              First=.FALSE.
-              WRITE (stdout,30) ' Analytical header files used:'
+          ana_string=TRIM(ANANAME(i))
+          ivalue=ICHAR(ana_string(1:1))
+          IF (ivalue.ge.47) THEN          ! decimal value for characters
+            IF (exit_flag.ne.5) THEN
+              IF (First) THEN
+                First=.FALSE.
+                WRITE (stdout,30) ' Analytical header files used:'
+              END IF
+              WRITE (stdout,'(5x,a)') TRIM(ADJUSTL(ANANAME(i)))
             END IF
-            WRITE (stdout,'(5x,a)') TRIM(ADJUSTL(ANANAME(i)))
           END IF
         END DO
       END IF
@@ -362,12 +368,16 @@
       IF (Master) THEN
         First=.TRUE.
         DO i=1,4
-          IF ((LEN_TRIM(BIONAME(i)).gt.0).and.(exit_flag.ne.5)) THEN
-            IF (First) THEN
-              First=.FALSE.
-              WRITE (stdout,30) ' Biology model header files used:'
+          ana_string=TRIM(BIONAME(i))
+          ivalue=ICHAR(ana_string(1:1))
+          IF (ivalue.ge.47) THEN          ! decimal value for characters
+            IF (exit_flag.ne.5) THEN
+              IF (First) THEN
+                First=.FALSE.
+                WRITE (stdout,30) ' Biology model header files used:'
+              END IF
+              WRITE (stdout,'(5x,a)') TRIM(ADJUSTL(BIONAME(i)))
             END IF
-            WRITE (stdout,'(5x,a)') TRIM(ADJUSTL(BIONAME(i)))
           END IF
         END DO
       END IF

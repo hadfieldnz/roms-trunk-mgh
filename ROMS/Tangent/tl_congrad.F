@@ -537,7 +537,6 @@
 !^          WRITE (stdout,20) cg_delta(innLoop,outLoop), outLoop,       &
 !^   &                        innLoop
 !^          exit_flag=8
-!^          GO TO 10
 !^        END IF
 !^
 !

@@ -429,6 +429,12 @@
 !
         logical :: spherical = .FALSE.
 !
+!  Switch to indicate if ROMS kernel arrays have been allocated.  It
+!  used to skip memory reports during early termination.
+!
+        logical :: LallocatedMemory = .FALSE.
+!$OMP THREADPRIVATE (LallocatedMemory)
+!
 !  Switch to compute the grid stiffness.
 !
         logical :: Lstiffness = .TRUE.

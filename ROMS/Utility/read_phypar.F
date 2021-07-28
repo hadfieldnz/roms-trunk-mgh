@@ -6538,24 +6538,33 @@
 #endif
 #ifndef ANA_GRID
           fname=GRD(ng)%name
-          IF (.not.find_file(ng, fname, 'GRDNAME')) GO TO 30
-          WRITE (out,230) '                 Input Grid File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'GRDNAME')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '                 Input Grid File:  ',      &
+     &                      TRIM(fname)
+          END IF
 #endif
 #if !defined CORRELATION
 # ifdef NESTING
           fname=NGCname
-          IF (.not.find_file(ng, fname, 'NGCNAME')) GO TO 30
-          WRITE (out,230) '  Nesting grid connectivity File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'NGCNAME')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '  Nesting grid connectivity File:  ',      &
+     &                      TRIM(fname)
+          END IF
 # endif
 #endif
 #ifdef INI_FILE
 # ifdef NONLINEAR
           fname=INI(ng)%name
-          IF (.not.find_file(ng, fname, 'ININAME')) GO TO 30
-          WRITE (out,230) '    Input Nonlinear Initial File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'ININAME')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '    Input Nonlinear Initial File:  ',      &
+     &                      TRIM(fname)
+          END IF
 # endif
 # if !defined CORRELATION
 #  if defined TANGENT && \
@@ -6563,9 +6572,12 @@
        defined OPT_OBSERVATIONS  || defined SANITY_CHECK           || \
        defined SENSITIVITY_4DVAR || defined TLM_CHECK)
           fname=ITL(ng)%name
-          IF (.not.find_file(ng, fname, 'ITLNAME')) GO TO 30
-          WRITE (out,230) '      Input Tangent Initial File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'ITLNAME')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '      Input Tangent Initial File:  ',      &
+     &                      TRIM(fname)
+          END IF
 #  endif
 #  if defined WEAK_CONSTRAINT          && \
     !(defined RBL4DVAR                 || \
@@ -6574,9 +6586,12 @@
       defined R_SYMMETRY               || \
       defined SP4DVAR)
           fname=IRP(ng)%name
-          IF (.not.find_file(ng, fname, 'IRPNAME')) GO TO 30
-          WRITE (out,230) '  Input Representer Initial File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'IRPNAME')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '  Input Representer Initial File:  ',      &
+     &                      TRIM(fname)
+          END IF
 #  endif
 #  if defined ADJOINT && \
      !(defined AD_SENSITIVITY         || defined FOUR_DVAR         || \
@@ -6587,9 +6602,12 @@
        defined HESSIAN_SV             || defined HESSIAN_SO        || \
        defined HESSIAN_FSV)
           fname=IAD(ng)%name
-          IF (.not.find_file(ng, fname, 'IADNAME')) GO TO 30
-          WRITE (out,230) '      Input Adjoint Initial File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'IADNAME')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '      Input Adjoint Initial File:  ',      &
+     &                      TRIM(fname)
+          END IF
 #  endif
 # endif
 #endif
@@ -6597,29 +6615,41 @@
 # ifndef ANA_PSOURCE
           IF (LuvSrc(ng).or.LwSrc(ng).or.(ANY(LtracerSrc(:,ng)))) THEN
             fname=SSF(ng)%name
-            IF (.not.find_file(ng, fname, 'SSFNAME')) GO TO 30
-            WRITE (out,230) '        Input Sources/Sinks File:  ',      &
+            IF (.not.find_file(ng, out, fname, 'SSFNAME')) THEN
+              IF (FoundError(exit_flag, NoError, __LINE__, MyFile))     &
+     &          RETURN
+            ELSE
+              WRITE (out,230) '        Input Sources/Sinks File:  ',    &
      &                      TRIM(fname)
+            END IF
           END IF
 # endif
 # if defined SSH_TIDES || defined UV_TIDES
           IF (ng.eq.1) THEN               ! only tidal forcing on grid 1
             fname=TIDE(ng)%name
-            IF (.not.find_file(ng, fname, 'TIDENAME')) GO TO 30
-            WRITE (out,230) '              Tidal Forcing File:  ',      &
-     &                      TRIM(fname)
+            IF (.not.find_file(ng, out, fname, 'TIDENAME')) THEN
+              IF (FoundError(exit_flag, NoError, __LINE__, MyFile))     &
+                RETURN
+            ELSE
+              WRITE (out,230) '              Tidal Forcing File:  ',    &
+     &                        TRIM(fname)
+            END IF
           END IF
 # endif
 # ifdef FRC_FILE
           DO i=1,nFfiles(ng)
             DO ifile=1,FRC(i,ng)%Nfiles
               fname=FRC(i,ng)%files(ifile)
-              IF (.not.find_file(ng, fname, 'FRCNAME')) GO TO 30
-              IF (ifile.eq.1) THEN
-                WRITE (out,310) '           Input Forcing File ', i,    &
-     &                          ':  ', TRIM(fname)
+              IF (.not.find_file(ng, out, fname, 'FRCNAME')) THEN
+                IF (FoundError(exit_flag, NoError, __LINE__, MyFile))   &
+     &            RETURN
               ELSE
-                WRITE (out,'(37x,a)') TRIM(fname)
+                IF (ifile.eq.1) THEN
+                  WRITE (out,310) '           Input Forcing File ', i,  &
+     &                            ':  ', TRIM(fname)
+                ELSE
+                  WRITE (out,'(37x,a)') TRIM(fname)
+                END IF
               END IF
             END DO
           END DO
@@ -6628,12 +6658,16 @@
             IF (CLM_FILE(ng)) THEN
               DO ifile=1,CLM(i,ng)%Nfiles
                 fname=CLM(i,ng)%files(ifile)
-                IF (.not.find_file(ng, fname, 'CLMNAME')) GO TO 30
-                IF (ifile.eq.1) THEN
-                  WRITE (out,310) '       Input Climatology File ', i,  &
-     &                            ':  ', TRIM(fname)
+                IF (.not.find_file(ng, out, fname, 'CLMNAME')) THEN
+                  IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) &
+     &              RETURN
                 ELSE
-                  WRITE (out,'(37x,a)') TRIM(fname)
+                  IF (ifile.eq.1) THEN
+                    WRITE (out,310) '       Input Climatology File ',   &
+     &                              i, ':  ', TRIM(fname)
+                  ELSE
+                    WRITE (out,'(37x,a)') TRIM(fname)
+                  END IF
                 END IF
               END DO
             END IF
@@ -6642,20 +6676,28 @@
           IF (LnudgeM2CLM(ng).or.LnudgeM3CLM(ng).or.                    &
      &        (ANY(LnudgeTCLM(:,ng)))) THEN
             fname=NUD(ng)%name
-            IF (.not.find_file(ng, fname, 'NUDNAME')) GO TO 30
-            WRITE (out,230) '   Input Nudge Coefficients File:  ',      &
-     &                      TRIM(fname)
+            IF (.not.find_file(ng, out, fname, 'NUDNAME')) THEN
+              IF (FoundError(exit_flag, NoError, __LINE__, MyFile))     &
+     &          RETURN
+            ELSE
+              WRITE (out,230) '   Input Nudge Coefficients File:  ',    &
+     &                        TRIM(fname)
+            END IF
           END IF
 # endif
 # if defined FORWARD_READ && !(defined FOUR_DVAR || defined PICARD_TEST)
           DO ifile=1,FWD(ng)%Nfiles
             fname=FWD(ng)%files(ifile)
-            IF (.not.find_file(ng, fname, 'FWDNAME')) GO TO 30
-            IF (ifile.eq.1) THEN
-              WRITE (out,230) '        Input Forward State File:  ',    &
-     &                        TRIM(fname)
+            IF (.not.find_file(ng, out, fname, 'FWDNAME')) THEN
+              IF (FoundError(exit_flag, NoError, __LINE__, MyFile))     &
+     &          RETURN
             ELSE
-              WRITE (out,'(37x,a)') TRIM(fname)
+              IF (ifile.eq.1) THEN
+                WRITE (out,230) '        Input Forward State File:  ',  &
+     &                          TRIM(fname)
+              ELSE
+                WRITE (out,'(37x,a)') TRIM(fname)
+              END IF
             END IF
           END DO
 # endif
@@ -6664,9 +6706,12 @@
      defined SO_SEMI
 #  ifndef OBS_SPACE
           fname=ADS(ng)%name
-          IF (.not.find_file(ng, fname, 'ADSNAME')) GO TO 30
-          WRITE (out,230) '  Input Adjoint Sensitivity File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'ADSNAME')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '  Input Adjoint Sensitivity File:  ',      &
+     &                      TRIM(fname)
+          END IF
 #  endif
 # endif
 !
@@ -6674,59 +6719,66 @@
             DO i=1,nBCfiles(ng)
               DO ifile=1,BRY(i,ng)%Nfiles
                 fname=BRY(i,ng)%files(ifile)
-                IF (.not.find_file(ng, fname, 'BRYNAME')) GO TO 30
-                IF (ifile.eq.1) THEN
-                  WRITE (out,310) '  Input Lateral Boundary File ', i,  &
-     &                            ':  ', TRIM(fname)
+                IF (.not.find_file(ng, out, fname, 'BRYNAME')) THEN
+                  IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) &
+     &              RETURN
                 ELSE
-                  WRITE (out,'(37x,a)') TRIM(fname)
+                  IF (ifile.eq.1) THEN
+                    WRITE (out,310) '  Input Lateral Boundary File ',   &
+     &                              i, ':  ', TRIM(fname)
+                  ELSE
+                    WRITE (out,'(37x,a)') TRIM(fname)
+                  END IF
                 END IF
               END DO
             END DO
           END IF
 # ifdef STATIONS
           fname=sposnam
-          IF (.not.find_file(ng, fname, 'SPOSNAM')) GO TO 30
-          WRITE (out,230) '          Station positions File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'SPOSNAM')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '          Station positions File:  ',      &
+     &                      TRIM(fname)
+          END IF
 # endif
 #endif
 #ifdef FOUR_DVAR
           fname=aparnam
-          IF (.not.find_file(ng, fname, 'APARNAM')) GO TO 30
-          WRITE (out,230) '    Assimilation Parameters File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'APARNAM')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '    Assimilation Parameters File:  ',      &
+     &                      TRIM(fname)
+          END IF
 #endif
 #if !defined CORRELATION
 # ifdef FLOATS
           fname=fposnam
-          IF (.not.find_file(ng, fname, 'FPOSNAM')) GO TO 30
-          WRITE (out,230) '   Initial Floats Positions File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'FPOSNAM')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '   Initial Floats Positions File:  ',      &
+     &                      TRIM(fname)
+          END IF
 # endif
 # ifdef BIOLOGY
           fname=bparnam
-          IF (.not.find_file(ng, fname, 'BPARNAM')) GO TO 30
-          WRITE (out,230) '         Biology Parameters File:  ',        &
-     &                    TRIM(fname)
+          IF (.not.find_file(ng, out, fname, 'BPARNAM')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) '         Biology Parameters File:  ',      &
+     &                      TRIM(fname)
+          END IF
 # endif
 #endif
           fname=varname
-          IF (.not.find_file(ng, fname, 'VARNAME')) GO TO 30
-          WRITE (out,230) 'ROMS I/O variables Metadata File:  ',        &
+          IF (.not.find_file(ng, out, fname, 'VARNAME')) THEN
+            IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
+          ELSE
+            WRITE (out,230) 'ROMS I/O variables Metadata File:  ',      &
      &                    TRIM(fname)
-          GO TO 40
-  30      IF (Master) THEN
-            IF (LEN_TRIM(fname).eq.0) THEN
-              WRITE (out,270) ng, 'Oops unassigned file name. '//       &
-     &                            'Check standard input script...'
-            ELSE
-              WRITE (out,270) ng, TRIM(fname)
-            END IF
           END IF
-          exit_flag=4
-          IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-  40      CONTINUE
         END DO
         IF (Nuser.gt.0) THEN
           WRITE (out,230) '          Input/Output USER File:  ',        &
@@ -6914,8 +6966,6 @@
      &        i4,/,15x,a)
  265  FORMAT (/,' READ_PHYPAR - Invalid input parameter, ',a,           &
      &        1p,e11.4,/,15x,a)
- 270  FORMAT (/,' READ_PHYPAR - Grid ',i2.2,                            &
-     &        ', could not find input file:  ',a)
  280  FORMAT (/,' READ_PHYPAR - Variable index not yet loaded, ', a)
  290  FORMAT (/,' READ_PHYPAR - Invalid dimension parameter, ',a,i0,    &
      &        /,15x,a)

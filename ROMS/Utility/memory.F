@@ -30,7 +30,8 @@
 #ifdef DISTRIBUTE
       USE distribute_mod, ONLY : mp_collect
 #endif
-      USE mod_netcdf, ONLY : Matts, Mdims, Mvars, NvarD, NvarA
+      USE mod_netcdf,     ONLY : Matts, Mdims, Mvars, NvarD, NvarA
+      USE mod_scalars,    ONLY : LallocatedMemory
 !
       implicit none
 !
@@ -54,6 +55,10 @@
 !-----------------------------------------------------------------------
 !  Report estimate of dynamic memory and automatic memory requirements.
 !-----------------------------------------------------------------------
+!
+!  If ROMS array have not been allocated, skip report.
+
+      IF (.not.LallocatedMemory) RETURN
 !
 !  Allocate and initialize.
 !
