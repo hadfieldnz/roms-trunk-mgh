@@ -304,6 +304,7 @@
             DO ir=1,Nrec
               DO ib=1,4
                 DO ij=LBij,UBij
+                  ic=ic+1
                   Cwrk(ic)=wrk(ij,ib,ir)
                 END DO
               END DO
@@ -589,6 +590,7 @@
           DO ir=1,Nrec
             DO ib=1,4
               DO ij=LBij,UBij
+                ic=ic+1
                 Cwrk(ic)=wrk(ij,ib,ir)
               END DO
             END DO
@@ -598,7 +600,7 @@
         END IF
       END IF
 !
-      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
+      IF (FoundError(status, PIO_noerr, __LINE__, MyFile)) THEN
         exit_flag=2
         ioerror=status
         RETURN

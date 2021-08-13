@@ -464,7 +464,7 @@
       IF (.not.foundit) THEN
         IF (Master) WRITE (out,20) ng, TRIM(fname)
  20     FORMAT (/,' FIND_FILE - Grid ',i2.2,                           &
-                  ', cannot find input file: ',a)
+     &          ', cannot find input file: ',a)
         exit_flag=5
       END IF
 !

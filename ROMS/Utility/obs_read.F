@@ -237,11 +237,12 @@
 
 #  ifdef DISTRIBUTE
 !
-!  If distributed-memory and Zobs in meters (Zobs < 0),  zero-out
-!  Zobs values in all nodes but itself to facilitate exchages between
-!  tiles latter before writting into observation NetCDF file.
+!  If distributed-memory and SOME or ALL observations have Zobs in
+!  meters (Zobs < 0), zero-out Zobs values in all nodes but itself
+!  to facilitate exchages between tiles latter before writting into
+!  observation NetCDF file.
 !
-        IF (.not.wrote_Zobs(ng)) THEN
+        IF (.not.wrote_Zobs(ng).and.Load_Zobs(ng)) THEN
           CALL obs_depth (ng, MyRank, model)
         END IF
 #  endif
@@ -583,11 +584,12 @@
           Load_Zobs(ng)=.TRUE.
         END IF
 !
-!  If distributed-memory and Zobs in meters (Zobs < 0),  zero-out
-!  Zobs values in all nodes but itself to facilitate exchages between
-!  tiles latter before writting into observation NetCDF file.
+!  If distributed-memory and SOME or ALL observations have Zobs in
+!  meters (Zobs < 0), zero-out Zobs values in all nodes but itself
+!  to facilitate exchages between tiles latter before writting into
+!  observation NetCDF file.
 !
-        IF (.not.wrote_Zobs(ng)) THEN
+        IF (.not.wrote_Zobs(ng).and.Load_Zobs(ng)) THEN
           CALL obs_depth (ng, MyRank, model)
         END IF
 #  endif

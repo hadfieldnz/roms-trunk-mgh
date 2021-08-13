@@ -176,7 +176,7 @@
       status=PIO_noerr
 !
       status=PIO_def_dim(pioFile, TRIM(DimName), DimSize, DimId)
-      IF (FoundError(status, pio_noerr, __LINE__,                       &
+      IF (FoundError(status, PIO_noerr, __LINE__,                       &
      &                 __FILE__)) THEN
         IF (Master) WRITE (stdout,10) TRIM(DimName), TRIM(ncname)
         exit_flag=3

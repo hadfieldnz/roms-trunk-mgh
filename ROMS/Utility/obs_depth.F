@@ -61,39 +61,37 @@
 !  Process vertical positions.
 !
       DO iobs=Mstr,Mend
-        IF (Zobs(iobs).lt.0.0_r8) THEN
-          r_bound=((rXmin(ng) .le.Xobs(iobs)).and.                      &
-     &             (Xobs(iobs).lt.rXmax(ng))).and.                      &
-     &            ((rYmin(ng) .le.Yobs(iobs)).and.                      &
-     &             (Yobs(iobs).lt.rYmax(ng)))
-          u_bound=((uXmin(ng) .le.Xobs(iobs)).and.                      &
-     &             (Xobs(iobs).lt.uXmax(ng))).and.                      &
-     &            ((uYmin(ng) .le.Yobs(iobs)).and.                      &
-     &             (Yobs(iobs).lt.uYmax(ng)))
-          v_bound=((vXmin(ng) .le.Xobs(iobs)).and.                      &
-     &             (Xobs(iobs).lt.vXmax(ng))).and.                      &
-     &            ((vYmin(ng) .le.Yobs(iobs)).and.                      &
-     &             (Yobs(iobs).lt.vYmax(ng)))
-          IF (ObsType(iobs).eq.ObsState2Type(isUvel)) THEN
-            IF (.not.u_bound) THEN
-              Zobs(iobs)=IniVal
-            END IF
-          ELSE IF (ObsType(iobs).eq.ObsState2Type(isVvel)) THEN
-            IF (.not.v_bound) THEN
-              Zobs(iobs)=IniVal
-            END IF
-          ELSE
-            DO itrc=1,NT(ng)
-              IF (ObsType(iobs).eq.ObsState2Type(isTvar(itrc))) THEN
-                IF (.not.r_bound) THEN
-                  Zobs(iobs)=IniVal
-                END IF
-              END IF
-            END DO
+        r_bound=((rXmin(ng) .le.Xobs(iobs)).and.                        &
+     &           (Xobs(iobs).lt.rXmax(ng))).and.                        &
+     &          ((rYmin(ng) .le.Yobs(iobs)).and.                        &
+     &           (Yobs(iobs).lt.rYmax(ng)))
+        u_bound=((uXmin(ng) .le.Xobs(iobs)).and.                        &
+     &           (Xobs(iobs).lt.uXmax(ng))).and.                        &
+     &          ((uYmin(ng) .le.Yobs(iobs)).and.                        &
+     &           (Yobs(iobs).lt.uYmax(ng)))
+        v_bound=((vXmin(ng) .le.Xobs(iobs)).and.                        &
+     &           (Xobs(iobs).lt.vXmax(ng))).and.                        &
+     &          ((vYmin(ng) .le.Yobs(iobs)).and.                        &
+     &           (Yobs(iobs).lt.vYmax(ng)))
+        IF (ObsType(iobs).eq.ObsState2Type(isUvel)) THEN
+          IF (.not.u_bound) THEN
+            Zobs(iobs)=IniVal
           END IF
+        ELSE IF (ObsType(iobs).eq.ObsState2Type(isVvel)) THEN
+          IF (.not.v_bound) THEN
+            Zobs(iobs)=IniVal
+          END IF
+        ELSE
+          DO itrc=1,NT(ng)
+            IF (ObsType(iobs).eq.ObsState2Type(isTvar(itrc))) THEN
+              IF (.not.r_bound) THEN
+                Zobs(iobs)=IniVal
+              END IF
+            END IF
+          END DO
         END IF
       END DO
-
+!
       RETURN
       END SUBROUTINE obs_depth
 #else

@@ -1143,7 +1143,7 @@
             inc=0
             IF ((Xb(k).eq.Xo).and.(Yb(k).eq.Yo)) THEN
               crossings=1
-              goto 10
+              GO TO 10
             ELSE IF (((dx1.eq.0.0_r8).and.(Yo.ge.Yb(k  ))).or.          &
      &              ((dx2.eq.0.0_r8).and.(Yo.ge.Yb(k+1)))) THEN
               inc=1

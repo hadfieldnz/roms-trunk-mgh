@@ -381,9 +381,11 @@
             Ztop=Adepth(i1,j1,N(ng))
             Zbot=Adepth(i1,j1,1    )
             IF (Zobs(iobs).ge.Ztop) THEN
-              r1=0.0_r8                        ! If shallower, ignore.
-              r2=0.0_r8
-              ObsVetting(iobs)=0.0_r8
+              k1=N(ng)                         ! If shallower, assign to
+              k2=N(ng)                         ! top grid cell. The
+              r1=1.0_r8                        ! observation is located
+              r2=0.0_r8                        ! on the upper cell half
+              Zobs(iobs)=REAL(N(ng),r8)        ! above its middle depth.
             ELSE IF (Zbot.ge.Zobs(iobs)) THEN
               r1=0.0_r8                        ! If deeper, ignore.
               r2=0.0_r8
