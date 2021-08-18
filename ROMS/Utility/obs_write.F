@@ -1219,7 +1219,7 @@
 # ifdef TLM_OBS
 !
 !  Tangent linear state vector.
-
+!
       IF (wrtTLmod(ng).or.wrtRPmod(ng)) THEN
         DO iobs=Mstr,Mend
 #  ifdef I4DVAR_ANA_SENSITIVITY
@@ -1687,13 +1687,8 @@
 !  evolve in time, the fractional level coordinate is unknow during
 !  the processing of the observations.
 !
-      IF (Load_Zobs(ng).and.                                            &
+      IF ((Nrun.eq.1).and.                                              &
      &    (wrtNLmod(ng).or.wrtTLmod(ng).or.wrtRPmod(ng))) THEN
-
-        DO iobs=Mstr,Mend
-          Zobs(iobs)=Zobs(iobs)*ObsScale(iobs)
-        END DO
-!
         CALL netcdf_put_fvar (ng, model, OBS(ng)%name,                  &
      &                        Vname(1,idObsZ),                          &
      &                        Zobs(Mstr:),                              &
@@ -1740,7 +1735,7 @@
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 # ifdef SOLVE3D
-        IF (Load_Zobs(ng)) THEN
+        IF (Nrun.eq.1) THEN
           CALL netcdf_sync (ng, model, OBS(ng)%name, OBS(ng)%ncid)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         END IF
@@ -2140,13 +2135,8 @@
 !  evolve in time, the fractional level coordinate is unknow during
 !  the processing of the observations.
 !
-      IF (Load_Zobs(ng).and.                                            &
+      IF ((Nrun.eq.1).and.                                              &
      &    (wrtNLmod(ng).or.wrtTLmod(ng).or.wrtRPmod(ng))) THEN
-
-        DO iobs=Mstr,Mend
-          Zobs(iobs)=Zobs(iobs)*ObsScale(iobs)
-        END DO
-!
         CALL pio_netcdf_put_fvar (ng, model, OBS(ng)%name,              &
      &                            Vname(1,idObsZ),                      &
      &                            Zobs(Mstr:Mend),                      &
@@ -2200,7 +2190,7 @@
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
 #  ifdef SOLVE3D
-        IF (Load_Zobs(ng)) THEN
+        IF (Nrun.eq.1) THEN
           CALL pio_netcdf_sync (ng, model, OBS(ng)%name,                &
      &                          OBS(ng)%pioFile)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN

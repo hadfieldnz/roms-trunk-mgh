@@ -58,7 +58,8 @@
       Mend=Nobs(ng)
 # endif
 !
-!  Process vertical positions.
+!  Set observations depth (Zobs) to zero if not bounded in the current
+!  parallel tile to facilitate global reduction in "mp_collect".
 !
       DO iobs=Mstr,Mend
         r_bound=((rXmin(ng) .le.Xobs(iobs)).and.                        &
@@ -73,22 +74,8 @@
      &           (Xobs(iobs).lt.vXmax(ng))).and.                        &
      &          ((vYmin(ng) .le.Yobs(iobs)).and.                        &
      &           (Yobs(iobs).lt.vYmax(ng)))
-        IF (ObsType(iobs).eq.ObsState2Type(isUvel)) THEN
-          IF (.not.u_bound) THEN
-            Zobs(iobs)=IniVal
-          END IF
-        ELSE IF (ObsType(iobs).eq.ObsState2Type(isVvel)) THEN
-          IF (.not.v_bound) THEN
-            Zobs(iobs)=IniVal
-          END IF
-        ELSE
-          DO itrc=1,NT(ng)
-            IF (ObsType(iobs).eq.ObsState2Type(isTvar(itrc))) THEN
-              IF (.not.r_bound) THEN
-                Zobs(iobs)=IniVal
-              END IF
-            END IF
-          END DO
+        IF (.not.(r_bound.or.u_bound.or.v_bound)) THEN
+          Zobs(iobs)=IniVal                              ! not bouded
         END IF
       END DO
 !

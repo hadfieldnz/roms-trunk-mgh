@@ -1101,12 +1101,14 @@
 !
 !  Local variable declarations.
 !
+      logical :: ItIsInside
+!
       integer, parameter :: Nstep =128
 
       integer :: crossings, i, inc, k, kk, nc
 
       integer, dimension(Nstep) :: Sindex
-
+!
       real(r8) :: dx1, dx2, dxy
 !
 !-----------------------------------------------------------------------
@@ -1115,6 +1117,7 @@
 !
 !  Set crossings counter and close the contour of the polygon.
 !
+      ItIsInside=.FALSE.
       crossings=0
       Xb(Nb+1)=Xb(1)
       Yb(Nb+1)=Yb(1)
@@ -1143,7 +1146,8 @@
             inc=0
             IF ((Xb(k).eq.Xo).and.(Yb(k).eq.Yo)) THEN
               crossings=1
-              GO TO 10
+              ItIsInside=.TRUE.               ! terminate inner DO-loop
+              EXIT
             ELSE IF (((dx1.eq.0.0_r8).and.(Yo.ge.Yb(k  ))).or.          &
      &              ((dx2.eq.0.0_r8).and.(Yo.ge.Yb(k+1)))) THEN
               inc=1
@@ -1158,11 +1162,12 @@
             END IF
           END IF
         END DO
+        IF (ItIsInside) EXIT                  ! terminate outer DO-loop
       END DO
 !
 !  Determine if point (Xo,Yo) is inside of closed polygon.
 !
-  10  IF (crossings.eq.0) THEN
+      IF (crossings.eq.0) THEN
         inside=.FALSE.
       ELSE
         inside=.TRUE.

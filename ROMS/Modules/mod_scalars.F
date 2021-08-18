@@ -1990,10 +1990,12 @@
       END IF
       IF (.not.allocated(tdays)) THEN
         allocate ( tdays(Ngrids) )
+        tdays=0.0_dp
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
       IF (.not.allocated(time)) THEN
         allocate ( time(Ngrids) )
+        time=0.0_dp
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
       IF (.not.allocated(time_code)) THEN
