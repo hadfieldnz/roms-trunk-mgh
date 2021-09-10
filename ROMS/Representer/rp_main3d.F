@@ -30,6 +30,9 @@
       USE analytical_mod,          ONLY : ana_vmix
 # endif
       USE dateclock_mod,           ONLY : time_string
+# ifdef TIDE_GENERATING_FORCES
+      USE equilibrium_tide_mod,    ONLY : equilibrium_tide
+# endif
 # if defined ATM_COUPLING_NOT_YET && defined MCT_LIB
       USE ocean_coupler_mod,       ONLY : atmos_coupling
 # endif
@@ -252,6 +255,9 @@
             CALL rp_set_massflux (ng, tile, iRPM)
 # ifndef TS_FIXED
             CALL rp_rho_eos (ng, tile, iRPM)
+# endif
+# ifdef TIDE_GENERATING_FORCES
+            CALL equilibrium_tide (ng, tile, iTLM)
 # endif
             CALL rp_diag (ng, tile)
 # ifdef FORWARD_READ

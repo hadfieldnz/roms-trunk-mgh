@@ -1430,7 +1430,7 @@
         IF (.not.find_file(ng, out, fname, 'OBSname')) THEN
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         ELSE
-          IF (Master.and.Lwrite) WRITE (out,160)
+          IF (Master.and.Lwrite) WRITE (out,160)                        &
      &      '          Input observations File:  ', TRIM(fname)
         END IF
         IF (Master.and.Lwrite) WRITE (out,160)                          &

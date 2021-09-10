@@ -70,6 +70,10 @@
      &                       GRID(ng) % ad_z_w,                         &
      &                       OCEAN(ng) % rho,                           &
      &                       OCEAN(ng) % ad_rho,                        &
+#ifdef TIDE_GENERATING_FORCES
+     &                       OCEAN(ng) % eq_tide,                       &
+     &                       OCEAN(ng) % ad_eq_tide,                    &
+#endif
 #ifdef ATM_PRESS
      &                       FORCES(ng) % Pair,                         &
 #endif
@@ -95,6 +99,9 @@
      &                             Hz, ad_Hz,                           &
      &                             z_w, ad_z_w,                         &
      &                             rho, ad_rho,                         &
+#ifdef TIDE_GENERATING_FORCES
+     &                             eq_tide, ad_eq_tide,                 &
+#endif
 #ifdef ATM_PRESS
      &                             Pair,                                &
 #endif
@@ -123,6 +130,10 @@
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:,LBj:)
 # endif
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:,LBj:)
+      real(r8), intent(inout) :: ad_eq_tide(LBi:,LBj:)
+# endif
 # ifdef DIAGNOSTICS_UV
 !!    real(r8), intent(inout) :: DiaRU(LBi:,LBj:,:,:,:)
 !!    real(r8), intent(inout) :: DiaRV(LBi:,LBj:,:,:,:)
@@ -140,6 +151,10 @@
       real(r8), intent(in) :: rho(LBi:UBi,LBj:UBj,N(ng))
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:UBi,LBj:UBj)
+# endif
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:UBi,LBj:UBj)
+      real(r8), intent(inout) :: ad_eq_tide(LBi:UBi,LBj:UBj)
 # endif
 # ifdef DIAGNOSTICS_UV
 !!    real(r8), intent(inout) :: DiaRU(LBi:UBi,LBj:UBj,N(ng),2,NDrhs)
@@ -203,10 +218,12 @@
 #endif
       DO j=JstrV-1,Jend
         DO i=IstrU-1,Iend
-#ifdef ATM_PRESS
-          P(i,j,N(ng))=fac*(Pair(i,j)-OneAtm)
-#else
           P(i,j,N(ng))=0.0_r8
+#ifdef ATM_PRESS
+          P(i,j,N(ng))=P(i,j,N(ng))+fac*(Pair(i,j)-OneAtm)
+#endif
+#ifdef TIDE_GENERATING_FORCES
+          P(i,j,N(ng))=P(i,j,N(ng))-g*eq_tide(i,j)
 #endif
         END DO
         DO k=N(ng),1,-1
@@ -368,6 +385,11 @@
           END DO
         END DO
         DO i=IstrU-1,Iend
+#ifdef TIDE_GENERATING_FORCES
+!^        tl_P(i,j,N(ng))=tl_P(i,j,N(ng))-g*tl_eq_tide(i,j)
+!^
+          ad_eq_tide(i,j)=ad_eq_tide(i,j)-g*ad_P(i,j,N(ng))
+#endif
 !^        tl_P(i,j,N(ng))=0.0_r8
 !^
           ad_P(i,j,N(ng))=0.0_r8

@@ -101,6 +101,10 @@
      &                     OCEAN(ng) % vbar_stokes,                     &
      &                     OCEAN(ng) % tl_vbar_stokes,                  &
 #endif
+#if defined TIDE_GENERATING_FORCES && !defined SOLVE3D
+     &                     OCEAN(ng) % eq_tide,                         &
+     &                     OCEAN(ng) % tl_eq_tide,                      &
+#endif
 #ifndef SOLVE3D
      &                     FORCES(ng) % tl_bustr,                       &
      &                     FORCES(ng) % tl_bvstr,                       &
@@ -187,6 +191,9 @@
      &                           tl_rulag2d, tl_rvlag2d,                &
      &                           ubar_stokes, tl_ubar_stokes,           &
      &                           vbar_stokes, tl_vbar_stokes,           &
+#endif
+#if defined TIDE_GENERATING_FORCES && !defined SOLVE3D
+     &                           eq_tide, tl_eq_tide,                   &
 #endif
 #ifndef SOLVE3D
      &                           tl_bustr, tl_bvstr,                    &
@@ -293,6 +300,10 @@
       real(r8), intent(in) :: ubar_stokes(LBi:,LBj:)
       real(r8), intent(in) :: vbar_stokes(LBi:,LBj:)
 # endif
+# if defined TIDE_GENERATING_FORCES && !defined SOLVE3D
+      real(r8), intent(in) :: eq_tide(LBi:,LBj:)
+      real(r8), intent(in) :: tl_eq_tide(LBi:,LBj:)
+# endif
       real(r8), intent(in) :: rubar(LBi:,LBj:,:)
       real(r8), intent(in) :: rvbar(LBi:,LBj:,:)
       real(r8), intent(in) :: rzeta(LBi:,LBj:,:)
@@ -333,6 +344,10 @@
       real(r8), intent(inout) :: tl_rvlag2d(LBi:,LBj:)
       real(r8), intent(inout) :: tl_ubar_stokes(LBi:,LBj:)
       real(r8), intent(inout) :: tl_vbar_stokes(LBi:,LBj:)
+# endif
+# if defined TIDE_GENERATING_FORCES && !defined SOLVE3D
+      real(r8), intent(in) :: eq_tide(LBi:UBi,LBj:UBj)
+      real(r8), intent(in) :: tl_eq_tide(LBi:UBi,LBj:UBj)
 # endif
 # ifdef WET_DRY_NOT_YET
       real(r8), intent(inout) :: pmask_full(LBi:,LBj:)
@@ -1399,13 +1414,29 @@
 !^   &                  fac3*on_u(i,j)*                                 &
 !^   &                  (h(i-1,j)+h(i,j)+                               &
 !^   &                   gzeta(i-1,j)+gzeta(i,j))*                      &
-!^   &                  (Pair(i-1,j)-Pair(i,j))
+!^   &                  (Pair(i,j)-Pair(i-1,j))
 !^
           tl_rhs_ubar(i,j)=tl_rhs_ubar(i,j)+                            &
      &                     fac3*on_u(i,j)*                              &
      &                     (tl_h(i-1,j)+tl_h(i,j)+                      &
      &                      tl_gzeta(i-1,j)+tl_gzeta(i,j))*             &
-     &                     (Pair(i-1,j)-Pair(i,j))
+     &                     (Pair(i,j)-Pair(i-1,j))
+#endif
+#if defined TIDE_GENERATING_FORCES && !defined SOLVE3D
+!^        rhs_ubar(i,j)=rhs_ubar(i,j)-                                  &
+!^   &                  cff1*on_u(i,j)*                                 &
+!^   &                  (h(i-1,j)+h(i,j)+                               &
+!^   &                   gzeta(i-1,j)+gzeta(i,j))*                      &
+!^   &                  (eq_tide(i,j)-eq_tide(i-1,j))
+!^
+          tl_rhs_ubar(i,j)=tl_rhs_ubar(i,j)-                            &
+     &                     cff1*on_u(i,j)*                              &
+     &                     ((tl_h(i-1,j)+tl_h(i,j)+                     &
+     &                       tl_gzeta(i-1,j)+tl_gzeta(i,j))*            &
+     &                      (eq_tide(i,j)-eq_tide(i-1,j))+              &
+     &                      (h(i-1,j)+h(i,j)+                           &
+     &                       gzeta(i-1,j)+gzeta(i,j))*                  &
+     &                      (tl_eq_tide(i,j)-tl_eq_tide(i-1,j)))
 #endif
 #ifdef DIAGNOSTICS_UV
 !!        DiaU2rhs(i,j,M2pgrd)=rhs_ubar(i,j)
@@ -1469,13 +1500,29 @@
 !^   &                    fac3*om_v(i,j)*                               &
 !^   &                    (h(i,j-1)+h(i,j)+                             &
 !^   &                     gzeta(i,j-1)+gzeta(i,j))*                    &
-!^   &                    (Pair(i,j-1)-Pair(i,j))
+!^   &                    (Pair(i,j)-Pair(i,j-1))
 !^
             tl_rhs_vbar(i,j)=tl_rhs_vbar(i,j)+                          &
      &                       fac3*om_v(i,j)*                            &
      &                       (tl_h(i,j-1)+tl_h(i,j)+                    &
      &                        tl_gzeta(i,j-1)+tl_gzeta(i,j))*           &
-     &                       (Pair(i,j-1)-Pair(i,j))
+     &                       (Pair(i,j)-Pair(i,j-1))
+#endif
+#if defined TIDE_GENERATING_FORCES && !defined SOLVE3D
+!^          rhs_vbar(i,j)=rhs_vbar(i,j)-                                &
+!^   &                    cff1*om_v(i,j)*                               &
+!^   &                    (h(i,j-1)+h(i,j)+                             &
+!^   &                     gzeta(i,j-1)+gzeta(i,j))*                    &
+!^   &                    (eq_tide(i,j)-eq_tide(i,j-1))
+!^
+            tl_rhs_vbar(i,j)=tl_rhs_vbar(i,j)-                          &
+     &                       cff1*om_v(i,j)*                            &
+     &                       ((tl_h(i,j-1)+tl_h(i,j)+                   &
+     &                         tl_gzeta(i,j-1)+tl_gzeta(i,j))*          &
+     &                        (eq_tide(i,j)-eq_tide(i,j-1))+            &
+     &                        (h(i,j-1)+h(i,j)+                         &
+     &                         gzeta(i,j-1)+gzeta(i,j))*                &
+     &                        (tl_eq_tide(i,j)-tl_eq_tide(i,j-1)))
 #endif
 #ifdef DIAGNOSTICS_UV
 !!          DiaV2rhs(i,j,M2pgrd)=rhs_vbar(i,j)

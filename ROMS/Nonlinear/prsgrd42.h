@@ -81,6 +81,9 @@
      &                    GRID(ng) % on_u,                              &
      &                    GRID(ng) % z_w,                               &
      &                    OCEAN(ng) % rho,                              &
+#ifdef TIDE_GENERATING_FORCES
+     &                    OCEAN(ng) % eq_tide,                          &
+#endif
 #ifdef ATM_PRESS
      &                    FORCES(ng) % Pair,                            &
 #endif
@@ -110,6 +113,9 @@
 #endif
      &                          Hz, om_v, on_u, z_w,                    &
      &                          rho,                                    &
+#ifdef TIDE_GENERATING_FORCES
+     &                          eq_tide,                                &
+#endif
 #ifdef ATM_PRESS
      &                          Pair,                                   &
 #endif
@@ -143,6 +149,9 @@
       real(r8), intent(in) :: on_u(LBi:,LBj:)
       real(r8), intent(in) :: z_w(LBi:,LBj:,0:)
       real(r8), intent(in) :: rho(LBi:,LBj:,:)
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:,LBj:)
+# endif
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:,LBj:)
 # endif
@@ -166,6 +175,9 @@
       real(r8), intent(in) :: on_u(LBi:UBi,LBj:UBj)
       real(r8), intent(in) :: z_w(LBi:UBi,LBj:UBj,0:N(ng))
       real(r8), intent(in) :: rho(LBi:UBi,LBj:UBj,N(ng))
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:UBi,LBj:UBj)
+# endif
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:UBi,LBj:UBj)
 # endif
@@ -281,10 +293,12 @@
 !  pressure at the free-surface as zero
 !
         DO i=IstrU-2,Iend+1
-#ifdef ATM_PRESS
-          P(i,j,N(ng))=fac*(Pair(i,j)-OneAtm)
-#else
           P(i,j,N(ng))=0.0_r8
+#ifdef ATM_PRESS
+          P(i,j,N(ng))=P(i,j,N(ng))+fac*(Pair(i,j)-OneAtm)
+#endif
+#ifdef TIDE_GENERATING_FORCES
+          P(i,j,N(ng))=P(i,j,N(ng))-g*eq_tide(i,j)
 #endif
         END DO
         DO k=N(ng),1,-1

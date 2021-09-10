@@ -70,6 +70,10 @@
      &                       GRID(ng) % tl_z_w,                         &
      &                       OCEAN(ng) % rho,                           &
      &                       OCEAN(ng) % tl_rho,                        &
+#ifdef TIDE_GENERATING_FORCES
+     &                       OCEAN(ng) % eq_tide,                       &
+     &                       OCEAN(ng) % tl_eq_tide,                    &
+#endif
 #ifdef ATM_PRESS
      &                       FORCES(ng) % Pair,                         &
 #endif
@@ -95,6 +99,9 @@
      &                             Hz, tl_Hz,                           &
      &                             z_w, tl_z_w,                         &
      &                             rho, tl_rho,                         &
+#ifdef TIDE_GENERATING_FORCES
+     &                             eq_tide, tl_eq_tide,                 &
+#endif
 #ifdef ATM_PRESS
      &                             Pair,                                &
 #endif
@@ -124,6 +131,10 @@
       real(r8), intent(in) :: tl_Hz(LBi:,LBj:,:)
       real(r8), intent(in) :: tl_z_w(LBi:,LBj:,0:)
       real(r8), intent(in) :: tl_rho(LBi:,LBj:,:)
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:,LBj:)
+      real(r8), intent(in) :: tl_eq_tide(LBi:,LBj:)
+# endif
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:,LBj:)
 # endif
@@ -143,6 +154,10 @@
       real(r8), intent(in) :: tl_Hz(LBi:UBi,LBj:UBj,N(ng))
       real(r8), intent(in) :: tl_z_w(LBi:UBi,LBj:UBj,0:N(ng))
       real(r8), intent(in) :: tl_rho(LBi:UBi,LBj:UBj,N(ng))
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:UBi,LBj:UBj)
+      real(r8), intent(in) :: tl_eq_tide(LBi:UBi,LBj:UBj)
+# endif
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:UBi,LBj:UBj)
 # endif
@@ -185,12 +200,15 @@
 #endif
       J_LOOP : DO j=JstrV-1,Jend
         DO i=IstrU-1,Iend
-#ifdef ATM_PRESS
-          P(i,j,N(ng))=fac*(Pair(i,j)-OneAtm)
-#else
           P(i,j,N(ng))=0.0_r8
+#ifdef ATM_PRESS
+          P(i,j,N(ng))=P(i,j,N(ng))+fac*(Pair(i,j)-OneAtm)
 #endif
           tl_P(i,j,N(ng))=0.0_r8
+#ifdef TIDE_GENERATING_FORCES
+          P(i,j,N(ng))=P(i,j,N(ng))-g*eq_tide(i,j)
+          tl_P(i,j,N(ng))=tl_P(i,j,N(ng))--g*tl_eq_tide(i,j)
+#endif
         END DO
         DO k=N(ng),1,-1
           DO i=IstrU-1,Iend

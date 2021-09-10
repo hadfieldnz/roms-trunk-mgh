@@ -71,6 +71,9 @@
 !!    USE ad_step_floats_mod,      ONLY : tl_step_floats
 # endif
       USE dateclock_mod,           ONLY : time_string
+# ifdef TIDE_GENERATING_FORCES
+      USE equilibrium_tide_mod,    ONLY : equilibrium_tide
+# endif
 # ifdef WEAK_CONSTRAINT
       USE frc_weak_mod,            ONLY : frc_ADgather, frc_clear
 # endif
@@ -150,6 +153,9 @@
             CALL ad_set_data (ng, tile)
 # ifdef AD_AVERAGES
             CALL ad_set_avg (ng, tile)
+# endif
+# ifdef TIDE_GENERATING_FORCES
+            CALL equilibrium_tide (ng, tile, iADM)
 # endif
 # ifdef DIAGNOSTICS
 !!          CALL ad_set_diags (ng, tile)

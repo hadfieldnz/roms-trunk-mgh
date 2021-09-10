@@ -124,6 +124,9 @@
       USE bulk_flux_mod,           ONLY : bulk_flux
 # endif
       USE dateclock_mod,           ONLY : time_string
+# ifdef TIDE_GENERATING_FORCES
+      USE equilibrium_tide_mod,    ONLY : equilibrium_tide
+# endif
 # if defined ATM_COUPLING_NOT_YET && defined MCT_LIB
       USE ocean_coupler_mod,       ONLY : atmos_coupling
 # endif
@@ -209,6 +212,9 @@
             CALL ad_set_data (ng, tile)
 # ifdef FORWARD_READ
             CALL set_depth (ng, tile, iADM)
+# endif
+# ifdef TIDE_GENERATING_FORCES
+            CALL equilibrium_tide (ng, tile, iADM)
 # endif
           END DO
         END DO

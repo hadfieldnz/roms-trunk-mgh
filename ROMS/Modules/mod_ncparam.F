@@ -296,6 +296,7 @@
       integer  :: idTdif        ! vertical T-diffusion coefficient
       integer  :: idTice        ! temperature of ice surface
       integer  :: idtime        ! ocean time
+      integer  :: idTref        ! tidal reference date for zero phase
       integer  :: idTper        ! tidal period
       integer  :: idTvan        ! tidal current angle
       integer  :: idTvma        ! maximum tidal current
@@ -1535,6 +1536,8 @@
               idU3Sd=varid
             CASE ('idV3Sd')
               idV3Sd=varid
+            CASE ('idTref')
+              idTref=varid
             CASE ('idTper')
               idTper=varid
             CASE ('idTzam')

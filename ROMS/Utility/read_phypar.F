@@ -981,6 +981,11 @@
             CASE ('BVF_BAK')
               Npts=load_r(Nval, Rval, 1, Rvalue)
               bvf_bak=Rvalue(1)
+#ifdef TIDE_GENERATING_FORCES
+            CASE ('Lnodal')
+              Npts=load_l(Nval, Cval, 1, Lvalue)
+              Lnodal=Lvalue(1)
+#endif
             CASE ('DSTART')
               Npts=load_r(Nval, Rval, 1, Dvalue)
               dstart=Dvalue(1)
@@ -997,12 +1002,12 @@
                 DO itrc=1,NAT
                   Tnudg(itrc,ng)=Dtracer(itrc,ng)
                 END DO
-# ifdef T_PASSIVE
+#ifdef T_PASSIVE
                 DO i=1,NPT
                   itrc=inert(i)
                   Tnudg(itrc,ng)=Dtracer(NAT+i,ng)
                 END DO
-# endif
+#endif
               END DO
             CASE ('ZNUDG')
               Npts=load_r(Nval, Rval, Ngrids, Znudg)
@@ -3544,7 +3549,8 @@
               label='SSF - Sources/Sinks forcing fields'
               Npts=load_s1d(Nval, Cval, Cdim, line, label, igrid,       &
      &                      Ngrids, Nfiles, inp_lib, SSF)
-# if defined SSH_TIDES || defined UV_TIDES
+# if defined SSH_TIDES || defined UV_TIDES || \
+     defined TIDE_GENERATING_FORCES
             CASE ('TIDENAME')
               label='TIDE - Tidal forcing fields'
               Npts=load_s1d(Nval, Cval, Cdim, line, label, igrid,       &
@@ -4773,6 +4779,10 @@
 #if defined SOLVE3D && (defined FOUR_DVAR || defined PROPAGATOR)
           WRITE (out,200) bvf_bak, 'bvf_bak',                           &
      &          'Background Brunt-Vaisala frequency squared (1/s2).'
+#endif
+#ifdef TIDE_GENERATING_FORCES
+          WRITE (out,170) Lnodal, 'Lnodal',                             &
+     &          'Switch to apply a 18.5-year lunar nodal correction.'
 #endif
           WRITE (out,140) dstart, 'dstart',                             &
      &          'Time-stamp assigned to model initialization (days).'
@@ -6792,7 +6802,7 @@
 !-----------------------------------------------------------------------
 !  Report generic USER parameters.
 !-----------------------------------------------------------------------
-
+!
       IF (Nuser.gt.0) THEN
         IF (Master.and.Lwrite) THEN
           WRITE (out,240)
@@ -6801,6 +6811,19 @@
           END DO
         END IF
       END IF
+
+#if !defined ANA_TIDES              && \
+    (defined TIDE_GENERATING_FORCES || \
+     defined SSH_TIDES              || defined UV_TIDES)
+!
+!-----------------------------------------------------------------------
+!  Check and report tidal reference date for zero phase.
+!-----------------------------------------------------------------------
+!
+      DO ng=1,Ngrids
+        CALL tides_date (ng)
+      END DO
+#endif
 
 #if defined WEAK_CONSTRAINT   && \
    (defined POSTERIOR_EOFS    || defined POSTERIOR_ERROR_F || \

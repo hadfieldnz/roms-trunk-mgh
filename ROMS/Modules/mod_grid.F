@@ -29,6 +29,10 @@
 !               RHO-points.                                            !
 !  CosAngler  Cosine of curvilinear angle, angler.                     !
 !  SinAngler  Sine of curvilinear angle, angler.                       !
+#if defined TIDE_GENERATING_FORCES
+!  Cos2Lat    Squared cosine of latitude, COS2(latr).                  !
+!  SinLat2    Sine of twice the latitude, SIN(2*latr).                 !
+#endif
 !  dmde       ETA-derivative of inverse metric factor pm,              !
 !               d(1/pm)/d(ETA).                                        !
 !  dndx       XI-derivative  of inverse metric factor pn,              !
@@ -150,6 +154,11 @@
           real(r8), pointer :: angler(:,:)
           real(r8), pointer :: CosAngler(:,:)
           real(r8), pointer :: SinAngler(:,:)
+
+#if defined TIDE_GENERATING_FORCES
+          real(r8), pointer :: Cos2Lat(:,:)
+          real(r8), pointer :: SinLat2(:,:)
+#endif
 
 #if defined CURVGRID && defined UV_ADV
           real(r8), pointer :: dmde(:,:)
@@ -352,6 +361,14 @@
 
       allocate ( GRID(ng) % SinAngler(LBi:UBi,LBj:UBj) )
       Dmem(ng)=Dmem(ng)+size2d
+
+#if defined TIDE_GENERATING_FORCES
+      allocate ( GRID(ng) % Cos2Lat(LBi:UBi,LBj:UBj) )
+      Dmem(ng)=Dmem(ng)+size2d
+
+      allocate ( GRID(ng) % SinLat2(LBi:UBi,LBj:UBj) )
+      Dmem(ng)=Dmem(ng)+size2d
+#endif
 
 #if defined CURVGRID && defined UV_ADV
       allocate ( GRID(ng) % dmde(LBi:UBi,LBj:UBj) )
@@ -774,6 +791,11 @@
             GRID(ng) % angler(i,j) = IniMetricVal
             GRID(ng) % CosAngler(i,j) = IniVal
             GRID(ng) % SinAngler(i,j) = IniVal
+
+#if defined TIDE_GENERATING_FORCES
+            GRID(ng) % Cos2Lat(i,j) = IniVal
+            GRID(ng) % SinLat2(i,j) = IniVal
+#endif
 
 #if defined CURVGRID && defined UV_ADV
             GRID(ng) % dmde(i,j) = IniMetricVal

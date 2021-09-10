@@ -74,6 +74,9 @@
      &                    GRID(ng) % z_r,                               &
      &                    GRID(ng) % z_w,                               &
      &                    OCEAN(ng) % rho,                              &
+#ifdef TIDE_GENERATING_FORCES
+     &                    OCEAN(ng) % eq_tide,                          &
+#endif
 #ifdef ATM_PRESS
      &                    FORCES(ng) % Pair,                            &
 #endif
@@ -100,6 +103,9 @@
 #endif
      &                          Hz, om_v, on_u, z_r, z_w,               &
      &                          rho,                                    &
+#ifdef TIDE_GENERATING_FORCES
+     &                          eq_tide,                                &
+#endif
 #ifdef ATM_PRESS
      &                          Pair,                                   &
 #endif
@@ -130,6 +136,9 @@
       real(r8), intent(in) :: z_r(LBi:,LBj:,:)
       real(r8), intent(in) :: z_w(LBi:,LBj:,0:)
       real(r8), intent(in) :: rho(LBi:,LBj:,:)
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:,LBj:)
+# endif
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:,LBj:)
 # endif
@@ -150,6 +159,9 @@
       real(r8), intent(in) :: z_r(LBi:UBi,LBj:UBj,N(ng))
       real(r8), intent(in) :: z_w(LBi:UBi,LBj:UBj,0:N(ng))
       real(r8), intent(in) :: rho(LBi:UBi,LBj:UBj,N(ng))
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:UBi,LBj:UBj)
+# endif
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:UBi,LBj:UBj)
 # endif
@@ -190,8 +202,13 @@
 
       DO j=Jstr,Jend
         DO i=IstrU,Iend
+#ifdef TIDE_GENERATING_FORCES
+          cff1=z_w(i  ,j,N(ng))-eq_tide(i  ,j)-z_r(i  ,j,N(ng))+        &
+     &         z_w(i-1,j,N(ng))-eq_tide(i-1,j)-z_r(i-1,j,N(ng))
+#else
           cff1=z_w(i  ,j,N(ng))-z_r(i  ,j,N(ng))+                       &
      &         z_w(i-1,j,N(ng))-z_r(i-1,j,N(ng))
+#endif
           phix(i)=fac1*(rho(i,j,N(ng))-rho(i-1,j,N(ng)))*cff1
 #ifdef ATM_PRESS
           phix(i)=phix(i)+fac*(Pair(i,j)-Pair(i-1,j))
@@ -266,8 +283,13 @@
 !
         IF (j.ge.JstrV) THEN
           DO i=Istr,Iend
+#ifdef TIDE_GENERATING_FORCES
+            cff1=z_w(i,j  ,N(ng))-eq_tide(i,j  )-z_r(i,j  ,N(ng))+      &
+     &           z_w(i,j-1,N(ng))-eq_tide(i,j-1)-z_r(i,j-1,N(ng))
+#else
             cff1=z_w(i,j  ,N(ng))-z_r(i,j  ,N(ng))+                     &
      &           z_w(i,j-1,N(ng))-z_r(i,j-1,N(ng))
+#endif
             phie(i)=fac1*(rho(i,j,N(ng))-rho(i,j-1,N(ng)))*cff1
 #ifdef ATM_PRESS
             phie(i)=phie(i)+fac*(Pair(i,j)-Pair(i,j-1))

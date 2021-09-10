@@ -73,6 +73,10 @@
      &                       GRID(ng) % tl_z_w,                         &
      &                       OCEAN(ng) % rho,                           &
      &                       OCEAN(ng) % tl_rho,                        &
+#ifdef TIDE_GENERATING_FORCES
+     &                       OCEAN(ng) % eq_tide,                       &
+     &                       OCEAN(ng) % tl_eq_tide,                    &
+#endif
 #ifdef ATM_PRESS
      &                       FORCES(ng) % Pair,                         &
 #endif
@@ -99,6 +103,9 @@
      &                             z_r, tl_z_r,                         &
      &                             z_w, tl_z_w,                         &
      &                             rho, tl_rho,                         &
+#ifdef TIDE_GENERATING_FORCES
+     &                             eq_tide, tl_eq_tide,                 &
+#endif
 #ifdef ATM_PRESS
      &                             Pair,                                &
 #endif
@@ -131,6 +138,10 @@
       real(r8), intent(in) :: tl_z_w(LBi:,LBj:,0:)
       real(r8), intent(in) :: tl_rho(LBi:,LBj:,:)
 
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:,LBj:)
+      real(r8), intent(in) :: tl_eq_tide(LBi:,LBj:)
+# endif
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:,LBj:)
 # endif
@@ -153,6 +164,10 @@
       real(r8), intent(in) :: tl_z_w(LBi:UBi,LBj:UBj,0:N(ng))
       real(r8), intent(in) :: tl_rho(LBi:UBi,LBj:UBj,N(ng))
 
+# ifdef TIDE_GENERATING_FORCES
+      real(r8), intent(in) :: eq_tide(LBi:,LBj:)
+      real(r8), intent(in) :: tl_eq_tide(LBi:,LBj:)
+# endif
 # ifdef ATM_PRESS
       real(r8), intent(in) :: Pair(LBi:UBi,LBj:UBj)
 # endif
@@ -198,10 +213,19 @@
 
       DO j=Jstr,Jend
         DO i=IstrU,Iend
+#ifdef TIDE_GENERATING_FORCES
+          cff1=z_w(i  ,j,N(ng))-eq_tide(i  ,j)-z_r(i  ,j,N(ng))+        &
+     &         z_w(i-1,j,N(ng))-eq_tide(i-1,j)-z_r(i-1,j,N(ng))
+          tl_cff1=tl_z_w(i  ,j,N(ng))-tl_eq_tide(i  ,j)-                &
+     &            tl_z_r(i  ,j,N(ng))+                                  &
+     &            tl_z_w(i-1,j,N(ng))-tl_eq_tide(i-1,j)-                &
+     &            tl_z_r(i-1,j,N(ng))
+#else
           cff1=z_w(i  ,j,N(ng))-z_r(i  ,j,N(ng))+                       &
      &         z_w(i-1,j,N(ng))-z_r(i-1,j,N(ng))
           tl_cff1=tl_z_w(i  ,j,N(ng))-tl_z_r(i  ,j,N(ng))+              &
      &            tl_z_w(i-1,j,N(ng))-tl_z_r(i-1,j,N(ng))
+#endif
           phix(i)=fac1*(rho(i,j,N(ng))-rho(i-1,j,N(ng)))*cff1
           tl_phix(i)=fac1*                                              &
      &               ((tl_rho(i,j,N(ng))-tl_rho(i-1,j,N(ng)))*cff1+     &
@@ -321,9 +345,9 @@
      &                         phix(i)+                                 &
      &                         (Hz(i,j,k)+Hz(i-1,j,k))*                 &
      &                         tl_phix(i))
-# ifdef DIAGNOSTICS_UV
+#ifdef DIAGNOSTICS_UV
 !!          DiaRU(i,j,k,nrhs,M3pgrd)=ru(i,j,k,nrhs)
-# endif
+#endif
           END DO
         END DO
 !
@@ -335,10 +359,19 @@
 !
         IF (j.ge.JstrV) THEN
           DO i=Istr,Iend
+#ifdef TIDE_GENERATING_FORCES
+            cff1=z_w(i,j  ,N(ng))-eq_tide(i,j  )-z_r(i,j  ,N(ng))+      &
+     &           z_w(i,j-1,N(ng))-eq_tide(i,j-1)-z_r(i,j-1,N(ng))
+            tl_cff1=tl_z_w(i,j  ,N(ng))-tl_eq_tide(i,j  )-              &
+     &              tl_z_r(i,j  ,N(ng))+                                &
+     &              tl_z_w(i,j-1,N(ng))-tl_eq_tide(i,j-1)-              &
+     &              tl_z_r(i,j-1,N(ng))
+#else
             cff1=z_w(i,j  ,N(ng))-z_r(i,j  ,N(ng))+                     &
      &           z_w(i,j-1,N(ng))-z_r(i,j-1,N(ng))
             tl_cff1=tl_z_w(i,j  ,N(ng))-tl_z_r(i,j  ,N(ng))+            &
      &              tl_z_w(i,j-1,N(ng))-tl_z_r(i,j-1,N(ng))
+#endif
             phie(i)=fac1*(rho(i,j,N(ng))-rho(i,j-1,N(ng)))*cff1
             tl_phie(i)=fac1*                                            &
      &                 ((tl_rho(i,j,N(ng))-tl_rho(i,j-1,N(ng)))*cff1+   &
