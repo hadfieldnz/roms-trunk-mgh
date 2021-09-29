@@ -231,7 +231,7 @@
 # if !defined ANA_PAIR       && \
      (defined ATM_PRESS      || defined BULK_FLUXES  || \
       defined ECOSIM)
-#  if !(defined FRC_COUPLING || definedFORWARD_FLUXES)
+#  if !(defined FRC_COUPLING || defined FORWARD_FLUXES)
 !
 !-----------------------------------------------------------------------
 !  Surface air pressure from input FRC file.

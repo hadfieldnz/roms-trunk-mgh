@@ -2544,6 +2544,13 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+23)=' SURFACE_DO_SATURATION,'
 #endif
+#if defined SUBOBJECT_DEALLOCATION
+!
+      IF (Master) WRITE (stdout,20) 'SUBOBJECT_DEALLOCATION',           &
+     &   'Deallocate each variable in structure objects separately'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+24)=' SUBOBJECT_DEALLOCATION,'
+#endif
 #if defined SUPPRESS_REPORT && defined SPLIT_4DVAR
 !
       IF (Master) WRITE (stdout,20) 'SUPPRESS_REPORT',                  &

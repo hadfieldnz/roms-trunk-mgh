@@ -12,13 +12,27 @@
 !                                                                      !
 !=======================================================================
 !
-      USE mod_param
+      USE mod_kinds
 !
       implicit none
 
 #ifdef MPI
+!
       include 'mpif.h'
 #endif
+!
+      PUBLIC :: allocate_parallel
+      PUBLIC :: deallocate_parallel
+      PUBLIC :: initialize_parallel
+
+#if defined DISTRIBUTE && defined DISJOINTED
+      PUBLIC :: split_communicator
+      PUBLIC :: assign_communicator
+#endif
+!
+!-----------------------------------------------------------------------
+!  Define variables in module.
+!-----------------------------------------------------------------------
 !
 !  Switch to identify master processor. In serial and shared-memory
 !  applications it is always true.
@@ -188,7 +202,7 @@
 !
       CONTAINS
 !
-      SUBROUTINE allocate_parallel
+      SUBROUTINE allocate_parallel (Ngrids)
 !
 !=======================================================================
 !                                                                      !
@@ -198,6 +212,10 @@
 !=======================================================================
 !
       USE mod_strings, ONLY: Nregion
+!
+!  Imported variable declarations.
+!
+      integer, intent(in) :: Ngrids
 !
 !-----------------------------------------------------------------------
 !  Allocate and initialize module variables.
@@ -254,6 +272,32 @@
 
       RETURN
       END SUBROUTINE allocate_parallel
+!
+      SUBROUTINE deallocate_parallel
+!
+!=======================================================================
+!                                                                      !
+!  This routine deallocates variables in the module.                   !
+!                                                                      !
+!=======================================================================
+!
+!-----------------------------------------------------------------------
+!  Deallocate variables in module.
+!-----------------------------------------------------------------------
+!
+!$OMP PARALLEL
+      IF (allocated(first_tile)) deallocate ( first_tile )
+      IF (allocated(last_tile))  deallocate ( last_tile )
+!
+      IF (allocated(proc))       deallocate ( proc )
+      IF (allocated(Cstr))       deallocate ( Cstr )
+      IF (allocated(Cend))       deallocate ( Cend )
+!$OMP END PARALLEL
+
+      IF (allocated(Csum))       deallocate ( Csum )
+!
+      RETURN
+      END SUBROUTINE deallocate_parallel
 !
       SUBROUTINE initialize_parallel
 !

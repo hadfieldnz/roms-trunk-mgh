@@ -50,9 +50,16 @@
 !                                                                      !
 !=======================================================================
 !
-        USE mod_param
+!       USE mod_param
 !
         implicit none
+!
+        PUBLIC :: allocate_stepping
+        PUBLIC :: deallocate_stepping
+!
+!-----------------------------------------------------------------------
+!  Define module variables.
+!-----------------------------------------------------------------------
 !
         integer, allocatable :: knew(:)
         integer, allocatable :: krhs(:)
@@ -94,7 +101,7 @@
 !
       CONTAINS
 !
-      SUBROUTINE allocate_stepping
+      SUBROUTINE allocate_stepping (Ngrids)
 !
 !=======================================================================
 !                                                                      !
@@ -102,6 +109,10 @@
 !  on the number of nested grids.                                      !
 !                                                                      !
 !=======================================================================
+!
+!  Imported variable declarations
+!
+       integer, intent(in) :: Ngrids
 !
 !-----------------------------------------------------------------------
 !  Allocate and intialize time indices.
@@ -206,9 +217,72 @@
         allocate ( NTC(Ngrids) )
       END IF
 #endif
-
+!
       RETURN
       END SUBROUTINE allocate_stepping
+!
+      SUBROUTINE deallocate_stepping
+!
+!=======================================================================
+!                                                                      !
+!  This routine deallocates several variables in the module that       !
+!  depend on the number of nested grids.                               !
+!                                                                      !
+!=======================================================================
+!
+!-----------------------------------------------------------------------
+!  Deallocate variables in module.
+!-----------------------------------------------------------------------
+!
+!$OMP PARALLEL
+      IF (allocated(knew))  deallocate ( knew )
 
+      IF (allocated(krhs))  deallocate ( krhs )
+
+      IF (allocated(kstp))  deallocate ( kstp )
+
+      IF (allocated(nnew))  deallocate ( nnew )
+
+      IF (allocated(nrhs))  deallocate ( nrhs )
+
+      IF (allocated(nstp))  deallocate ( nstp )
+
+#ifdef FLOATS
+      IF (allocated(nf))    deallocate ( nf )
+
+      IF (allocated(nfp1))  deallocate ( nfp1 )
+
+      IF (allocated(nfm3))  deallocate ( nfm3 )
+
+      IF (allocated(nfm2))  deallocate ( nfm2 )
+
+      IF (allocated(nfm1))  deallocate ( nfm1 )
+#endif
+!$OMP END PARALLEL
+
+#ifdef ADJUST_BOUNDARY
+      IF (allocated(Lbinp)) deallocate ( Lbinp )
+
+      IF (allocated(Lbout)) deallocate ( Lbout )
+#endif
+
+#if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
+    defined ADJUST_WSTRESS
+      IF (allocated(Lfinp)) deallocate ( Lfinp )
+
+      IF (allocated(Lfout)) deallocate ( Lfout )
+#endif
+
+      IF (allocated(Lnew))  deallocate ( Lnew )
+
+      IF (allocated(Lold))  deallocate ( Lold )
+
+#if defined SSH_TIDES || defined UV_TIDES
+      IF (allocated(NTC))   deallocate ( NTC )
+#endif
+!
+      RETURN
+      END SUBROUTINE deallocate_stepping
+!
       END MODULE mod_stepping
 

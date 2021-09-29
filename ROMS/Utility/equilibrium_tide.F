@@ -45,9 +45,9 @@
 # ifdef DISTRIBUTE
       USE mp_exchange_mod, ONLY : mp_exchange2d
 # endif
-      USE mod_param,       ONLY : BOUNDS, iADM, iRPM, iTLM
+      USE mod_param,       ONLY : BOUNDS, iADM, iNLM, iRPM, iTLM,       &
+     &                            NghostPoints
       USE mod_scalars,     ONLY : EWperiodic, NSperiodic, Lnodal,       &
-     &                            iNLM, NghostPoints,                   &
      &                            deg2rad, tide_start, time, Rclock
 !
       implicit none

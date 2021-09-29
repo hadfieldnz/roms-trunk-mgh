@@ -33,6 +33,9 @@
 !! i4dvar_roms.h                Strong constraint, incremental 4D-Var  !
 !!                                data assimilation driver (I4D-Var)   !
 !!                                                                     !
+!! jedi_roms.h                  Joint Effort for DA Integration        !
+!!                                configuration                        !
+!!                                                                     !
 !! nl_roms.h                    Nonlinear model driver (default)       !
 !!                                                                     !
 !! op_roms.h                    Optimal perturbations driver           !
@@ -148,9 +151,11 @@
 #elif defined ARRAY_MODES || defined CLIPPING
 # include "array_modes.h"
 #elif defined I4DVAR && !defined SPLIT_I4DVAR
-#  include "i4dvar_roms.h"
+# include "i4dvar_roms.h"
 #elif defined I4DVAR_ANA_SENSITIVITY
 # include "obs_sen_i4dvar_analysis.h"
+#elif defined JEDI
+# include "jedi_roms.h"
 #elif defined RBL4DVAR && !defined SPLIT_RBL4DVAR
 # include "rbl4dvar_roms.h"
 #elif defined RBL4DVAR_ANA_SENSITIVITY

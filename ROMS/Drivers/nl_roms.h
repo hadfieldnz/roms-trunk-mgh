@@ -21,6 +21,7 @@
 !
       USE mod_param
       USE mod_parallel
+      USE mod_arrays
 #ifdef VERIFICATION
       USE mod_fourdvar
 #endif
@@ -162,15 +163,10 @@
 !  Allocate and initialize all model state arrays.
 !
 !$OMP PARALLEL
-        CALL mod_arrays (allocate_vars)
+        CALL ROMS_allocate_arrays (allocate_vars)
+        CALL ROMS_initialize_arrays
 !$OMP END PARALLEL
 
-#ifdef VERIFICATION
-!
-!  Allocate and initialize observation arrays.
-!
-        CALL initialize_fourdvar
-#endif
       END IF
 
 #if defined MCT_LIB && (defined ATM_COUPLING || defined WAV_COUPLING)

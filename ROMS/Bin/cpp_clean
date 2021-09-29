@@ -37,6 +37,9 @@ while (<FILE>) {
    next if /^!!/;
    next if /^!\$\!/;
    next if /^\s*$/;
+   if(/".*\/ROMS\/.*(\.F|\.h)"/){
+      $_=~s/".*\/ROMS\/(.*)(\.F|\.h)"/"ROMS\/$1$2"/;
+   }
    $ind=rindex($_,"&");
    if(/\&(\ )*$/ && $ind!=72){
       $l=length();

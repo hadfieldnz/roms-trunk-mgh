@@ -65,7 +65,7 @@
       USE NUOPC
 !
       USE mod_kinds
-      USE mod_param, ONLY : T_IO
+      USE mod_iounits, ONLY : T_IO
 !
       implicit none
 !
@@ -1669,7 +1669,7 @@
 !
               CALL mpi_comm_rank (OCN_COMM_WORLD, MyRank, MyError)
               CALL mpi_comm_size (OCN_COMM_WORLD, MySize, MyError)
-              CALL allocate_parallel
+              CALL allocate_parallel (NgridsR)
               CALL initialize_parallel
             CASE ('IsActive(atmos)')
               Npts=load_l(Nval, Cval, 1, Lvalue)

@@ -45,6 +45,7 @@ list( APPEND _files
       ROMS/Utility/def_station.F
       ROMS/Utility/def_tides.F
       ROMS/Utility/def_var.F
+      ROMS/Utility/destroy.F
       ROMS/Utility/distribute.F
       ROMS/Utility/dotproduct.F
       ROMS/Utility/edit_multifile.F
