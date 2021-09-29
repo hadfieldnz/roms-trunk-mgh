@@ -11,8 +11,6 @@ list( APPEND _files
       Master/coupler.F
       Master/esmf_roms.F
       Master/propagator.F
-      Master/roms_export.F
-      Master/roms_import.F
       Master/roms_kernel.F
 )
 
