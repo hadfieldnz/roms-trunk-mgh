@@ -740,11 +740,14 @@
       IF (allocated(ADS))       deallocate ( ADS )
       IF (allocated(AVG))       deallocate ( AVG )
       IF (allocated(BLK))       deallocate ( BLK )
+      IF (allocated(BRY))       deallocate ( BRY )
+      IF (allocated(CLM))       deallocate ( CLM )
       IF (allocated(DAI))       deallocate ( DAI )
       IF (allocated(DAV))       deallocate ( DAV )
       IF (allocated(DIA))       deallocate ( DIA )
       IF (allocated(ERR))       deallocate ( ERR )
       IF (allocated(FLT))       deallocate ( FLT )
+      IF (allocated(FRC))       deallocate ( FRC )
 
 #ifdef RBL4DVAR_FCT_SENSITIVITY
       IF (allocated(FCTA))      deallocate ( FCTA )
@@ -799,6 +802,19 @@
 !  Deallocate other variables in module.
 !-----------------------------------------------------------------------
 !
+      IF (allocated(BRYids))    deallocate ( BRYids )
+#if defined PIO_LIB && defined DISTRIBUTE
+      IF (allocated(BRYdesc))   deallocate ( BRYdesc )
+#endif
+      IF (allocated(CLMids))    deallocate ( CLMids )
+#if defined PIO_LIB && defined DISTRIBUTE
+      IF (allocated(CLMdesc))   deallocate ( CLMdesc )
+#endif
+      IF (allocated(FRCids))    deallocate ( FRCids )
+#if defined PIO_LIB && defined DISTRIBUTE
+      IF (allocated(FRCdesc))   deallocate ( FRCdesc )
+#endif
+
       IF (allocated(nBCfiles))  deallocate ( nBCfiles )
       IF (allocated(nCLMfiles)) deallocate ( nCLMfiles )
       IF (allocated(nFfiles))   deallocate ( nFfiles )

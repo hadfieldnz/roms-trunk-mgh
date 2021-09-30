@@ -51,6 +51,7 @@
       USE mod_grid,     ONLY : allocate_grid,                           &
      &                         deallocate_grid,                         &
      &                         initialize_grid
+      USE mod_iounits,  ONLY : deallocate_iounits
       USE mod_mixing,   ONLY : allocate_mixing,                         &
      &                         deallocate_mixing,                       &
      &                         initialize_mixing
@@ -291,6 +292,10 @@
 !
       CALL deallocate_fourdvar
 #endif
+!
+!  Deallocate I/O derived-type structures.
+!
+      CALL deallocate_iounits
 !
 !  Deallocate main configuration dimensions and associated parameters.
 !
