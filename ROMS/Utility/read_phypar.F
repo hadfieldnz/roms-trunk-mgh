@@ -4097,14 +4097,14 @@
           OutFiles=ntimes(ng)/ndefAVG(ng)
           CALL edit_file_struct (ng, OutFiles, AVG)
           AVG(ng)%load=0       ! because delayed creation of NetCDF file
-        END IF                 ! due to time-aveeraging
+        END IF                 ! due to time-averaging
 #endif
 #ifdef DIAGNOSTICS
         IF ((nDIA(ng).gt.0).and.(ndefDIA(ng).gt.0)) THEN
           OutFiles=ntimes(ng)/ndefDIA(ng)
           CALL edit_file_struct (ng, OutFiles, DIA)
           DIA(ng)%load=0       ! because delayed creation of NetCDF file
-        END IF                 ! due to time-aveeraging
+        END IF                 ! due to time-averaging
 #endif
 #if defined TANGENT || defined TL_IOMS
         IF ((nTLM(ng).gt.0).and.(ndefTLM(ng).gt.0)) THEN

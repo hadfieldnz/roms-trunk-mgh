@@ -65,7 +65,7 @@
      &                         initialize_ocean
 #if defined SEDIMENT || defined BBL_MODEL
       USE mod_sedbed,   ONLY : allocate_sedbed,                         &
-     &                         deallocate_seabed,                       &
+     &                         deallocate_sedbed,                       &
      &                         initialize_sedbed
 #endif
       USE mod_sources,  ONLY : allocate_sources,                        &
@@ -264,7 +264,7 @@
         CALL deallocate_mixing (ng)
         CALL deallocate_ocean (ng)
 #if defined SEDIMENT || defined BBL_MODEL
-        CALL allocate_sedbed (ng)
+        CALL deallocate_sedbed (ng)
 #endif
 #if defined SSH_TIDES || defined UV_TIDES
         CALL deallocate_tides (ng)

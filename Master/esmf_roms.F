@@ -1542,7 +1542,7 @@
 !  (total/memory region). All ROMS arrays are horizontally dimensioned
 !  with the same bounds regardless if they are variables located at
 !  RHO-, PSI-, U-, or V-points. There is no halos at the boundary edges.
-!  The physical boundary is a U-points (east/west edged) and V-points
+!  The physical boundary is a U-points (east/west edges) and V-points
 !  (south/north edges). The boundary for RHO-points variables are
 !  located at half grid (dx,dy) distance away from the physical boundary
 !  at array indices(i=0; i=Lm+1) and (j=0; j=Mm+1).
