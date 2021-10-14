@@ -59,6 +59,9 @@
 #endif
       USE stiffness_mod,     ONLY : stiffness
       USE strings_mod,       ONLY : FoundError
+#ifdef TANGENT
+      USE tl_set_depth_mod,  ONLY : tl_bath
+#endif
 #ifdef WET_DRY
       USE wetdry_mod,        ONLY : wetdry
 #endif
