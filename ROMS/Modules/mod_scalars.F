@@ -12,7 +12,7 @@
 #ifdef NO_4BYTE_REALS
         USE netcdf
 #endif
-!        implicit none
+!       implicit none
 !
 !-----------------------------------------------------------------------
 !  Multiple grid structure.
@@ -108,7 +108,8 @@
         real(dp) :: base               ! reference date (YYYYMMDD.dd)
         real(dp) :: DateNumber(2)      ! date number, [1]: days
                                        !              [2]: seconds
-
+        real(dp) :: tide_DateNumber(2) ! tide reference date number,
+                                       !   [1]: days  [2]: seconds
         character (len=22) :: string   ! YYYY-MM-DD hh:mm:ss.ss
         character (len=25) :: calendar ! date calendar
       END TYPE T_CLOCK
@@ -390,6 +391,11 @@
         logical, allocatable :: Lsediment(:)
         logical, allocatable :: Lstations(:)
 !
+!  If equilibrium tides, switch to apply the 18.6-year lunar nodal
+!  cycle correction.
+!
+        logical :: Lnodal = .TRUE.
+!
 !-----------------------------------------------------------------------
 !  Physical constants.
 !-----------------------------------------------------------------------
@@ -428,6 +434,12 @@
 !  Switch for spherical grid (lon,lat) configurations.
 !
         logical :: spherical = .FALSE.
+!
+!  Switch to indicate if ROMS kernel arrays have been allocated.  It
+!  used to skip memory reports during early termination.
+!
+        logical :: LallocatedMemory = .FALSE.
+!$OMP THREADPRIVATE (LallocatedMemory)
 !
 !  Switch to compute the grid stiffness.
 !
@@ -1984,10 +1996,12 @@
       END IF
       IF (.not.allocated(tdays)) THEN
         allocate ( tdays(Ngrids) )
+        tdays=0.0_dp
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
       IF (.not.allocated(time)) THEN
         allocate ( time(Ngrids) )
+        time=0.0_dp
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
       IF (.not.allocated(time_code)) THEN

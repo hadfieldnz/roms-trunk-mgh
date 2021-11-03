@@ -1,3 +1,4 @@
+      MODULE mod_biology
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -745,6 +746,8 @@
       iDON_=ic+9
       iSiOH=ic+10
       iopal=ic+11
-
+!
       RETURN
       END SUBROUTINE initialize_biology
+
+      END MODULE mod_biology

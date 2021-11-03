@@ -103,13 +103,13 @@
 !-----------------------------------------------------------------------
 !
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange2d (ng, tile, iTLM, 2,                            &
-!>   &                    LBi, UBi, LBj, UBj,                           &
-!>   &                    NghostPoints,                                 &
-!>   &                    EWperiodic(ng), NSperiodic(ng),               &
-!>   &                    tl_zeta(:,:,1),                               &
-!>   &                    tl_zeta(:,:,2))
-!>
+!^    CALL mp_exchange2d (ng, tile, iTLM, 2,                            &
+!^   &                    LBi, UBi, LBj, UBj,                           &
+!^   &                    NghostPoints,                                 &
+!^   &                    EWperiodic(ng), NSperiodic(ng),               &
+!^   &                    tl_zeta(:,:,1),                               &
+!^   &                    tl_zeta(:,:,2))
+!^
       CALL ad_mp_exchange2d (ng, tile, iADM, 2,                         &
      &                       LBi, UBi, LBj, UBj,                        &
      &                       NghostPoints,                              &
@@ -120,17 +120,17 @@
 # endif
 
       IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
-!>      CALL exchange_r2d_tile (ng, tile,                               &
-!>   &                          LBi, UBi, LBj, UBj,                     &
-!>   &                          tl_zeta(:,:,2))
-!>
+!^      CALL exchange_r2d_tile (ng, tile,                               &
+!^   &                          LBi, UBi, LBj, UBj,                     &
+!^   &                          tl_zeta(:,:,2))
+!^
         CALL ad_exchange_r2d_tile (ng, tile,                            &
      &                             LBi, UBi, LBj, UBj,                  &
      &                             ad_zeta(:,:,2))
-!>      CALL exchange_r2d_tile (ng, tile,                               &
-!>   &                          LBi, UBi, LBj, UBj,                     &
-!>   &                          tl_zeta(:,:,1))
-!>
+!^      CALL exchange_r2d_tile (ng, tile,                               &
+!^   &                          LBi, UBi, LBj, UBj,                     &
+!^   &                          tl_zeta(:,:,1))
+!^
         CALL ad_exchange_r2d_tile (ng, tile,                            &
      &                             LBi, UBi, LBj, UBj,                  &
      &                             ad_zeta(:,:,1))
@@ -147,9 +147,9 @@
 !
       DO j=JstrR,JendR
         DO i=IstrR,IendR
-!>        tl_zeta(i,j,2)=tl_Zt_avg1(i,j)
-!>        tl_zeta(i,j,1)=tl_Zt_avg1(i,j)
-!>
+!^        tl_zeta(i,j,2)=tl_Zt_avg1(i,j)
+!^        tl_zeta(i,j,1)=tl_Zt_avg1(i,j)
+!^
           ad_Zt_avg1(i,j)=ad_Zt_avg1(i,j)+                              &
      &                    ad_zeta(i,j,1)+ad_zeta(i,j,2)
           ad_zeta(i,j,2)=0.0_r8

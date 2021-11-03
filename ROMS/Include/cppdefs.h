@@ -329,6 +329,7 @@
 ** SSH_TIDES               if imposing tidal elevation                       **
 ** UV_TIDES                if imposing tidal currents                        **
 ** RAMP_TIDES              if ramping (over one day) tidal forcing           **
+** TIDE_GENERATING_FORCES  adds tide generation forces to pressure gradient  **
 ** FSOBC_REDUCED           if SSH data and reduced physics conditions        **
 ** ADD_FSOBC               to add tidal elevation to processed OBC data      **
 ** ADD_M2OBC               to add tidal currents  to processed OBC data      **

@@ -470,7 +470,7 @@
             ad_state(ng)%vector => STORAGE(ng)%SworkD(Is:Ie)
           END DO
 
-          CALL propagator (RunInterval, state, ad_state)
+          CALL propagator_fsv (RunInterval, state, ad_state)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         ELSE
           IF (ANY(info.ne.0)) THEN
@@ -582,7 +582,7 @@
                   ad_state(ng)%vector => SworkR(Is:Ie)
                 END DO
 
-                CALL propagator (RunInterval, state, ad_state)
+                CALL propagator_fsv (RunInterval, state, ad_state)
                 IF (FoundError(exit_flag, NoError,                      &
      &                         __LINE__, MyFile)) RETURN
 !

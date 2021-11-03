@@ -1,3 +1,4 @@
+      MODULE mod_sediment
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -189,9 +190,9 @@
       real(r8), allocatable :: transC(:)       ! cohesive transition
       real(r8), allocatable :: transN(:)       ! noncohesive transition
 #endif
-
+!
       CONTAINS
-
+!
       SUBROUTINE initialize_sediment
 !
 !=======================================================================
@@ -328,6 +329,8 @@
         isand(i)=ic
         idsed(NCS+i)=isand(i)
       END DO
-
+!
       RETURN
       END SUBROUTINE initialize_sediment
+
+      END MODULE mod_sediment

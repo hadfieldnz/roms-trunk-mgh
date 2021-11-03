@@ -2,7 +2,7 @@
 #undef SGWC
 #define N92_RIPRUF
 
-      SUBROUTINE bblm (ng, tile)
+      MODULE bbl_mod
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -23,6 +23,17 @@
 !    105, 24119-24139.                                                 !
 !                                                                      !
 !=======================================================================
+!
+      implicit none
+!
+      PRIVATE
+      PUBLIC  :: bblm
+!
+      CONTAINS
+!
+!***********************************************************************
+      SUBROUTINE bblm (ng, tile)
+!***********************************************************************
 !
       USE mod_param
       USE mod_bbl
@@ -46,46 +57,46 @@
 #ifdef PROFILE
       CALL wclock_on (ng, iNLM, 37, __LINE__, MyFile)
 #endif
-      CALL bblm_tile (ng, tile,                                         &
-     &                LBi, UBi, LBj, UBj,                               &
-     &                IminS, ImaxS, JminS, JmaxS,                       &
-     &                nrhs(ng),                                         &
-     &                GRID(ng) % h,                                     &
+      CALL ssw_bbl_tile (ng, tile,                                      &
+     &                   LBi, UBi, LBj, UBj,                            &
+     &                   IminS, ImaxS, JminS, JmaxS,                    &
+     &                   nrhs(ng),                                      &
+     &                   GRID(ng) % h,                                  &
 #ifdef LIMIT_BSTRESS
-     &                GRID(ng) % Hz,                                    &
+     &                   GRID(ng) % Hz,                                 &
 #endif
-     &                GRID(ng) % z_r,                                   &
-     &                GRID(ng) % z_w,                                   &
-     &                GRID(ng) % angler,                                &
-     &                GRID(ng) % ZoBot,                                 &
+     &                   GRID(ng) % z_r,                                &
+     &                   GRID(ng) % z_w,                                &
+     &                   GRID(ng) % angler,                             &
+     &                   GRID(ng) % ZoBot,                              &
 #if defined SSW_CALC_UB
-     &                FORCES(ng) % Hwave,                               &
+     &                   FORCES(ng) % Hwave,                            &
 #else
-     &                FORCES(ng) % Ub_swan,                             &
+     &                   FORCES(ng) % Ub_swan,                          &
 #endif
-     &                FORCES(ng) % Dwave,                               &
-     &                FORCES(ng) % Pwave_bot,                           &
+     &                   FORCES(ng) % Dwave,                            &
+     &                   FORCES(ng) % Pwave_bot,                        &
 #ifdef BEDLOAD
-     &                SEDBED(ng) % bedldu,                              &
-     &                SEDBED(ng) % bedldv,                              &
+     &                   SEDBED(ng) % bedldu,                           &
+     &                   SEDBED(ng) % bedldv,                           &
 #endif
-     &                SEDBED(ng) % bottom,                              &
-     &                OCEAN(ng) % rho,                                  &
-     &                OCEAN(ng) % u,                                    &
-     &                OCEAN(ng) % v,                                    &
-     &                BBL(ng) % Iconv,                                  &
-     &                BBL(ng) % Ubot,                                   &
-     &                BBL(ng) % Vbot,                                   &
-     &                BBL(ng) % Ur,                                     &
-     &                BBL(ng) % Vr,                                     &
-     &                BBL(ng) % bustrc,                                 &
-     &                BBL(ng) % bvstrc,                                 &
-     &                BBL(ng) % bustrw,                                 &
-     &                BBL(ng) % bvstrw,                                 &
-     &                BBL(ng) % bustrcwmax,                             &
-     &                BBL(ng) % bvstrcwmax,                             &
-     &                FORCES(ng) % bustr,                               &
-     &                FORCES(ng) % bvstr)
+     &                   SEDBED(ng) % bottom,                           &
+     &                   OCEAN(ng) % rho,                               &
+     &                   OCEAN(ng) % u,                                 &
+     &                   OCEAN(ng) % v,                                 &
+     &                   BBL(ng) % Iconv,                               &
+     &                   BBL(ng) % Ubot,                                &
+     &                   BBL(ng) % Vbot,                                &
+     &                   BBL(ng) % Ur,                                  &
+     &                   BBL(ng) % Vr,                                  &
+     &                   BBL(ng) % bustrc,                              &
+     &                   BBL(ng) % bvstrc,                              &
+     &                   BBL(ng) % bustrw,                              &
+     &                   BBL(ng) % bvstrw,                              &
+     &                   BBL(ng) % bustrcwmax,                          &
+     &                   BBL(ng) % bvstrcwmax,                          &
+     &                   FORCES(ng) % bustr,                            &
+     &                   FORCES(ng) % bvstr)
 #ifdef PROFILE
       CALL wclock_off (ng, iNLM, 37, __LINE__, MyFile)
 #endif
@@ -94,31 +105,31 @@
       END SUBROUTINE bblm
 !
 !***********************************************************************
-      SUBROUTINE bblm_tile (ng, tile,                                   &
-     &                      LBi, UBi, LBj, UBj,                         &
-     &                      IminS, ImaxS, JminS, JmaxS,                 &
-     &                      nrhs,                                       &
-     &                      h,                                          &
+      SUBROUTINE ssw_bbl_tile (ng, tile,                                &
+     &                         LBi, UBi, LBj, UBj,                      &
+     &                         IminS, ImaxS, JminS, JmaxS,              &
+     &                         nrhs,                                    &
+     &                         h,                                       &
 #ifdef LIMIT_BSTRESS
-     &                      Hz,                                         &
+     &                         Hz,                                      &
 #endif
-     &                      z_r, z_w, angler, ZoBot,                    &
+     &                         z_r, z_w, angler, ZoBot,                 &
 #if defined SSW_CALC_UB
-     &                      Hwave,                                      &
+     &                         Hwave,                                   &
 #else
-     &                      Ub_swan,                                    &
+     &                         Ub_swan,                                 &
 #endif
-     &                      Dwave, Pwave_bot,                           &
+     &                         Dwave, Pwave_bot,                        &
 #ifdef BEDLOAD
-     &                      bedldu, bedldv,                             &
+     &                         bedldu, bedldv,                          &
 #endif
-     &                      bottom, rho, u, v,                          &
-     &                      Iconv,                                      &
-     &                      Ubot, Vbot, Ur, Vr,                         &
-     &                      bustrc, bvstrc,                             &
-     &                      bustrw, bvstrw,                             &
-     &                      bustrcwmax, bvstrcwmax,                     &
-     &                      bustr, bvstr)
+     &                         bottom, rho, u, v,                       &
+     &                         Iconv,                                   &
+     &                         Ubot, Vbot, Ur, Vr,                      &
+     &                         bustrc, bvstrc,                          &
+     &                         bustrw, bvstrw,                          &
+     &                         bustrcwmax, bvstrcwmax,                  &
+     &                         bustr, bvstr)
 !***********************************************************************
 !
       USE mod_param
@@ -832,7 +843,7 @@
 #endif
 !
       RETURN
-      END SUBROUTINE bblm_tile
+      END SUBROUTINE ssw_bbl_tile
 
 #ifdef SGWC
 !
@@ -1444,3 +1455,4 @@
       RETURN
       END SUBROUTINE madsen94
 #endif
+      END MODULE bbl_mod

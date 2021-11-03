@@ -69,8 +69,7 @@
       USE mod_iounits
       USE mod_ncparam
       USE mod_scalars
-!
-      USE interpolate_mod
+      USE roms_interpolate_mod
 !
 #ifdef DISTRIBUTE
       USE distribute_mod,    ONLY : mp_reduce

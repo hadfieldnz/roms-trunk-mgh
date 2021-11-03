@@ -1,11 +1,11 @@
-      SUBROUTINE propagator (RunInterval, state, tl_state)
+      MODULE propagator_mod
 !
 !svn $Id$
-!************************************************** Hernan G. Arango ***
+!================================================== Hernan G. Arango ===
 !  Copyright (c) 2002-2021 The ROMS/TOMS Group       Andrew M. Moore   !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
-!***********************************************************************
+!=======================================================================
 !                                                                      !
 !  Finite Time Eigenvalues Propagator:                                 !
 !                                                                      !
@@ -21,6 +21,19 @@
 !       analysis system based on the tangent linear and adjoint of a   !
 !       regional ocean model, Ocean Modelling, 7, 227-258.             !
 !                                                                      !
+!=======================================================================
+!
+      USE mod_kinds
+!
+      implicit none
+!
+      PRIVATE
+      PUBLIC  :: propagator_fte
+!
+      CONTAINS
+!
+!***********************************************************************
+      SUBROUTINE propagator_fte (RunInterval, state, tl_state)
 !***********************************************************************
 !
       USE mod_param
@@ -275,4 +288,6 @@
      &        ' (Grid: ',i2.2,' TimeSteps: ',i8.8,' - ',i8.8,')')
 
       RETURN
-      END SUBROUTINE propagator
+      END SUBROUTINE propagator_fte
+
+      END MODULE propagator_mod

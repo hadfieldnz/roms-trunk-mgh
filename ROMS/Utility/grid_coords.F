@@ -21,11 +21,11 @@
 # endif
       USE mod_grid
       USE mod_scalars
+      USE roms_interpolate_mod
 !
 # ifdef DISTRIBUTE
       USE distribute_mod, ONLY : mp_collect
 # endif
-      USE interpolate_mod
 !
       implicit none
 !

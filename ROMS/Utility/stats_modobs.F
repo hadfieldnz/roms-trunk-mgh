@@ -77,6 +77,12 @@
 !  Compute and write out model-observation statistics.
 !-----------------------------------------------------------------------
 !
+!  Skip if configuration error.
+!
+      IF ((exit_flag.eq.5).or.(exit_flag.eq.6)) RETURN
+!
+!  Process model-observation statistics
+!
       LBi=BOUNDS(ng)%LBi(tile)
       UBi=BOUNDS(ng)%UBi(tile)
       LBj=BOUNDS(ng)%LBj(tile)

@@ -34,6 +34,9 @@
 # ifdef TLM_CHECK
       USE dotproduct_mod,       ONLY : nl_dotproduct
 # endif
+# ifdef TIDE_GENERATING_FORCES
+      USE equilibrium_tide_mod, ONLY : equilibrium_tide
+# endif
 # if defined NLM_OUTER                || \
      defined RBL4DVAR                 || \
      defined RBL4DVAR_ANA_SENSITIVITY || \
@@ -256,6 +259,9 @@
 # endif
 # ifdef DIAGNOSTICS
                 CALL set_diags (ng, tile)
+# endif
+# ifdef TIDE_GENERATING_FORCES
+                CALL equilibrium_tide (ng, tile, iNLM)
 # endif
                 CALL diag (ng, tile)
 # ifdef TLM_CHECK

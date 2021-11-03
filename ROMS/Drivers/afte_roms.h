@@ -454,7 +454,7 @@
             ad_state(ng)%vector => STORAGE(ng)%SworkD(Is:Ie)
           END DO
 
-          CALL propagator (RunInterval, state, ad_state)
+          CALL propagator_afte (RunInterval, state, ad_state)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
         ELSE
@@ -571,7 +571,7 @@
                     ad_state(ng)%vector => SworkR(Is:Ie)
                   END DO
 
-                  CALL propagator (RunInterval, state, ad_state)
+                  CALL propagator_afte (RunInterval, state, ad_state)
                   IF (FoundError(exit_flag, NoError,                    &
      &                           __LINE__, MyFile)) RETURN
 !
@@ -601,7 +601,7 @@
                     ad_state(ng)%vector => SworkR(Is:Ie)
                   END DO
 
-                  CALL propagator (RunInterval, state, ad_state)
+                  CALL propagator_afte (RunInterval, state, ad_state)
                   IF (FoundError(exit_flag, NoError,                    &
      &                           __LINE__, MyFile)) RETURN
 !
@@ -628,7 +628,7 @@
                     ad_state(ng)%vector => SworkR(Is:Ie)
                   END DO
 
-                  CALL propagator (RunInterval, state, ad_state)
+                  CALL propagator_afte (RunInterval, state, ad_state)
                   IF (FoundError(exit_flag, NoError,                    &
      &                           __LINE__, MyFile)) RETURN
 !

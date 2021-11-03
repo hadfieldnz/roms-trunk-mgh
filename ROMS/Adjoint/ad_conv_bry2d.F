@@ -179,37 +179,37 @@
 !-----------------------------------------------------------------------
 !
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij,                               &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij,                               &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange2d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij,                            &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_r2d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij,                                 &
-!>   &                      tl_A)
-!>
+!^    CALL bc_r2d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij,                                 &
+!^   &                      tl_A)
+!^
       CALL ad_bc_r2d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij,                              &
      &                         ad_A)
       IF (Lconvolve(boundary)) THEN
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO j=Jstr,Jend
-!>          tl_A(j)=tl_Awrk(j,Nold)
-!>
+!^          tl_A(j)=tl_Awrk(j,Nold)
+!^
             ad_Awrk(j,Nold)=ad_Awrk(j,Nold)+ad_A(j)
             ad_A(j)=0.0_r8
           END DO
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO i=Istr,Iend
-!>          tl_A(i)=tl_Awrk(i,Nold)
-!>
+!^          tl_A(i)=tl_Awrk(i,Nold)
+!^
             ad_Awrk(i,Nold)=ad_Awrk(i,Nold)+ad_A(i)
             ad_A(i)=0.0_r8
           END DO
@@ -232,22 +232,22 @@
 !  data.
 !
 # ifdef DISTRIBUTE
-!>      CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,           &
-!>   &                          LBij, UBij,                             &
-!>   &                          Nghost,                                 &
-!>   &                          EWperiodic(ng), NSperiodic(ng),         &
-!>   &                          tl_Awrk(:,Nnew))
-!>
+!^      CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,           &
+!^   &                          LBij, UBij,                             &
+!^   &                          Nghost,                                 &
+!^   &                          EWperiodic(ng), NSperiodic(ng),         &
+!^   &                          tl_Awrk(:,Nnew))
+!^
         CALL ad_mp_exchange2d_bry (ng, tile, model, 1, boundary,        &
      &                             LBij, UBij,                          &
      &                             Nghost,                              &
      &                             EWperiodic(ng), NSperiodic(ng),      &
      &                             ad_Awrk(:,Nnew))
 # endif
-!>      CALL bc_r2d_bry_tile (ng, tile, boundary,                       &
-!>   &                        LBij, UBij,                               &
-!>   &                        tl_Awrk(:,Nnew))
-!>
+!^      CALL bc_r2d_bry_tile (ng, tile, boundary,                       &
+!^   &                        LBij, UBij,                               &
+!^   &                        tl_Awrk(:,Nnew))
+!^
         CALL ad_bc_r2d_bry_tile (ng, tile, boundary,                    &
      &                           LBij, UBij,                            &
      &                           ad_Awrk(:,Nnew))
@@ -257,10 +257,10 @@
         IF (Lconvolve(boundary)) THEN
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             DO j=Jstr,Jend
-!>            tl_Awrk(j,Nnew)=tl_Awrk(j,Nold)+                          &
-!>   &                        Hfac(j)*                                  &
-!>   &                        (tl_FE(j+1)-tl_FE(j))
-!>
+!^            tl_Awrk(j,Nnew)=tl_Awrk(j,Nold)+                          &
+!^   &                        Hfac(j)*                                  &
+!^   &                        (tl_FE(j+1)-tl_FE(j))
+!^
               adfac=Hfac(j)*ad_Awrk(j,Nnew)
               ad_FE(j  )=ad_FE(j  )-adfac
               ad_FE(j+1)=ad_FE(j+1)+adfac
@@ -270,10 +270,10 @@
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             DO i=Istr,Iend
-!>            tl_Awrk(i,Nnew)=tl_Awrk(i,Nold)+                          &
-!>   &                        Hfac(i)*                                  &
-!>   &                        (tl_FX(i+1)-tl_FX(i))
-!>
+!^            tl_Awrk(i,Nnew)=tl_Awrk(i,Nold)+                          &
+!^   &                        Hfac(i)*                                  &
+!^   &                        (tl_FX(i+1)-tl_FX(i))
+!^
               adfac=Hfac(i)*ad_Awrk(i,Nnew)
               ad_FX(i  )=ad_FX(i  )-adfac
               ad_FX(i+1)=ad_FX(i+1)+adfac
@@ -291,14 +291,14 @@
             i=edge(boundary)
             DO j=Jstr,Jend+1
 # ifdef MASKING
-!>            tl_FE(j)=tl_FE(j)*vmask(i,j)
-!>
+!^            tl_FE(j)=tl_FE(j)*vmask(i,j)
+!^
               ad_FE(j)=ad_FE(j)*vmask(i,j)
 # endif
-!>            tl_FE(j)=pnom_v(i,j)*0.5_r8*(Kh(i,j-1)+Kh(i,j))*          &
-!>   &                 (tl_Awrk(j  ,Nold)-                              &
-!>   &                  tl_Awrk(j-1,Nold))
-!>
+!^            tl_FE(j)=pnom_v(i,j)*0.5_r8*(Kh(i,j-1)+Kh(i,j))*          &
+!^   &                 (tl_Awrk(j  ,Nold)-                              &
+!^   &                  tl_Awrk(j-1,Nold))
+!^
               adfac=pnom_v(i,j)*0.5_r8*(Kh(i,j-1)+Kh(i,j))*ad_FE(j)
               ad_Awrk(j-1,Nold)=ad_Awrk(j-1,Nold)-adfac
               ad_Awrk(j  ,Nold)=ad_Awrk(j  ,Nold)+adfac
@@ -308,14 +308,14 @@
             j=edge(boundary)
             DO i=Istr,Iend+1
 # ifdef MASKING
-!>            tl_FX(i)=tl_FX(i)*umask(i,j)
-!>
+!^            tl_FX(i)=tl_FX(i)*umask(i,j)
+!^
               ad_FX(i)=ad_FX(i)*umask(i,j)
 # endif
-!>            tl_FX(i)=pmon_u(i,j)*0.5_r8*(Kh(i-1,j)+Kh(i,j))*          &
-!>   &                 (tl_Awrk(i  ,Nold)-                              &
-!>   &                  tl_Awrk(i-1,Nold))
-!>
+!^            tl_FX(i)=pmon_u(i,j)*0.5_r8*(Kh(i-1,j)+Kh(i,j))*          &
+!^   &                 (tl_Awrk(i  ,Nold)-                              &
+!^   &                  tl_Awrk(i-1,Nold))
+!^
               adfac=pmon_u(i,j)*0.5_r8*(Kh(i-1,j)+Kh(i,j))*ad_FX(i)
               ad_Awrk(i-1,Nold)=ad_Awrk(i-1,Nold)-adfac
               ad_Awrk(i  ,Nold)=ad_Awrk(i  ,Nold)+adfac
@@ -330,37 +330,37 @@
       IF (Lconvolve(boundary)) THEN
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO j=Jstr-1,Jend+1
-!>          tl_Awrk(j,Nold)=tl_A(j)
-!>
+!^          tl_Awrk(j,Nold)=tl_A(j)
+!^
             ad_A(j)=ad_A(j)+ad_Awrk(j,Nold)
             ad_Awrk(j,Nold)=0.0_r8
           END DO
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO i=Istr-1,Iend+1
-!>          tl_Awrk(i,Nold)=tl_A(i)
-!>
+!^          tl_Awrk(i,Nold)=tl_A(i)
+!^
             ad_A(i)=ad_A(i)+ad_Awrk(i,Nold)
             ad_Awrk(i,Nold)=0.0_r8
           END DO
         END IF
       END IF
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij,                               &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij,                               &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange2d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij,                            &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_r2d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij,                                 &
-!>   &                      tl_A)
-!>
+!^    CALL bc_r2d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij,                                 &
+!^   &                      tl_A)
+!^
       CALL ad_bc_r2d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij,                              &
      &                         ad_A)
@@ -488,37 +488,37 @@
 !-----------------------------------------------------------------------
 !
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij,                               &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij,                               &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange2d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij,                            &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_u2d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij,                                 &
-!>   &                      tl_A)
-!>
+!^    CALL bc_u2d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij,                                 &
+!^   &                      tl_A)
+!^
       CALL ad_bc_u2d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij,                              &
      &                         ad_A)
       IF (Lconvolve(boundary)) THEN
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO j=Jstr,Jend
-!>          tl_A(j)=tl_Awrk(j,Nold)
-!>
+!^          tl_A(j)=tl_Awrk(j,Nold)
+!^
             ad_Awrk(j,Nold)=ad_Awrk(j,Nold)+ad_A(j)
             ad_A(j)=0.0_r8
           END DO
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO i=IstrU,Iend
-!>          tl_A(i)=tl_Awrk(i,Nold)
-!>
+!^          tl_A(i)=tl_Awrk(i,Nold)
+!^
             ad_Awrk(i,Nold)=ad_Awrk(i,Nold)+ad_A(i)
             ad_A(i)=0.0_r8
           END DO
@@ -541,22 +541,22 @@
 !  data.
 !
 # ifdef DISTRIBUTE
-!>      CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,           &
-!>   &                          LBij, UBij,                             &
-!>   &                          Nghost,                                 &
-!>   &                          EWperiodic(ng), NSperiodic(ng),         &
-!>   &                          tl_Awrk(:,Nnew))
-!>
+!^      CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,           &
+!^   &                          LBij, UBij,                             &
+!^   &                          Nghost,                                 &
+!^   &                          EWperiodic(ng), NSperiodic(ng),         &
+!^   &                          tl_Awrk(:,Nnew))
+!^
         CALL ad_mp_exchange2d_bry (ng, tile, model, 1, boundary,        &
      &                             LBij, UBij,                          &
      &                             Nghost,                              &
      &                             EWperiodic(ng), NSperiodic(ng),      &
      &                             ad_Awrk(:,Nnew))
 # endif
-!>      CALL bc_u2d_bry_tile (ng, tile, boundary,                       &
-!>   &                        LBij, UBij,                               &
-!>   &                        tl_Awrk(:,Nnew))
-!>
+!^      CALL bc_u2d_bry_tile (ng, tile, boundary,                       &
+!^   &                        LBij, UBij,                               &
+!^   &                        tl_Awrk(:,Nnew))
+!^
         CALL ad_bc_u2d_bry_tile (ng, tile, boundary,                    &
      &                           LBij, UBij,                            &
      &                           ad_Awrk(:,Nnew))
@@ -566,10 +566,10 @@
         IF (Lconvolve(boundary)) THEN
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             DO j=Jstr,Jend
-!>            tl_Awrk(j,Nnew)=tl_Awrk(j,Nold)+                          &
-!>   &                        Hfac(j)*                                  &
-!>   &                        (tl_FE(j+1)-tl_FE(j))
-!>
+!^            tl_Awrk(j,Nnew)=tl_Awrk(j,Nold)+                          &
+!^   &                        Hfac(j)*                                  &
+!^   &                        (tl_FE(j+1)-tl_FE(j))
+!^
               adfac=Hfac(j)*ad_Awrk(j,Nnew)
               ad_FE(j  )=ad_FE(j  )-adfac
               ad_FE(j+1)=ad_FE(j+1)+adfac
@@ -579,10 +579,10 @@
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             DO i=IstrU,Iend
-!>            tl_Awrk(i,Nnew)=tl_Awrk(i,Nold)+                          &
-!>   &                        Hfac(i)*                                  &
-!>   &                        (tl_FX(i)-tl_FX(i-1))
-!>
+!^            tl_Awrk(i,Nnew)=tl_Awrk(i,Nold)+                          &
+!^   &                        Hfac(i)*                                  &
+!^   &                        (tl_FX(i)-tl_FX(i-1))
+!^
               adfac=Hfac(i)*ad_Awrk(i,Nnew)
               ad_FX(i-1)=ad_FX(i-1)-adfac
               ad_FX(i  )=ad_FX(i  )+adfac
@@ -600,15 +600,15 @@
             i=edge(boundary)
             DO j=Jstr,Jend+1
 # ifdef MASKING
-!>            tl_FE(j)=tl_FE(j)*pmask(i,j)
-!>
+!^            tl_FE(j)=tl_FE(j)*pmask(i,j)
+!^
               ad_FE(j)=ad_FE(j)*pmask(i,j)
 # endif
-!>            tl_FE(j)=pnom_p(i,j)*0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+      &
-!>   &                                      Kh(i-1,j-1)+Kh(i,j-1))*     &
-!>   &                 (tl_Awrk(j  ,Nold)-                              &
-!>   &                  tl_Awrk(j-1,Nold))
-!>
+!^            tl_FE(j)=pnom_p(i,j)*0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+      &
+!^   &                                      Kh(i-1,j-1)+Kh(i,j-1))*     &
+!^   &                 (tl_Awrk(j  ,Nold)-                              &
+!^   &                  tl_Awrk(j-1,Nold))
+!^
               adfac=pnom_p(i,j)*0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+         &
      &                                   Kh(i-1,j-1)+Kh(i,j-1))*        &
      &              ad_FE(j)
@@ -619,10 +619,10 @@
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             j=edge(boundary)
             DO i=IstrU-1,Iend
-!>            tl_FX(i)=pmon_r(i,j)*Kh(i,j)*                             &
-!>   &                 (tl_Awrk(i+1,Nold)-                              &
-!>   &                  tl_Awrk(i  ,Nold))
-!>
+!^            tl_FX(i)=pmon_r(i,j)*Kh(i,j)*                             &
+!^   &                 (tl_Awrk(i+1,Nold)-                              &
+!^   &                  tl_Awrk(i  ,Nold))
+!^
               adfac=pmon_r(i,j)*Kh(i,j)*ad_FX(i)
               ad_Awrk(i  ,Nold)=ad_Awrk(i  ,Nold)-adfac
               ad_Awrk(i+1,Nold)=ad_Awrk(i+1,Nold)+adfac
@@ -637,37 +637,37 @@
       IF (Lconvolve(boundary)) THEN
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO j=Jstr-1,Jend+1
-!>          tl_Awrk(j,Nold)=tl_A(j)
-!>
+!^          tl_Awrk(j,Nold)=tl_A(j)
+!^
             ad_A(j)=ad_A(j)+ad_Awrk(j,Nold)
             ad_Awrk(j,Nold)=0.0_r8
           END DO
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO i=IstrU-1,Iend+1
-!>          tl_Awrk(i,Nold)=tl_A(i)
-!>
+!^          tl_Awrk(i,Nold)=tl_A(i)
+!^
             ad_A(i)=ad_A(i)+ad_Awrk(i,Nold)
             ad_Awrk(i,Nold)=0.0_r8
           END DO
         END IF
       END IF
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij,                               &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij,                               &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange2d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij,                            &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_u2d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij,                                 &
-!>   &                      tl_A)
-!>
+!^    CALL bc_u2d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij,                                 &
+!^   &                      tl_A)
+!^
       CALL ad_bc_u2d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij,                              &
      &                         ad_A)
@@ -795,37 +795,37 @@
 !-----------------------------------------------------------------------
 !
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij,                               &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij,                               &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange2d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij,                            &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_v2d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij,                                 &
-!>   &                      tl_A)
-!>
+!^    CALL bc_v2d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij,                                 &
+!^   &                      tl_A)
+!^
       CALL ad_bc_v2d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij,                              &
      &                         ad_A)
       IF (Lconvolve(boundary)) THEN
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO j=JstrV,Jend
-!>          tl_A(j)=tl_Awrk(j,Nold)
-!>
+!^          tl_A(j)=tl_Awrk(j,Nold)
+!^
             ad_Awrk(j,Nold)=ad_Awrk(j,Nold)+ad_A(j)
             ad_A(j)=0.0_r8
           END DO
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO i=Istr,Iend
-!>          tl_A(i)=tl_Awrk(i,Nold)
-!>
+!^          tl_A(i)=tl_Awrk(i,Nold)
+!^
             ad_Awrk(i,Nold)=ad_Awrk(i,Nold)+ad_A(i)
             ad_A(i)=0.0_r8
           END DO
@@ -847,22 +847,22 @@
 !  Apply boundary conditions. If applicable, exchange boundary data.
 !
 # ifdef DISTRIBUTE
-!>      CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,           &
-!>   &                          LBij, UBij,                             &
-!>   &                          Nghost,                                 &
-!>   &                          EWperiodic(ng), NSperiodic(ng),         &
-!>   &                          tl_Awrk(:,Nnew))
-!>
+!^      CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,           &
+!^   &                          LBij, UBij,                             &
+!^   &                          Nghost,                                 &
+!^   &                          EWperiodic(ng), NSperiodic(ng),         &
+!^   &                          tl_Awrk(:,Nnew))
+!^
         CALL ad_mp_exchange2d_bry (ng, tile, model, 1, boundary,        &
      &                             LBij, UBij,                          &
      &                             Nghost,                              &
      &                             EWperiodic(ng), NSperiodic(ng),      &
      &                             ad_Awrk(:,Nnew))
 # endif
-!>      CALL bc_v2d_bry_tile (ng, tile, boundary,                       &
-!>   &                        LBij, UBij,                               &
-!>   &                        tl_Awrk(:,Nnew))
-!>
+!^      CALL bc_v2d_bry_tile (ng, tile, boundary,                       &
+!^   &                        LBij, UBij,                               &
+!^   &                        tl_Awrk(:,Nnew))
+!^
         CALL ad_bc_v2d_bry_tile (ng, tile, boundary,                    &
      &                           LBij, UBij,                            &
      &                           ad_Awrk(:,Nnew))
@@ -872,10 +872,10 @@
         IF (Lconvolve(boundary)) THEN
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             DO j=JstrV,Jend
-!>            tl_Awrk(j,Nnew)=tl_Awrk(j,Nold)+                          &
-!>   &                        Hfac(j)*                                  &
-!>   &                        (tl_FE(j)-tl_FE(j-1))
-!>
+!^            tl_Awrk(j,Nnew)=tl_Awrk(j,Nold)+                          &
+!^   &                        Hfac(j)*                                  &
+!^   &                        (tl_FE(j)-tl_FE(j-1))
+!^
               adfac=Hfac(j)*ad_Awrk(j,Nnew)
               ad_FE(j-1)=ad_FE(j-1)-adfac
               ad_FE(j  )=ad_FE(j  )+adfac
@@ -885,10 +885,10 @@
             END DO
           ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
             DO i=Istr,Iend
-!>            tl_Awrk(i,Nnew)=tl_Awrk(i,Nold)+                          &
-!>   &                        Hfac(i)*                                  &
-!>   &                        (tl_FX(i+1)-tl_FX(i))
-!>
+!^            tl_Awrk(i,Nnew)=tl_Awrk(i,Nold)+                          &
+!^   &                        Hfac(i)*                                  &
+!^   &                        (tl_FX(i+1)-tl_FX(i))
+!^
               adfac=Hfac(i)*ad_Awrk(i,Nnew)
               ad_FX(i  )=ad_FX(i  )-adfac
               ad_FX(i+1)=ad_FX(i+1)+adfac
@@ -905,10 +905,10 @@
           IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
             i=edge(boundary)
             DO j=JstrV-1,Jend
-!>            tl_FE(j)=pnom_r(i,j)*Kh(i,j)*                             &
-!>   &                 (tl_Awrk(j+1,Nold)-                              &
-!>   &                  tl_Awrk(j  ,Nold))
-!>
+!^            tl_FE(j)=pnom_r(i,j)*Kh(i,j)*                             &
+!^   &                 (tl_Awrk(j+1,Nold)-                              &
+!^   &                  tl_Awrk(j  ,Nold))
+!^
               adfac=pnom_r(i,j)*Kh(i,j)*ad_FE(j)
               ad_Awrk(j  ,Nold)=ad_Awrk(j  ,Nold)-adfac
               ad_Awrk(j+1,Nold)=ad_Awrk(j+1,Nold)+adfac
@@ -918,15 +918,15 @@
             j=edge(boundary)
             DO i=Istr,Iend+1
 # ifdef MASKING
-!>            tl_FX(i)=tl_FX(i)*pmask(i,j)
-!>
+!^            tl_FX(i)=tl_FX(i)*pmask(i,j)
+!^
               ad_FX(i)=ad_FX(i)*pmask(i,j)
 # endif
-!>            tl_FX(i)=pmon_p(i,j)*0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+      &
-!>   &                                      Kh(i-1,j-1)+Kh(i,j-1))*     &
-!>   &                 (tl_Awrk(i  ,Nold)-                              &
-!>   &                  tl_Awrk(i-1,Nold))
-!>
+!^            tl_FX(i)=pmon_p(i,j)*0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+      &
+!^   &                                      Kh(i-1,j-1)+Kh(i,j-1))*     &
+!^   &                 (tl_Awrk(i  ,Nold)-                              &
+!^   &                  tl_Awrk(i-1,Nold))
+!^
               adfac=pmon_p(i,j)*0.25_r8*(Kh(i-1,j  )+Kh(i,j  )+         &
      &                                   Kh(i-1,j-1)+Kh(i,j-1))*        &
      &              ad_FX(i)
@@ -943,37 +943,37 @@
       IF (Lconvolve(boundary)) THEN
         IF ((boundary.eq.iwest).or.(boundary.eq.ieast)) THEN
           DO j=JstrV-1,Jend+1
-!>          tl_Awrk(j,Nold)=tl_A(j)
-!>
+!^          tl_Awrk(j,Nold)=tl_A(j)
+!^
             ad_A(j)=ad_A(j)+ad_Awrk(j,Nold)
             ad_Awrk(j,Nold)=0.0_r8
           END DO
         ELSE IF ((boundary.eq.isouth).or.(boundary.eq.inorth)) THEN
           DO i=Istr-1,Iend+1
-!>          tl_Awrk(i,Nold)=tl_A(i)
-!>
+!^          tl_Awrk(i,Nold)=tl_A(i)
+!^
             ad_A(i)=ad_A(i)+ad_Awrk(i,Nold)
             ad_Awrk(i,Nold)=0.0_r8
           END DO
         END IF
       END IF
 # ifdef DISTRIBUTE
-!>    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
-!>   &                        LBij, UBij,                               &
-!>   &                        Nghost,                                   &
-!>   &                        EWperiodic(ng), NSperiodic(ng),           &
-!>   &                        tl_A)
-!>
+!^    CALL mp_exchange2d_bry (ng, tile, model, 1, boundary,             &
+!^   &                        LBij, UBij,                               &
+!^   &                        Nghost,                                   &
+!^   &                        EWperiodic(ng), NSperiodic(ng),           &
+!^   &                        tl_A)
+!^
       CALL ad_mp_exchange2d_bry (ng, tile, model, 1, boundary,          &
      &                           LBij, UBij,                            &
      &                           Nghost,                                &
      &                           EWperiodic(ng), NSperiodic(ng),        &
      &                           ad_A)
 # endif
-!>    CALL bc_v2d_bry_tile (ng, tile, boundary,                         &
-!>   &                      LBij, UBij,                                 &
-!>   &                      tl_A)
-!>
+!^    CALL bc_v2d_bry_tile (ng, tile, boundary,                         &
+!^   &                      LBij, UBij,                                 &
+!^   &                      tl_A)
+!^
       CALL ad_bc_v2d_bry_tile (ng, tile, boundary,                      &
      &                         LBij, UBij,                              &
      &                         ad_A)

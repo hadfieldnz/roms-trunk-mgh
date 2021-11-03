@@ -88,7 +88,8 @@
       END SUBROUTINE wrt_tides
 !
 !***********************************************************************
-      SUBROUTINE wrt_tides_nf90 (ng, tile)
+      SUBROUTINE wrt_tides_nf90 (ng, tile,                              &
+     &                           LBi, UBi, LBj, UBj)
 !***********************************************************************
 !
       USE mod_netcdf
@@ -364,7 +365,8 @@
 # if defined PIO_LIB && defined DISTRIBUTE
 !
 !***********************************************************************
-      SUBROUTINE wrt_tides_pio (ng, tile)
+      SUBROUTINE wrt_tides_pio (ng, tile,                               &
+     &                          LBi, UBi, LBj, UBj)
 !***********************************************************************
 !
       USE mod_pio_netcdf

@@ -363,7 +363,8 @@
 !
 !-----------------------------------------------------------------------
 !  Compute vertical averaged density (rhoA) and density perturbation
-!  (rhoS) used in barotropic pressure gradient.
+!  (rhoS) used in barotropic pressure gradient. Both values are
+!  nondimensional.
 !-----------------------------------------------------------------------
 !
         DO i=IstrT,IendT

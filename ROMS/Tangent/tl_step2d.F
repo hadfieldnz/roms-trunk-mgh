@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-      MODULE tl_step2d_mod
 #ifdef TANGENT
 !
 !svn $Id$
@@ -18,14 +17,8 @@
 !                                                                      !
 !=======================================================================
 !
-      implicit none
-!
-      PRIVATE
-      PUBLIC  :: tl_step2d
-!
-      CONTAINS
-!
 # include "tl_step2d_LF_AM3.h"
-
-#endif
+#else
+      MODULE tl_step2d_mod
       END MODULE tl_step2d_mod
+#endif

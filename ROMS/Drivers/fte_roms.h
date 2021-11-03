@@ -463,7 +463,7 @@
           END DO
 
 !$OMP PARALLEL
-          CALL propagator (RunInterval, state, tl_state)
+          CALL propagator_fte (RunInterval, state, tl_state)
 !$OMP END PARALLEL
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         ELSE
@@ -585,7 +585,7 @@
                   END DO
 
 !$OMP PARALLEL
-                  CALL propagator (RunInterval, state, tl_state)
+                  CALL propagator_fte (RunInterval, state, tl_state)
 !$OMP END PARALLEL
                   IF (FoundError(exit_flag, NoError,                    &
      &                           __LINE__, MyFile)) RETURN
@@ -617,7 +617,7 @@
                   END DO
 
 !$OMP PARALLEL
-                  CALL propagator (RunInterval, state, tl_state)
+                  CALL propagator_fte (RunInterval, state, tl_state)
 !$OMP END PARALLEL
                   IF (FoundError(exit_flag, NoError,                    &
      &                           __LINE__, MyFile)) RETURN
@@ -646,7 +646,7 @@
                   END DO
 
 !$OMP PARALLEL
-                  CALL propagator (RunInterval, state, tl_state)
+                  CALL propagator_fte (RunInterval, state, tl_state)
 !$OMP END PARALLEL
                   IF (FoundError(exit_flag, NoError,                    &
      &                           __LINE__, MyFile)) RETURN

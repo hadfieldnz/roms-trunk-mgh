@@ -48,6 +48,9 @@
 # ifdef TLM_CHECK
       USE dotproduct_mod,       ONLY : nl_dotproduct
 # endif
+# ifdef TIDE_GENERATING_FORCES
+      USE equilibrium_tide_mod, ONLY : equilibrium_tide
+# endif
 # if defined NLM_OUTER                || \
      defined RBL4DVAR                 || \
      defined RBL4DVAR_ANA_SENSITIVITY || \
@@ -303,6 +306,9 @@
                 CALL set_massflux (ng, tile, iNLM)
 # ifndef TS_FIXED
                 CALL rho_eos (ng, tile, iNLM)
+# endif
+# ifdef TIDE_GENERATING_FORCES
+                CALL equilibrium_tide (ng, tile, iNLM)
 # endif
                 CALL diag (ng, tile)
 # ifdef TLM_CHECK
@@ -634,9 +640,11 @@
                 IF (ANY(CompositeGrid(:,ng))) THEN
                   CALL nesting (ng, iNLM, n2dPS)
                 END IF
+#  ifdef NESTING_DEBUG
                 IF (RefinedGrid(ng).and.(RefineScale(ng).gt.0)) THEN
                   CALL nesting (ng, iNLM, nmflx)
                 END IF
+#  endif
               END DO
 # endif
 !
@@ -681,9 +689,11 @@
                 IF (ANY(CompositeGrid(:,ng))) THEN
                   CALL nesting (ng, iNLM, n2dCS)
                 END IF
+#  ifdef NESTING_DEBUG
                 IF (RefinedGrid(ng).and.(RefineScale(ng).gt.0)) THEN
                   CALL nesting (ng, iNLM, nmflx)
                 END IF
+#  endif
               END DO
 # endif
             END DO LOOP_2D
@@ -734,7 +744,7 @@
 !
             DO ig=1,GridsInLayer(nl)
               ng=GridNumber(ig,nl)
-              CALL nesting (ng, iNLM, nzwgt)
+!             CALL nesting (ng, iNLM, nzwgt)
             END DO
 # endif
 !

@@ -1,3 +1,4 @@
+!!
       SUBROUTINE ana_specir (ng, tile, model)
 !
 !! svn $Id$

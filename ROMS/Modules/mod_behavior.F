@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-      MODULE mod_behavior
 /*
 ** svn $Id$
 *************************************************** Hernan G. Arango ***
@@ -26,7 +25,11 @@
 #if defined FLOATS && defined FLOAT_BIOLOGY
 # if defined FLOAT_OYSTER
 #  include <oyster_floats_mod.h>
-# endif
-#endif
-
+#  else
+      MODULE mod_behavior
       END MODULE mod_behavior
+# endif
+#else
+      MODULE mod_behavior
+      END MODULE mod_behavior
+#endif

@@ -1,3 +1,4 @@
+      MODULE mod_biology
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -65,9 +66,9 @@
       real(r8), allocatable :: ZooMD(:)        ! 1/day
       real(r8), allocatable :: ZooGA(:)        ! nondimensional
       real(r8), allocatable :: ZooEC(:)        ! nondimensional
-
+!
       CONTAINS
-
+!
       SUBROUTINE initialize_biology
 !
 !=======================================================================
@@ -189,6 +190,8 @@
       iPhyt=ic+2
       iZoop=ic+3
       iSDet=ic+4
-
+!
       RETURN
       END SUBROUTINE initialize_biology
+
+      END MODULE mod_biology

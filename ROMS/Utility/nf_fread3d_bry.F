@@ -313,6 +313,7 @@
               DO ib=1,4
                 DO k=LBk,UBk
                   DO ij=LBij,UBij
+                    ic=ic+1
                     Cwrk(ic)=wrk(ij,k,ib,ir)
                   END DO
                 END DO
@@ -445,7 +446,7 @@
 !  Set starting and ending indices to process.
 !-----------------------------------------------------------------------
 !
-      status=nf90_noerr
+      status=PIO_noerr
 !
 !  Set first and last grid point according to staggered C-grid
 !  classification.
@@ -613,6 +614,7 @@
             DO ib=1,4
               DO k=LBk,UBk
                 DO ij=LBij,UBij
+                  ic=ic+1
                   Cwrk(ic)=wrk(ij,k,ib,ir)
                 END DO
               END DO
@@ -623,7 +625,7 @@
         END IF
       END IF
 !
-      IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
+      IF (FoundError(status, PIO_noerr, __LINE__, MyFile)) THEN
         exit_flag=2
         ioerror=status
         RETURN

@@ -93,15 +93,15 @@
         DO i=Istr,Iend
           cff1=EXP(Z(i,j)*fac1(i))
           cff2=EXP(Z(i,j)*fac2(i))
-!>        tl_swdk(i,j)=tl_cff1*fac3(i)+                                 &
-!>   &                 tl_cff2*(1.0_r8-fac3(i))
-!>
+!^        tl_swdk(i,j)=tl_cff1*fac3(i)+                                 &
+!^   &                 tl_cff2*(1.0_r8-fac3(i))
+!^
           ad_cff1=ad_cff1+fac3(i)*ad_swdk(i,j)
           ad_cff2=ad_cff2+(1.0_r8-fac3(i))*ad_swdk(i,j)
           ad_swdk(i,j)=0.0_r8
-!>        tl_cff2=fac2(i)*tl_Z(i,j)*cff2
-!>        tl_cff1=fac1(i)*tl_Z(i,j)*cff1
-!>
+!^        tl_cff2=fac2(i)*tl_Z(i,j)*cff2
+!^        tl_cff1=fac1(i)*tl_Z(i,j)*cff1
+!^
           ad_Z(i,j)=ad_Z(i,j)+                                          &
      &              fac1(i)*cff1*ad_cff1+                               &
      &              fac2(i)*cff2*ad_cff2

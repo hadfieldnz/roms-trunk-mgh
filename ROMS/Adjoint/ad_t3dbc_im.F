@@ -103,12 +103,12 @@
           IF (LBC_apply(ng)%north(Iend+1).and.                          &
      &        LBC_apply(ng)%east (Jend+1)) THEN
             DO k=1,N(ng)
-!>            tl_t(Iend+1,Jend+1,k,nout,itrc)=0.5_r8*                   &
-!>   &                                        (tl_t(Iend+1,Jend  ,k,    &
-!>   &                                              nout,itrc)+         &
-!>   &                                         tl_t(Iend  ,Jend+1,k,    &
-!>   &                                              nout,itrc))
-!>
+!^            tl_t(Iend+1,Jend+1,k,nout,itrc)=0.5_r8*                   &
+!^   &                                        (tl_t(Iend+1,Jend  ,k,    &
+!^   &                                              nout,itrc)+         &
+!^   &                                         tl_t(Iend  ,Jend+1,k,    &
+!^   &                                              nout,itrc))
+!^
               adfac=0.5_r8*ad_t(Iend+1,Jend+1,k,nout,itrc)
               ad_t(Iend+1,Jend  ,k,nout,itrc)=ad_t(Iend+1,Jend  ,k,     &
      &                                             nout,itrc)+          &
@@ -124,12 +124,12 @@
           IF (LBC_apply(ng)%north(Istr-1).and.                          &
      &        LBC_apply(ng)%west (Jend+1)) THEN
             DO k=1,N(ng)
-!>            tl_t(Istr-1,Jend+1,k,nout,itrc)=0.5_r8*                   &
-!>   &                                        (tl_t(Istr-1,Jend  ,k,    &
-!>   &                                              nout,itrc)+         &
-!>   &                                         tl_t(Istr  ,Jend+1,k,    &
-!>   &                                              nout,itrc))
-!>
+!^            tl_t(Istr-1,Jend+1,k,nout,itrc)=0.5_r8*                   &
+!^   &                                        (tl_t(Istr-1,Jend  ,k,    &
+!^   &                                              nout,itrc)+         &
+!^   &                                         tl_t(Istr  ,Jend+1,k,    &
+!^   &                                              nout,itrc))
+!^
               adfac=0.5_r8*ad_t(Istr-1,Jend+1,k,nout,itrc)
               ad_t(Istr-1,Jend  ,k,nout,itrc)=ad_t(Istr-1,Jend  ,k,     &
      &                                             nout,itrc)+          &
@@ -145,12 +145,12 @@
           IF (LBC_apply(ng)%south(Iend+1).and.                          &
      &        LBC_apply(ng)%east (Jstr-1)) THEN
             DO k=1,N(ng)
-!>            tl_t(Iend+1,Jstr-1,k,nout,itrc)=0.5_r8*                   &
-!>   &                                        (tl_t(Iend  ,Jstr-1,k,    &
-!>   &                                              nout,itrc)+         &
-!>   &                                         tl_t(Iend+1,Jstr  ,k,    &
-!>   &                                              nout,itrc))
-!>
+!^            tl_t(Iend+1,Jstr-1,k,nout,itrc)=0.5_r8*                   &
+!^   &                                        (tl_t(Iend  ,Jstr-1,k,    &
+!^   &                                              nout,itrc)+         &
+!^   &                                         tl_t(Iend+1,Jstr  ,k,    &
+!^   &                                              nout,itrc))
+!^
               adfac=0.5_r8*ad_t(Iend+1,Jstr-1,k,nout,itrc)
               ad_t(Iend  ,Jstr-1,k,nout,itrc)=ad_t(Iend  ,Jstr-1,k,     &
      &                                             nout,itrc)+          &
@@ -166,12 +166,12 @@
           IF (LBC_apply(ng)%south(Istr-1).and.                          &
      &        LBC_apply(ng)%west (Jstr-1)) THEN
             DO k=1,N(ng)
-!>            tl_t(Istr-1,Jstr-1,k,nout,itrc)=0.5_r8*                   &
-!>   &                                        (tl_t(Istr  ,Jstr-1,k,    &
-!>   &                                              nout,itrc)+         &
-!>   &                                         tl_t(Istr-1,Jstr  ,k,    &
-!>   &                                              nout,itrc))
-!>
+!^            tl_t(Istr-1,Jstr-1,k,nout,itrc)=0.5_r8*                   &
+!^   &                                        (tl_t(Istr  ,Jstr-1,k,    &
+!^   &                                              nout,itrc)+         &
+!^   &                                         tl_t(Istr-1,Jstr  ,k,    &
+!^   &                                              nout,itrc))
+!^
               adfac=0.5_r8*ad_t(Istr-1,Jstr-1,k,nout,itrc)
               ad_t(Istr  ,Jstr-1,k,nout,itrc)=ad_t(Istr  ,Jstr-1,k,     &
      &                                             nout,itrc)+          &
@@ -224,39 +224,39 @@
                   cff=BOUNDARY(ng)%t_north_C2(i,k,itrc)
 # endif
 # ifdef MASKING
-!>                tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,      &
-!>   &                                            itrc)*                &
-!>   &                                       GRID(ng)%rmask(i,Jend+1)
-!>
+!^                tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,      &
+!^   &                                            itrc)*                &
+!^   &                                       GRID(ng)%rmask(i,Jend+1)
+!^
                   ad_t(i,Jend+1,k,nout,itrc)=ad_t(i,Jend+1,k,nout,      &
      &                                            itrc)*                &
      &                                       GRID(ng)%rmask(i,Jend+1)
 # endif
                   IF (ad_LBC(inorth,isTvar(itrc),ng)%nudging) THEN
-!>                  tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,    &
-!>   &                                              itrc)-              &
-!>   &                                         tau*                     &
-!>   &                                         tl_t(i,Jend+1,k,nstp,    &
-!>   &                                              itrc)
-!>
+!^                  tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,    &
+!^   &                                              itrc)-              &
+!^   &                                         tau*                     &
+!^   &                                         tl_t(i,Jend+1,k,nstp,    &
+!^   &                                              itrc)
+!^
                     ad_t(i,Jend+1,k,nstp,itrc)=ad_t(i,Jend+1,k,nstp,    &
      &                                              itrc)-              &
      &                                         tau*                     &
      &                                         ad_t(i,Jend+1,k,nout,    &
      &                                              itrc)
                   END IF
-!>                tl_t(i,Jend+1,k,nout,itrc)=(cff*                      &
-!>   &                                        tl_t(i,Jend+1,k,nstp,     &
-!>   &                                             itrc)+               &
-!>   &                                        Ce*                       &
-!>   &                                        tl_t(i,Jend  ,k,nout,     &
-!>   &                                             itrc)-               &
-!>   &                                        MAX(Cx,0.0_r8)*           &
-!>   &                                           tl_grad(i  ,Jend+1)-   &
-!>   &                                        MIN(Cx,0.0_r8)*           &
-!>   &                                           tl_grad(i+1,Jend+1))/  &
-!>   &                                       (cff+Ce)
-!>
+!^                tl_t(i,Jend+1,k,nout,itrc)=(cff*                      &
+!^   &                                        tl_t(i,Jend+1,k,nstp,     &
+!^   &                                             itrc)+               &
+!^   &                                        Ce*                       &
+!^   &                                        tl_t(i,Jend  ,k,nout,     &
+!^   &                                             itrc)-               &
+!^   &                                        MAX(Cx,0.0_r8)*           &
+!^   &                                           tl_grad(i  ,Jend+1)-   &
+!^   &                                        MIN(Cx,0.0_r8)*           &
+!^   &                                           tl_grad(i+1,Jend+1))/  &
+!^   &                                       (cff+Ce)
+!^
                   adfac=ad_t(i,Jend+1,k,nout,itrc)/(cff+Ce)
                   ad_grad(i  ,Jend+1)=ad_grad(i  ,Jend+1)-              &
      &                                MAX(Cx,0.0_r8)*adfac
@@ -281,30 +281,30 @@
             DO i=Istr,Iend
               IF (LBC_apply(ng)%north(i)) THEN
 # ifdef MASKING
-!>              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(i,Jend+1)
-!>
+!^              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(i,Jend+1)
+!^
                 ad_t(i,Jend+1,k,nout,itrc)=ad_t(i,Jend+1,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(i,Jend+1)
 # endif
 # ifdef ADJUST_BOUNDARY
                 IF (Lobc(inorth,isTvar(itrc),ng)) THEN
-!>                tl_t(i,Jend+1,k,nout,itrc)=BOUNDARY(ng)%              &
-!>                                                 tl_t_north(i,k,itrc)
-!>
+!^                tl_t(i,Jend+1,k,nout,itrc)=BOUNDARY(ng)%              &
+!^                                                 tl_t_north(i,k,itrc)
+!^
                   BOUNDARY(ng)%ad_t_north(i,k,itrc)=                    &
      &                              BOUNDARY(ng)%ad_t_north(i,k,itrc)+  &
      &                                              ad_t(i,Jend+1,k,    &
      &                                                   nout,itrc)
                   ad_t(i,Jend+1,k,nout,itrc)=0.0_r8
                 ELSE
-!>                tl_t(i,Jend+1,k,nout,itrc)=0.0_r8
-!>
+!^                tl_t(i,Jend+1,k,nout,itrc)=0.0_r8
+!^
                   ad_t(i,Jend+1,k,nout,itrc)=0.0_r8
                 END IF
 # else
-!>              tl_t(i,Jend+1,k,nout,itrc)=0.0_r8
-!>
+!^              tl_t(i,Jend+1,k,nout,itrc)=0.0_r8
+!^
                 ad_t(i,Jend+1,k,nout,itrc)=0.0_r8
 # endif
               END IF
@@ -318,14 +318,14 @@
             DO i=Istr,Iend
               IF (LBC_apply(ng)%north(i)) THEN
 # ifdef MASKING
-!>              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(i,Jend+1)
-!>
+!^              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(i,Jend+1)
+!^
                 ad_t(i,Jend+1,k,nout,itrc)=ad_t(i,Jend+1,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(i,Jend+1)
 # endif
-!>              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend,k,nout,itrc)
-!>
+!^              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend,k,nout,itrc)
+!^
                 ad_t(i,Jend  ,k,nout,itrc)=ad_t(i,Jend  ,k,nout,itrc)+  &
      &                                     ad_t(i,Jend+1,k,nout,itrc)
                 ad_t(i,Jend+1,k,nout,itrc)=0.0_r8
@@ -340,14 +340,14 @@
             DO i=Istr,Iend
               IF (LBC_apply(ng)%north(i)) THEN
 # ifdef MASKING
-!>              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(i,Jend+1)
-!>
+!^              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend+1,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(i,Jend+1)
+!^
                 ad_t(i,Jend+1,k,nout,itrc)=ad_t(i,Jend+1,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(i,Jend+1)
 # endif
-!>              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend,k,nout,itrc)
-!>
+!^              tl_t(i,Jend+1,k,nout,itrc)=tl_t(i,Jend,k,nout,itrc)
+!^
                 ad_t(i,Jend  ,k,nout,itrc)=ad_t(i,Jend  ,k,nout,itrc)+  &
      &                                     ad_t(i,Jend+1,k,nout,itrc)
                 ad_t(i,Jend+1,k,nout,itrc)=0.0_r8
@@ -396,39 +396,39 @@
                   cff=BOUNDARY(ng)%t_south_C2(i,k,itrc)
 # endif
 # ifdef MASKING
-!>                tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,      &
-!>   &                                            itrc)*                &
-!>   &                                       GRID(ng)%rmask(i,Jstr-1)
-!>
+!^                tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,      &
+!^   &                                            itrc)*                &
+!^   &                                       GRID(ng)%rmask(i,Jstr-1)
+!^
                   ad_t(i,Jstr-1,k,nout,itrc)=ad_t(i,Jstr-1,k,nout,      &
      &                                            itrc)*                &
      &                                       GRID(ng)%rmask(i,Jstr-1)
 # endif
                   IF (ad_LBC(isouth,isTvar(itrc),ng)%nudging) THEN
-!>                  tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,    &
-!>   &                                              itrc)-              &
-!>   &                                         tau*                     &
-!>   &                                         tl_t(i,Jstr-1,k,nstp,    &
-!>   &                                              itrc)
-!>
+!^                  tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,    &
+!^   &                                              itrc)-              &
+!^   &                                         tau*                     &
+!^   &                                         tl_t(i,Jstr-1,k,nstp,    &
+!^   &                                              itrc)
+!^
                     ad_t(i,Jstr-1,k,nstp,itrc)=ad_t(i,Jstr-1,k,nstp,    &
      &                                              itrc)-              &
      &                                         tau*                     &
      &                                         ad_t(i,Jstr-1,k,nout,    &
      &                                              itrc)
                   END IF
-!>                tl_t(i,Jstr-1,k,nout,itrc)=(cff*                      &
-!>   &                                        tl_t(i,Jstr-1,k,nstp,     &
-!>   &                                             itrc)+               &
-!>   &                                        Ce*                       &
-!>   &                                        tl_t(i,Jstr  ,k,nout,     &
-!>   &                                             itrc)-               &
-!>   &                                        MAX(Cx,0.0_r8)*           &
-!>   &                                           tl_grad(i  ,Jstr-1)-   &
-!>   &                                        MIN(Cx,0.0_r8)*           &
-!>   &                                           tl_grad(i+1,Jstr-1))/  &
-!>   &                                       (cff+Ce)
-!>
+!^                tl_t(i,Jstr-1,k,nout,itrc)=(cff*                      &
+!^   &                                        tl_t(i,Jstr-1,k,nstp,     &
+!^   &                                             itrc)+               &
+!^   &                                        Ce*                       &
+!^   &                                        tl_t(i,Jstr  ,k,nout,     &
+!^   &                                             itrc)-               &
+!^   &                                        MAX(Cx,0.0_r8)*           &
+!^   &                                           tl_grad(i  ,Jstr-1)-   &
+!^   &                                        MIN(Cx,0.0_r8)*           &
+!^   &                                           tl_grad(i+1,Jstr-1))/  &
+!^   &                                       (cff+Ce)
+!^
                   adfac=ad_t(i,Jstr-1,k,nout,itrc)/(cff+Ce)
                   ad_grad(i  ,Jstr-1)=ad_grad(i  ,Jstr-1)-              &
      &                                MAX(Cx,0.0_r8)*adfac
@@ -453,30 +453,30 @@
             DO i=Istr,Iend
               IF (LBC_apply(ng)%south(i)) THEN
 # ifdef MASKING
-!>              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(i,Jstr-1)
-!>
+!^              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(i,Jstr-1)
+!^
                 ad_t(i,Jstr-1,k,nout,itrc)=ad_t(i,Jstr-1,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(i,Jstr-1)
 # endif
 # ifdef ADJUST_BOUNDARY
                 IF (Lobc(isouth,isTvar(itrc),ng)) THEN
-!>                tl_t(i,Jstr-1,k,nout,itrc)=BOUNDARY(ng)%              &
-!>   &                                             tl_t_south(i,k,itrc)
-!>
+!^                tl_t(i,Jstr-1,k,nout,itrc)=BOUNDARY(ng)%              &
+!^   &                                             tl_t_south(i,k,itrc)
+!^
                   BOUNDARY(ng)%ad_t_south(i,k,itrc)=                    &
      &                              BOUNDARY(ng)%ad_t_south(i,k,itrc)+  &
      &                                              ad_t(i,Jstr-1,k,    &
      &                                                   nout,itrc)
                   ad_t(i,Jstr-1,k,nout,itrc)=0.0_r8
                 ELSE
-!>                tl_t(i,Jstr-1,k,nout,itrc)=0.0_r8
-!>
+!^                tl_t(i,Jstr-1,k,nout,itrc)=0.0_r8
+!^
                   ad_t(i,Jstr-1,k,nout,itrc)=0.0_r8
                 END IF
 # else
-!>              tl_t(i,Jstr-1,k,nout,itrc)=0.0_r8
-!>
+!^              tl_t(i,Jstr-1,k,nout,itrc)=0.0_r8
+!^
                 ad_t(i,Jstr-1,k,nout,itrc)=0.0_r8
 # endif
               END IF
@@ -490,14 +490,14 @@
             DO i=Istr,Iend
               IF (LBC_apply(ng)%south(i)) THEN
 # ifdef MASKING
-!>              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(i,Jstr-1)
-!>
+!^              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(i,Jstr-1)
+!^
                 ad_t(i,Jstr-1,k,nout,itrc)=ad_t(i,Jstr-1,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(i,Jstr-1)
 # endif
-!>              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr,k,nout,itrc)
-!>
+!^              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr,k,nout,itrc)
+!^
                 ad_t(i,Jstr  ,k,nout,itrc)=ad_t(i,Jstr  ,k,nout,itrc)+  &
      &                                     ad_t(i,Jstr-1,k,nout,itrc)
                 ad_t(i,Jstr-1,k,nout,itrc)=0.0_r8
@@ -512,14 +512,14 @@
             DO i=Istr,Iend
               IF (LBC_apply(ng)%south(i)) THEN
 # ifdef MASKING
-!>              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(i,Jstr-1)
-!>
+!^              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr-1,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(i,Jstr-1)
+!^
                 ad_t(i,Jstr-1,k,nout,itrc)=ad_t(i,Jstr-1,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(i,Jstr-1)
 # endif
-!>              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr,k,nout,itrc)
-!>
+!^              tl_t(i,Jstr-1,k,nout,itrc)=tl_t(i,Jstr,k,nout,itrc)
+!^
                 ad_t(i,Jstr  ,k,nout,itrc)=ad_t(i,Jstr  ,k,nout,itrc)+  &
      &                                     ad_t(i,Jstr-1,k,nout,itrc)
                 ad_t(i,Jstr-1,k,nout,itrc)=0.0_r8
@@ -568,39 +568,39 @@
                   cff=BOUNDARY(ng)%t_east_C2(j,k,itrc)
 # endif
 # ifdef MASKING
-!>                tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,      &
-!>   &                                            itrc)*                &
-!>   &                                       GRID(ng)%rmask(Iend+1,j)
-!>
+!^                tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,      &
+!^   &                                            itrc)*                &
+!^   &                                       GRID(ng)%rmask(Iend+1,j)
+!^
                   ad_t(Iend+1,j,k,nout,itrc)=ad_t(Iend+1,j,k,nout,      &
      &                                            itrc)*                &
      &                                       GRID(ng)%rmask(Iend+1,j)
 # endif
                   IF (ad_LBC(ieast,isTvar(itrc),ng)%nudging) THEN
-!>                  tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,    &
-!>   &                                              itrc)-              &
-!>   &                                         tau*                     &
-!>   &                                         tl_t(Iend+1,j,k,nstp,    &
-!>   &                                              itrc)
-!>
+!^                  tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,    &
+!^   &                                              itrc)-              &
+!^   &                                         tau*                     &
+!^   &                                         tl_t(Iend+1,j,k,nstp,    &
+!^   &                                              itrc)
+!^
                     ad_t(Iend+1,j,k,nstp,itrc)=ad_t(Iend+1,j,k,nstp,    &
      &                                              itrc)-              &
      &                                         tau*                     &
      &                                         ad_t(Iend+1,j,k,nout,    &
      &                                              itrc)
                   END IF
-!>                tl_t(Iend+1,j,k,nout,itrc)=(cff*                      &
-!>   &                                        tl_t(Iend+1,j,k,nstp,     &
-!>   &                                             itrc)+               &
-!>   &                                        Cx*                       &
-!>   &                                        tl_t(Iend  ,j,k,nout,     &
-!>   &                                             itrc)-               &
-!>   &                                        MAX(Ce,0.0_r8)*           &
-!>   &                                           tl_grad(Iend+1,j  )-   &
-!>   &                                        MIN(Ce,0.0_r8)*           &
-!>   &                                           tl_grad(Iend+1,j+1))/  &
-!>   &                                       (cff+Cx)
-!>
+!^                tl_t(Iend+1,j,k,nout,itrc)=(cff*                      &
+!^   &                                        tl_t(Iend+1,j,k,nstp,     &
+!^   &                                             itrc)+               &
+!^   &                                        Cx*                       &
+!^   &                                        tl_t(Iend  ,j,k,nout,     &
+!^   &                                             itrc)-               &
+!^   &                                        MAX(Ce,0.0_r8)*           &
+!^   &                                           tl_grad(Iend+1,j  )-   &
+!^   &                                        MIN(Ce,0.0_r8)*           &
+!^   &                                           tl_grad(Iend+1,j+1))/  &
+!^   &                                       (cff+Cx)
+!^
                   adfac=ad_t(Iend+1,j,k,nout,itrc)/(cff+Cx)
                   ad_grad(Iend+1,j  )=ad_grad(Iend+1,j  )-              &
      &                                MAX(Ce,0.0_r8)*adfac
@@ -625,30 +625,30 @@
             DO j=Jstr,Jend
               IF (LBC_apply(ng)%east(j)) THEN
 # ifdef MASKING
-!>              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(Iend+1,j)
-!>
+!^              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(Iend+1,j)
+!^
                 ad_t(Iend+1,j,k,nout,itrc)=ad_t(Iend+1,j,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(Iend+1,j)
 # endif
 # ifdef ADJUST_BOUNDARY
                 IF (Lobc(ieast,isTvar(itrc),ng)) THEN
-!>                tl_t(Iend+1,j,k,nout,itrc)=BOUNDARY(ng)%              &
-!>   &                                             tl_t_east(j,k,itrc)
-!>
+!^                tl_t(Iend+1,j,k,nout,itrc)=BOUNDARY(ng)%              &
+!^   &                                             tl_t_east(j,k,itrc)
+!^
                   BOUNDARY(ng)%ad_t_east(j,k,itrc)=                     &
      &                              BOUNDARY(ng)%ad_t_east(j,k,itrc)+   &
      &                                             ad_t(Iend+1,j,k,     &
      &                                                  nout,itrc)
                   ad_t(Iend+1,j,k,nout,itrc)=0.0_r8
                 ELSE
-!>                tl_t(Iend+1,j,k,nout,itrc)=0.0_r8
-!>
+!^                tl_t(Iend+1,j,k,nout,itrc)=0.0_r8
+!^
                   ad_t(Iend+1,j,k,nout,itrc)=0.0_r8
                 END IF
 # else
-!>              tl_t(Iend+1,j,k,nout,itrc)=0.0_r8
-!>
+!^              tl_t(Iend+1,j,k,nout,itrc)=0.0_r8
+!^
                 ad_t(Iend+1,j,k,nout,itrc)=0.0_r8
 # endif
               END IF
@@ -662,14 +662,14 @@
             DO j=Jstr,Jend
               IF (LBC_apply(ng)%east(j)) THEN
 # ifdef MASKING
-!>              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(Iend+1,j)
-!>
+!^              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(Iend+1,j)
+!^
                 ad_t(Iend+1,j,k,nout,itrc)=ad_t(Iend+1,j,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(Iend+1,j)
 # endif
-!>              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend,j,k,nout,itrc)
-!>
+!^              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend,j,k,nout,itrc)
+!^
                 ad_t(Iend  ,j,k,nout,itrc)=ad_t(Iend  ,j,k,nout,itrc)+  &
      &                                     ad_t(Iend+1,j,k,nout,itrc)
                 ad_t(Iend+1,j,k,nout,itrc)=0.0_r8
@@ -684,14 +684,14 @@
             DO j=Jstr,Jend
               IF (LBC_apply(ng)%east(j)) THEN
 # ifdef MASKING
-!>              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(Iend+1,j)
-!>
+!^              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend+1,j,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(Iend+1,j)
+!^
                 ad_t(Iend+1,j,k,nout,itrc)=ad_t(Iend+1,j,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(Iend+1,j)
 # endif
-!>              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend,j,k,nout,itrc)
-!>
+!^              tl_t(Iend+1,j,k,nout,itrc)=tl_t(Iend,j,k,nout,itrc)
+!^
                 ad_t(Iend  ,j,k,nout,itrc)=ad_t(Iend  ,j,k,nout,itrc)+  &
      &                                     ad_t(Iend+1,j,k,nout,itrc)
                 ad_t(Iend+1,j,k,nout,itrc)=0.0_r8
@@ -740,39 +740,39 @@
                   cff=BOUNDARY(ng)%t_west_C2(j,k,itrc)
 # endif
 # ifdef MASKING
-!>                tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,      &
-!>   &                                            itrc)*                &
-!>   &                                       GRID(ng)%rmask(Istr-1,j)
-!>
+!^                tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,      &
+!^   &                                            itrc)*                &
+!^   &                                       GRID(ng)%rmask(Istr-1,j)
+!^
                   ad_t(Istr-1,j,k,nout,itrc)=ad_t(Istr-1,j,k,nout,      &
      &                                            itrc)*                &
      &                                       GRID(ng)%rmask(Istr-1,j)
 # endif
                   IF (ad_LBC(iwest,isTvar(itrc),ng)%nudging) THEN
-!>                  tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,    &
-!>                                                  itrc)-              &
-!>   &                                         tau*                     &
-!>   &                                         tl_t(Istr-1,j,k,nstp,    &
-!>   &                                              itrc)
-!>
+!^                  tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,    &
+!^                                                  itrc)-              &
+!^   &                                         tau*                     &
+!^   &                                         tl_t(Istr-1,j,k,nstp,    &
+!^   &                                              itrc)
+!^
                     ad_t(Istr-1,j,k,nstp,itrc)=ad_t(Istr-1,j,k,nstp,    &
      &                                              itrc)-              &
      &                                         tau*                     &
      &                                         ad_t(Istr-1,j,k,nout,    &
      &                                              itrc)
                   END IF
-!>                tl_t(Istr-1,j,k,nout,itrc)=(cff*                      &
-!>   &                                        tl_t(Istr-1,j,k,nstp,     &
-!>   &                                             itrc)+               &
-!>   &                                        Cx*                       &
-!>   &                                        tl_t(Istr  ,j,k,nout,     &
-!>   &                                             itrc)-               &
-!>   &                                        MAX(Ce,0.0_r8)*           &
-!>   &                                           tl_grad(Istr-1,j  )-   &
-!>   &                                        MIN(Ce,0.0_r8)*           &
-!>   &                                           tl_grad(Istr-1,j+1))/  &
-!>   &                                       (cff+Cx)
-!>
+!^                tl_t(Istr-1,j,k,nout,itrc)=(cff*                      &
+!^   &                                        tl_t(Istr-1,j,k,nstp,     &
+!^   &                                             itrc)+               &
+!^   &                                        Cx*                       &
+!^   &                                        tl_t(Istr  ,j,k,nout,     &
+!^   &                                             itrc)-               &
+!^   &                                        MAX(Ce,0.0_r8)*           &
+!^   &                                           tl_grad(Istr-1,j  )-   &
+!^   &                                        MIN(Ce,0.0_r8)*           &
+!^   &                                           tl_grad(Istr-1,j+1))/  &
+!^   &                                       (cff+Cx)
+!^
                   adfac=ad_t(Istr-1,j,k,nout,itrc)/(cff+Cx)
                   ad_grad(Istr-1,j  )=ad_grad(Istr-1,j  )-              &
      &                                MAX(Ce,0.0_r8)*adfac
@@ -797,30 +797,30 @@
             DO j=Jstr,Jend
               IF (LBC_apply(ng)%west(j)) THEN
 # ifdef MASKING
-!>              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(Istr-1,j)
-!>
+!^              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(Istr-1,j)
+!^
                 ad_t(Istr-1,j,k,nout,itrc)=ad_t(Istr-1,j,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(Istr-1,j)
 # endif
 # ifdef ADJUST_BOUNDARY
                 IF (Lobc(iwest,isTvar(itrc),ng)) THEN
-!>                tl_t(Istr-1,j,k,nout,itrc)=BOUNDARY(ng)%              &
-!>   &                                             tl_t_west(j,k,itrc)
-!>
+!^                tl_t(Istr-1,j,k,nout,itrc)=BOUNDARY(ng)%              &
+!^   &                                             tl_t_west(j,k,itrc)
+!^
                   BOUNDARY(ng)%ad_t_west(j,k,itrc)=                     &
      &                              BOUNDARY(ng)%ad_t_west(j,k,itrc)+   &
      &                                             ad_t(Istr-1,j,k,     &
      &                                                  nout,itrc)
                   ad_t(Istr-1,j,k,nout,itrc)=0.0_r8
                 ELSE
-!>                tl_t(Istr-1,j,k,nout,itrc)=0.0_r8
-!>
+!^                tl_t(Istr-1,j,k,nout,itrc)=0.0_r8
+!^
                   ad_t(Istr-1,j,k,nout,itrc)=0.0_r8
                 END IF
 # else
-!>              tl_t(Istr-1,j,k,nout,itrc)=0.0_r8
-!>
+!^              tl_t(Istr-1,j,k,nout,itrc)=0.0_r8
+!^
                 ad_t(Istr-1,j,k,nout,itrc)=0.0_r8
 # endif
               END IF
@@ -834,14 +834,14 @@
             DO j=Jstr,Jend
               IF (LBC_apply(ng)%west(j)) THEN
 # ifdef MASKING
-!>              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(Istr-1,j)
-!>
+!^              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(Istr-1,j)
+!^
                 ad_t(Istr-1,j,k,nout,itrc)=ad_t(Istr-1,j,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(Istr-1,j)
 # endif
-!>              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr,j,k,nout,itrc)
-!>
+!^              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr,j,k,nout,itrc)
+!^
                 ad_t(Istr  ,j,k,nout,itrc)=ad_t(Istr  ,j,k,nout,itrc)+  &
      &                                     ad_t(Istr-1,j,k,nout,itrc)
                 ad_t(Istr-1,j,k,nout,itrc)=0.0_r8
@@ -856,14 +856,14 @@
             DO j=Jstr,Jend
               IF (LBC_apply(ng)%west(j)) THEN
 # ifdef MASKING
-!>              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,itrc)*  &
-!>   &                                     GRID(ng)%rmask(Istr-1,j)
-!>
+!^              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr-1,j,k,nout,itrc)*  &
+!^   &                                     GRID(ng)%rmask(Istr-1,j)
+!^
                 ad_t(Istr-1,j,k,nout,itrc)=ad_t(Istr-1,j,k,nout,itrc)*  &
      &                                     GRID(ng)%rmask(Istr-1,j)
 # endif
-!>              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr,j,k,nout,itrc)
-!>
+!^              tl_t(Istr-1,j,k,nout,itrc)=tl_t(Istr,j,k,nout,itrc)
+!^
                 ad_t(Istr  ,j,k,nout,itrc)=ad_t(Istr  ,j,k,nout,itrc)+  &
      &                                     ad_t(Istr-1,j,k,nout,itrc)
                 ad_t(Istr-1,j,k,nout,itrc)=0.0_r8

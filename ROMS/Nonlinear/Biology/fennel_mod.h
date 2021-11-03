@@ -1,3 +1,4 @@
+      MODULE mod_biology
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -160,9 +161,9 @@
       real(r8), allocatable :: ZooMin(:)             ! mmol_N/m3
       real(r8), allocatable :: ZooMR(:)              ! 1/day
       real(r8), allocatable :: pCO2air(:)            ! ppmv
-
+!
       CONTAINS
-
+!
       SUBROUTINE initialize_biology
 !
 !=======================================================================
@@ -524,6 +525,8 @@
       iOxyg=ic+1
       ic=ic+1
 # endif
-
+!
       RETURN
       END SUBROUTINE initialize_biology
+
+      END MODULE mod_biology

@@ -22,19 +22,22 @@
 !
       USE analytical_mod
 #ifdef DISTRIBUTE
-      USE distribute_mod,   ONLY : mp_bcasti
+      USE distribute_mod,       ONLY : mp_bcasti
+#endif
+#ifdef TIDE_GENERATING_FORCES
+      USE equilibrium_tide_mod, ONLY : harmonic_constituents
 #endif
 #ifndef ANA_GRID
-      USE get_grid_mod,     ONLY : get_grid
+      USE get_grid_mod,         ONLY : get_grid
 #endif
 #ifndef ANA_NUDGCOEF
-      USE get_nudgcoef_mod, ONLY : get_nudgcoef
+      USE get_nudgcoef_mod,     ONLY : get_nudgcoef
 #endif
-      USE metrics_mod,      ONLY : metrics
+      USE metrics_mod,          ONLY : metrics
 #ifdef NESTING
-      USE nesting_mod,      ONLY : nesting
+      USE nesting_mod,          ONLY : nesting
 #endif
-      USE strings_mod,      ONLY : FoundError
+      USE strings_mod,          ONLY : FoundError
 !
       implicit none
 !
@@ -169,6 +172,17 @@
 !$OMP BARRIER
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
+# endif
+
+# ifdef TIDE_GENERATING_FORCES
+!
+!-----------------------------------------------------------------------
+!  If applying tide generating forces, compute harmonic constituent
+!  parameters of the equilibrium tide on Greenwich meridian for the
+!  reference tide date number.
+!-----------------------------------------------------------------------
+!
+      CALL harmonic_constituents (Lnodal)
 # endif
 #endif
 !

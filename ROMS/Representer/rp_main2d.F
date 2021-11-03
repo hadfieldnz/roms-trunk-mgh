@@ -27,6 +27,9 @@
       USE mod_stepping
 !
       USE dateclock_mod,           ONLY : time_string
+# ifdef TIDE_GENERATING_FORCES
+      USE equilibrium_tide_mod,    ONLY : equilibrium_tide
+# endif
 # if defined ATM_COUPLING_NOT_YET && defined MCT_LIB
       USE ocean_coupler_mod,       ONLY : atmos_coupling
 # endif
@@ -188,6 +191,9 @@
 # endif
 # ifdef DIAGNOSTICS
 !!          CALL rp_set_diags (ng, tile)
+# endif
+# ifdef TIDE_GENERATING_FORCES
+            CALL equilibrium_tide (ng, tile, iRPM)
 # endif
             CALL rp_diag (ng, tile)
           END DO

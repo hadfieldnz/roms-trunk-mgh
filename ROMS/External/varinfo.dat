@@ -1692,6 +1692,15 @@
 !------------------------------------------------------------------------------
 !
 
+'zero_phase_date'                                  ! Input
+  'tidal reference date for zero phase'
+  'days as %Y%m%d.%f'                              ! YYYYMMDD.dddd
+  'nulvar'
+  'nulvar'
+  'idTref'
+  'nulvar'
+  1.0d0
+
 'tide_period'                                      ! Input
   'tidal period'
   'hours'                                          ! [s]

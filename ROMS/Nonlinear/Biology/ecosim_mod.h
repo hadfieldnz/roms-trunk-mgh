@@ -1,3 +1,4 @@
+      MODULE mod_biology
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
@@ -491,9 +492,9 @@
       real(r8), dimension(NBands) :: wavedp   ! a and b factor
       real(r8), dimension(Ndom) :: aDOC410    ! CDM absorption at 410
       real(r8), dimension(Ndom) :: aDOC300    ! CDM absorption at 300
-
+!
       CONTAINS
-
+!
       SUBROUTINE initialize_biology
 !
 !=======================================================================
@@ -1169,6 +1170,8 @@
       DO i=1,Nfec
         WRITE (FecName(i),'(a,1x,i1)') 'Fecal Group', i
       END DO
-
+!
       RETURN
       END SUBROUTINE initialize_biology
+
+      END MODULE mod_biology

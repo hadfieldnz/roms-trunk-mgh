@@ -1,3 +1,4 @@
+!!
       SUBROUTINE ana_scope (ng, tile, model)
 !
 !! svn $Id$

@@ -1,14 +1,14 @@
 #undef  NEWMAN
 #define LIMIT_INTERIOR
 
-      SUBROUTINE biology (ng,tile)
+      MODULE biology_mod
 !
 !svn $Id$
-!******************************************************** Ruoying He ***
+!======================================================== Ruoying He ===
 !  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                           Hernan G. Arango   !
-!****************************************** Alexander F. Shchepetkin ***
+!========================================== Alexander F. Shchepetkin ===
 !                                                                      !
 !  Red Tide Biological Model: Alexandrium fundyense                    !
 !                                                                      !
@@ -28,6 +28,17 @@
 !      western Gulf of Maine: 2, Coupled biophysical modeling, J.      !
 !      Geophys. Res., 113, C07040, doi:10.1029/2007JC004602.           !
 !                                                                      !
+!=======================================================================
+!
+      implicit none
+!
+      PRIVATE
+      PUBLIC  :: biology
+!
+      CONTAINS
+!
+!***********************************************************************
+      SUBROUTINE biology (ng,tile)
 !***********************************************************************
 !
       USE mod_param
@@ -62,23 +73,23 @@
 #ifdef PROFILE
       CALL wclock_on (ng, iNLM, 15, __LINE__, MyFile)
 #endif
-      CALL biology_tile (ng, tile,                                      &
-     &                   LBi, UBi, LBj, UBj, N(ng), NT(ng),             &
-     &                   IminS, ImaxS, JminS, JmaxS,                    &
-     &                   nstp(ng), nnew(ng),                            &
+      CALL red_tide_tile (ng, tile,                                     &
+     &                    LBi, UBi, LBj, UBj, N(ng), NT(ng),            &
+     &                    IminS, ImaxS, JminS, JmaxS,                   &
+     &                    nstp(ng), nnew(ng),                           &
 #ifdef MASKING
-     &                   GRID(ng) % rmask,                              &
+     &                    GRID(ng) % rmask,                             &
 #endif
-     &                   GRID(ng) % Hz,                                 &
-     &                   GRID(ng) % z_r,                                &
-     &                   GRID(ng) % z_w,                                &
+     &                    GRID(ng) % Hz,                                &
+     &                    GRID(ng) % z_r,                               &
+     &                    GRID(ng) % z_w,                               &
 #ifdef DAILY_SHORTWAVE
-     &                   FORCES(ng) % srflx_avg,                        &
+     &                    FORCES(ng) % srflx_avg,                       &
 #endif
-     &                   FORCES(ng) % srflx,                            &
-     &                   OCEAN(ng) % CystIni,                           &
-     &                   OCEAN(ng) % DIN_obs,                           &
-     &                   OCEAN(ng) % t)
+     &                    FORCES(ng) % srflx,                           &
+     &                    OCEAN(ng) % CystIni,                          &
+     &                    OCEAN(ng) % DIN_obs,                          &
+     &                    OCEAN(ng) % t)
 
 #ifdef PROFILE
       CALL wclock_off (ng, iNLM, 15, __LINE__, MyFile)
@@ -88,19 +99,19 @@
       END SUBROUTINE biology
 !
 !-----------------------------------------------------------------------
-      SUBROUTINE biology_tile (ng, tile,                                &
-     &                         LBi, UBi, LBj, UBj, UBk, UBt,            &
-     &                         IminS, ImaxS, JminS, JmaxS,              &
-     &                         nstp, nnew,                              &
+      SUBROUTINE red_tide_tile (ng, tile,                               &
+     &                          LBi, UBi, LBj, UBj, UBk, UBt,           &
+     &                          IminS, ImaxS, JminS, JmaxS,             &
+     &                          nstp, nnew,                             &
 #ifdef MASKING
-     &                         rmask,                                   &
+     &                          rmask,                                  &
 #endif
-     &                         Hz, z_r, z_w,                            &
+     &                          Hz, z_r, z_w,                           &
 #ifdef DAILY_SHORTWAVE
-     &                         srflx_avg,                               &
+     &                          srflx_avg,                              &
 #endif
-     &                         srflx, CystIni, DIN_obs,                 &
-     &                         t)
+     &                          srflx, CystIni, DIN_obs,                &
+     &                          t)
 !-----------------------------------------------------------------------
 !
       USE mod_param
@@ -696,4 +707,6 @@
       END DO J_LOOP
 !
       RETURN
-      END SUBROUTINE biology_tile
+      END SUBROUTINE red_tide_tile
+
+      END MODULE biology_mod

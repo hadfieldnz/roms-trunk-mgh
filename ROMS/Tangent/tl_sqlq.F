@@ -70,8 +70,8 @@
         ELSE
           tl_zbeta=0.0_r8
         END IF
-!>      zbeta=-SIGN(zbeta,a(ii,ii))
-!>
+!^      zbeta=-SIGN(zbeta,a(ii,ii))
+!^
         tl_zbeta=-SIGN(1.0_r8,zbeta)*SIGN(1.0_r8,a(ii,ii))*tl_zbeta
         zbeta=-SIGN(zbeta,a(ii,ii))
         tau(ii)=(zbeta-a(ii,ii))/zbeta

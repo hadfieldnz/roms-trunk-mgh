@@ -1,3 +1,4 @@
+!!
       SUBROUTINE ana_passive (ng, tile, model)
 !
 !! svn $Id$

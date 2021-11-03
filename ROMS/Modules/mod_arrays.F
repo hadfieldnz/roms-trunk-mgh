@@ -155,6 +155,7 @@
 !$OMP END MASTER
 !$OMP BARRIER
 #endif
+        LallocatedMemory=.TRUE.
       END IF
 !
 !-----------------------------------------------------------------------

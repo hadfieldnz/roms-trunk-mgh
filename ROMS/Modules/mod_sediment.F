@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-      MODULE mod_sediment
 
 /*
 ** svn $Id$
@@ -64,6 +63,7 @@
 
 #if defined SEDIMENT || defined BBL_MODEL
 # include <sediment_mod.h>
-#endif
-
+#else
+      MODULE mod_sediment
       END MODULE mod_sediment
+#endif

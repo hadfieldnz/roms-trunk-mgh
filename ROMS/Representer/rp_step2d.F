@@ -1,5 +1,4 @@
 #include "cppdefs.h"
-      MODULE rp_step2d_mod
 #ifdef TL_IOMS
 !
 !svn $Id$
@@ -19,14 +18,8 @@
 !                                                                      !
 !=======================================================================
 !
-      implicit none
-!
-      PRIVATE
-      PUBLIC  :: rp_step2d
-!
-      CONTAINS
-!
 # include "rp_step2d_LF_AM3.h"
-
-#endif
+#else
+      MODULE rp_step2d_mod
       END MODULE rp_step2d_mod
+#endif
