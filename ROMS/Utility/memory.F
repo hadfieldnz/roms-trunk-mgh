@@ -47,6 +47,10 @@
 !
       real(r8), parameter :: spv = 0.0_r8
 !
+#ifdef DISTRIBUTE
+      real(r8), allocatable ::  Bwrk(:), Dwrk(:)
+!
+#endif
       real(r8), allocatable ::  Asize(:,:)      ! automatic arrays
       real(r8), allocatable ::  Bsize(:,:)      ! automatic mpi-buffers
       real(r8), allocatable ::  Dsize(:,:)      ! dynamic array
@@ -80,6 +84,14 @@
         allocate ( IOsize(0:Ntiles,Ngrids) )
         IOsize=spv
       END IF
+#ifdef DISTRIBUTE
+      IF (.not.allocated(Bwrk)) THEN
+        allocate ( Bwrk(Ntiles+1) )
+      END IF
+      IF (.not.allocated(Dwrk)) THEN
+        allocate ( Dwrk(Ntiles+1) )
+      END IF
+#endif
 !
 !  Determine size floating-point arrays in bytes.  We could use the
 !  Fortran 2008 standard function STORAGE_SIZE.  However since ROMS
@@ -157,13 +169,17 @@
 !  requirements, and convert number of array elements to megabytes.
 !
 #ifdef DISTRIBUTE
-      Bsize(0:numthreads-1,1:Ngrids)=spv
-      Dsize(0:numthreads-1,1:Ngrids)=spv
+      Bwrk=spv
+      Dwrk=spv
       DO ng=1,Ngrids
-        Bsize(MyRank,ng)=BmemMax(ng)*1.0E-6_r8        ! already in bytes
-        Dsize(MyRank,ng)=megabytefac*Dmem(ng)
-        CALL mp_collect (ng, iNLM, numthreads, spv, Bsize(0:,ng))
-        CALL mp_collect (ng, iNLM, numthreads, spv, Dsize(0:,ng))
+        Bwrk(MyRank+1)=BmemMax(ng)*1.0E-6_r8        ! already in bytes
+        Dwrk(MyRank+1)=megabytefac*Dmem(ng)
+        CALL mp_collect (ng, iNLM, numthreads, spv, Bwrk)
+        CALL mp_collect (ng, iNLM, numthreads, spv, Dwrk)
+        Bsize(MyRank,ng)=Bwrk(MyRank+1)
+        Dsize(MyRank,ng)=Dwrk(MyRank+1)
+        Bwrk=spv
+        Dwrk=spv
       END DO
 #else
       Dsize(0:numthreads-1,1:Ngrids)=spv

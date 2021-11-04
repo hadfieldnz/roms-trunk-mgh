@@ -21,6 +21,7 @@
 !
       USE mod_param
       USE mod_parallel
+      USE mod_arrays
       USE mod_iounits
       USE mod_ncparam
       USE mod_scalars
@@ -152,7 +153,8 @@
 !  Allocate and initialize modules variables.
 !
 !$OMP PARALLEL
-        CALL mod_arrays (allocate_vars)
+        CALL ROMS_allocate_arrays (allocate_vars)
+        CALL ROMS_initialize_arrays
 !$OMP END PARALLEL
 
       END IF

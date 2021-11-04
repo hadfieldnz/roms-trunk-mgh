@@ -138,10 +138,15 @@
         USE mod_param
 !
         implicit none
-
-# ifdef OBSERVATIONS
 !
-!  Define module structure.
+        PUBLIC :: allocate_fourdvar
+        PUBLIC :: deallocate_fourdvar
+        PUBLIC :: initialize_fourdvar
+!
+# ifdef OBSERVATIONS
+!-----------------------------------------------------------------------
+!  Define T_FOURDVAR structure.
+!-----------------------------------------------------------------------
 !
         TYPE T_FOURDVAR
 
@@ -202,10 +207,12 @@
 #  endif
 
         END TYPE T_FOURDVAR
-
+!
         TYPE (T_FOURDVAR), allocatable :: FOURDVAR(:)
 !
-!  Define other module arrays.
+!-----------------------------------------------------------------------
+!  Define other module variables.
+!-----------------------------------------------------------------------
 !
         integer,  allocatable :: ObsType(:)
         integer,  allocatable :: ObsState2Type(:)
@@ -336,7 +343,7 @@
 # endif
 !
 !-----------------------------------------------------------------------
-!  Observations parameters.
+!  Define observations parameters.
 !-----------------------------------------------------------------------
 !
 !  Switches indicating that at input observations vertical position were
@@ -910,9 +917,9 @@
 !
         real(r8), allocatable :: ForceTime(:)
 # endif
-
+!
       CONTAINS
-
+!
       SUBROUTINE allocate_fourdvar
 !
 !=======================================================================
@@ -1135,19 +1142,16 @@
         Dmem(1)=Dmem(1)+REAL(Ngrids,r8)
       END IF
 # endif
-
+!
       RETURN
       END SUBROUTINE allocate_fourdvar
-
-# if defined RBL4DVAR_FCT_SENSITIVITY && defined OBS_SPACE
+!
       SUBROUTINE deallocate_fourdvar
 !
 !=======================================================================
 !                                                                      !
-!  This routine deallocates several variables in module associated     !
+!  This routine deallocates only the variables in module associated    !
 !  with observation dimension parameters Ndatum, Nsurvey, and Mobs.    !
-!  It is used in the observations impacts for the analysis-forecast    !
-!  cycle.                                                              !
 !                                                                      !
 !=======================================================================
 !
@@ -1168,7 +1172,7 @@
           deallocate (FOURDVAR(ng) % SurveyTime)
         END IF
 
-#  ifdef RPCG
+# ifdef RPCG
         IF (allocated(FOURDVAR(ng) % cg_pxsave)) THEN
           deallocate (FOURDVAR(ng) % cg_pxsave)
         END IF
@@ -1193,18 +1197,18 @@
           deallocate (FOURDVAR(ng) % ad_cg_pxsave)
         END IF
 
-#  endif
+# endif
       END DO
 !
 !-----------------------------------------------------------------------
 !  deallocate and initialize model and observation variables.
 !-----------------------------------------------------------------------
 !
-#  ifdef CURVGRID
+# ifdef CURVGRID
       IF (allocated(ObsAngler)) THEN
         deallocate (ObsAngler)
       END IF
-#  endif
+# endif
 
       IF (allocated(ObsType)) THEN
         deallocate (ObsType)
@@ -1226,11 +1230,11 @@
         deallocate (ObsScale)
       END IF
 
-#  ifndef WEAK_CONSTRAINT
+# ifndef WEAK_CONSTRAINT
       IF (allocated(ObsScaleGlobal)) THEN
         deallocate (ObsScaleGlobal)
       END IF
-#  endif
+# endif
 
       IF (allocated(ObsVetting)) THEN
         deallocate (ObsVetting)
@@ -1252,11 +1256,11 @@
         deallocate (Yobs)
       END IF
 
-#  ifdef SOLVE3D
+# ifdef SOLVE3D
       IF (allocated(Zobs)) THEN
         deallocate (Zobs)
       END IF
-#  endif
+# endif
 
       IF (allocated(ADmodVal)) THEN
         deallocate (ADmodVal)
@@ -1282,7 +1286,7 @@
         deallocate (vradial)
       END IF
 
-#  ifndef VERIFICATION
+# ifndef VERIFICATION
       IF (allocated(uBgErr)) THEN
         deallocate (uBgErr)
       END IF
@@ -1290,9 +1294,9 @@
       IF (allocated(vBgErr)) THEN
         deallocate (vBgErr)
       END IF
-#  endif
+# endif
 
-#  ifdef FOUR_DVAR
+# ifdef FOUR_DVAR
       IF (allocated(BgErr)) THEN
         deallocate (BgErr)
       END IF
@@ -1308,28 +1312,28 @@
       IF (allocated(residual)) THEN
         deallocate (residual)
       END IF
-#  endif
+# endif
 
-#  ifdef BGQC
+# ifdef BGQC
       IF (allocated(BgThresh)) THEN
         deallocate (BgThresh)
       END IF
-#  endif
+# endif
 
-#  ifdef TLM_OBS
+# ifdef TLM_OBS
       IF (allocated(TLmodVal)) THEN
         deallocate (TLmodVal)
       END IF
 
-#   if defined ARRAY_MODES       || defined CLIPPING    || \
-       defined RBL4DVAR          || defined R4DVAR      || \
-       defined SENSITIVITY_4DVAR || defined TL_RBL4DVAR || \
-       defined TL_R4DVAR
+#  if defined ARRAY_MODES       || defined CLIPPING    || \
+      defined RBL4DVAR          || defined R4DVAR      || \
+      defined SENSITIVITY_4DVAR || defined TL_RBL4DVAR || \
+      defined TL_R4DVAR
       IF (allocated(TLmodVal_S)) THEN
         deallocate (TLmodVal_S)
       END IF
 
-#    if defined RPCG              && \
+#   if defined RPCG              && \
        (defined SENSITIVITY_4DVAR || defined TL_RBL4DVAR || \
         defined TL_R4DVAR)
 
@@ -1340,23 +1344,23 @@
       IF (allocated(ad_TLmodVal_S)) THEN
         deallocate (ad_TLmodVal_S)
       END IF
-#    endif
-
 #   endif
 
-#   if defined SENSITIVITY_4DVAR || defined RBL4DVAR || \
+#  endif
+
+#  if defined SENSITIVITY_4DVAR || defined RBL4DVAR || \
        defined TL_RBL4DVAR
 
       IF (allocated(BCKmodVal)) THEN
         deallocate (BCKmodVal)
       END IF
 
-#    ifdef RPCG
+#   ifdef RPCG
       IF (allocated(Hbk)) THEN
         deallocate (Hbk)
       END IF
-#     if defined SENSITIVITY_4DVAR || defined TL_RBL4DVAR || \
-         defined TL_R4DVAR
+#    if defined SENSITIVITY_4DVAR || defined TL_RBL4DVAR || \
+        defined TL_R4DVAR
 
       IF (allocated(tl_BCKmodVal)) THEN
         deallocate (tl_BCKmodVal)
@@ -1370,17 +1374,17 @@
       IF (allocated(ad_Hbk)) THEN
         deallocate (ad_Hbk)
       END IF
-#     endif
 #    endif
 #   endif
 #  endif
+# endif
 
-#  ifdef WEAK_CONSTRAINT
+# ifdef WEAK_CONSTRAINT
 !
 !  Deallocate and initialize weak constraint conjugate gradient vectors.
 !
-#   if defined SENSITIVITY_4DVAR || defined TL_RBL4DVAR || \
-       defined TL_R4DVAR
+#  if defined SENSITIVITY_4DVAR || defined TL_RBL4DVAR || \
+      defined TL_R4DVAR
       IF (allocated(ad_zcglwk)) THEN
         deallocate (ad_zcglwk)
       END IF
@@ -1417,18 +1421,18 @@
         deallocate (tl_ObsVal)
       END IF
 
-#    ifdef IMPACT_INNER
+#   ifdef IMPACT_INNER
       IF (allocated(ad_ObsVal)) THEN
         deallocate (ad_ObsVal)
       END IF
-#    else
+#   else
       IF (allocated(ad_ObsVal)) THEN
         deallocate (ad_ObsVal)
       END IF
-#    endif
 #   endif
+#  endif
 
-#   ifdef RPCG
+#  ifdef RPCG
       IF (allocated(zcglwk)) THEN
         deallocate (zcglwk)
       END IF
@@ -1457,11 +1461,11 @@
         deallocate (cg_innov)
       END IF
 
-#    if defined RBL4DVAR_ANA_SENSITIVITY || \
-        defined RBL4DVAR_FCT_SENSITIVITY || \
-        defined R4DVAR_ANA_SENSITIVITY   || \
-        defined TL_RBL4DVAR              || \
-        defined TL_R4DVAR
+#   if defined RBL4DVAR_ANA_SENSITIVITY || \
+       defined RBL4DVAR_FCT_SENSITIVITY || \
+       defined R4DVAR_ANA_SENSITIVITY   || \
+       defined TL_RBL4DVAR              || \
+       defined TL_R4DVAR
 
       IF (allocated(ad_vcglwk)) THEN
         deallocate (ad_vcglwk)
@@ -1526,9 +1530,9 @@
       IF (allocated(ad_cg_Gnorm_v)) THEN
         deallocate (ad_cg_Gnorm_v)
       END IF
-#    endif
+#   endif
 
-#   else
+#  else
 
       IF (allocated(cg_pxsave)) THEN
         deallocate (cg_pxsave)
@@ -1566,13 +1570,12 @@
         deallocate (cg_pxsave)
       END IF
 
-#   endif
 #  endif
-
+# endif
+!
       RETURN
       END SUBROUTINE deallocate_fourdvar
-# endif
-
+!
       SUBROUTINE initialize_fourdvar
 !
 !=======================================================================

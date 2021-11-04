@@ -44,6 +44,14 @@
 !
         implicit none
 !
+        PUBLIC :: allocate_diags
+        PUBLIC :: deallocate_diags
+        PUBLIC :: initialize_diags
+!
+!-----------------------------------------------------------------------
+!  Define T_DIAGS structure.
+!-----------------------------------------------------------------------
+!
         TYPE T_DIAGS
 
 # ifdef DIAGNOSTICS_BIO
@@ -84,7 +92,7 @@
 # endif
 
         END TYPE T_DIAGS
-
+!
         TYPE (T_DIAGS), allocatable :: DIAGS(:)
 !
       CONTAINS
@@ -103,7 +111,7 @@
       USE mod_biology
 # endif
 !
-!  Local variable declarations.
+!  Imported variable declarations.
 !
       integer, intent(in) :: ng, LBi, UBi, LBj, UBj
 !
@@ -211,6 +219,136 @@
 !
       RETURN
       END SUBROUTINE allocate_diags
+!
+      SUBROUTINE deallocate_diags (ng)
+!
+!=======================================================================
+!                                                                      !
+!  This routine deallocates all variables in the module for all nested !
+!  grids.                                                              !
+!                                                                      !
+!=======================================================================
+!
+      USE mod_param
+
+# ifdef SUBOBJECT_DEALLOCATION
+!
+      USE destroy_mod, ONLY : destroy
+# endif
+!
+!  Imported variable declarations.
+!
+      integer, intent(in) :: ng
+!
+!  Local variable declarations.
+!
+      character (len=*), parameter :: MyFile =                          &
+     &  __FILE__//", deallocate_diags"
+
+# ifdef SUBOBJECT_DEALLOCATION
+!
+!-----------------------------------------------------------------------
+!  Deallocate each variable in the derived-type T_DIAGS structure
+!  separately.
+!-----------------------------------------------------------------------
+!
+!  Diagnostic arrays.
+!
+#  ifdef DIAGNOSTICS_BIO
+#   if defined BIO_FENNEL
+      IF (NDbio2d.gt.0) THEN
+        IF (.not.destroy(ng, DIAGS(ng)%DiaBio2d, MyFile,                &
+     &                   __LINE__, 'DIAGS(ng)%DiaBio2d')) RETURN
+      END IF
+
+      IF (NDbio3d.gt.0) THEN
+        IF (.not.destroy(ng, DIAGS(ng)%DiaBio3d, MyFile,                &
+     &                   __LINE__, 'DIAGS(ng)%DiaBio3d')) RETURN
+      END IF
+#   elif defined ECOSIM
+      IF (NDbio3d.gt.0) THEN
+        IF (.not.destroy(ng, DIAGS(ng)%DiaBio3d, MyFile,                &
+     &                   __LINE__, 'DIAGS(ng)%DiaBio3d')) RETURN
+      END IF
+
+      IF (NDbio4d.gt.0) THEN
+        IF (.not.destroy(ng, DIAGS(ng)%DiaBio4d, MyFile,                &
+     &                   __LINE__, 'DIAGS(ng)%DiaBio4d')) RETURN
+      END IF
+#   endif
+#  endif
+
+#  ifdef DIAGNOSTICS_TS
+      IF (.not.destroy(ng, DIAGS(ng)%DiaTrc, MyFile,                    &
+     &                 __LINE__, 'DIAGS(ng)%DiaTrc')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaTwrk, MyFile,                   &
+     &                 __LINE__, 'DIAGS(ng)%DiaTwrk')) RETURN
+#  endif
+
+#  ifdef DIAGNOSTICS_UV
+      IF (.not.destroy(ng, DIAGS(ng)%DiaU2d, MyFile,                    &
+     &                 __LINE__, 'DIAGS(ng)%DiaU2d')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaV2d, MyFile,                    &
+     &                 __LINE__, 'DIAGS(ng)%DiaV2d')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaU2wrk, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaU2wrk')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaV2wrk, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaV2wrk')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaRUbar, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaRUbar')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaRVbar, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaRVbar')) RETURN
+
+#   ifdef SOLVE3D
+      IF (.not.destroy(ng, DIAGS(ng)%DiaU2int, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaU2int')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaV2int, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaV2int')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaRUfrc, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaRUfrc')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaRVfrc, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaRVfrc')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaU3d, MyFile,                    &
+     &                 __LINE__, 'DIAGS(ng)%DiaU3d')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaV3d, MyFile,                    &
+     &                 __LINE__, 'DIAGS(ng)%DiaV3d')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaU3wrk, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaU3wrk')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaV3wrk, MyFile,                  &
+     &                 __LINE__, 'DIAGS(ng)%DiaV3wrk')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaRU, MyFile,                     &
+     &                 __LINE__, 'DIAGS(ng)%DiaRU')) RETURN
+
+      IF (.not.destroy(ng, DIAGS(ng)%DiaRV, MyFile,                     &
+     &                 __LINE__, 'DIAGS(ng)%DiaRV')) RETURN
+#   endif
+#  endif
+# endif
+!
+!-----------------------------------------------------------------------
+!  Deallocate derived-type DIAGS structure.
+!-----------------------------------------------------------------------
+!
+      IF (ng.eq.Ngrids) THEN
+        IF (allocated(DIAGS)) deallocate ( DIAGS )
+      END IF
+!
+      RETURN
+      END SUBROUTINE deallocate_diags
 !
       SUBROUTINE initialize_diags (ng, tile)
 !

@@ -36,6 +36,7 @@
 !
       USE mod_param
       USE mod_parallel
+      USE mod_arrays
       USE mod_iounits
       USE mod_ncparam
       USE mod_netcdf
@@ -180,7 +181,8 @@
 !
 !  Allocate and initialize modules variables.
 !
-        CALL mod_arrays (allocate_vars)
+        CALL ROMS_allocate_arrays (allocate_vars)
+        CALL ROMS_initialize_arrays
 
       END IF
 
@@ -488,7 +490,7 @@
 #endif
 #ifdef DISTRIBUTE
               CALL pdneupd (OCN_COMM_WORLD,                             &
-     &                      Lrvec, howmany, select(1,ng),               &
+     &                      Lrvec, howmany, pick(1,ng),                 &
      &                      RvalueR(1,ng), RvalueI(1,ng),               &
      &                      STORAGE(ng)%Rvector(Nstr(ng),1),            &
      &                      Nsize(ng), sigmaR, sigmaI,                  &
@@ -500,7 +502,7 @@
      &                      STORAGE(ng)%SworkD,                         &
      &                      SworkL(1,ng), LworkL, info(ng))
 #else
-              CALL dneupd (Lrvec, howmany, select(1,ng),                &
+              CALL dneupd (Lrvec, howmany, pick(1,ng),                  &
      &                     RvalueR(1,ng), RvalueI(1,ng),                &
      &                     STORAGE(ng)%Rvector, Nsize(ng),              &
      &                     sigmaR, sigmaI,                              &

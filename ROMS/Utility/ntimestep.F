@@ -108,7 +108,7 @@
         DO ig=1,GridsInLayer(nl)
           ng=GridNumber(ig,nl)
 
-#if defined MODEL_COUPLING && !defined MCT_LIB
+#if defined JEDI || (defined MODEL_COUPLING && !defined MCT_LIB)
 !
 !  Set extra step parameter needed to finish the simulation due to ROMS
 !  delayed output until the next half step. If RunInterval (seconds) is

@@ -39,6 +39,7 @@
 !
       USE mod_param
       USE mod_parallel
+      USE mod_arrays
       USE mod_fourdvar
       USE mod_iounits
       USE mod_ncparam
@@ -177,11 +178,8 @@
 !
 !  Allocate and initialize all model state arrays.
 !
-        CALL mod_arrays (allocate_vars)
-!
-!  Allocate and initialize observation arrays.
-!
-        CALL initialize_fourdvar
+        CALL ROMS_allocate_arrays (allocate_vars)
+        CALL ROMS_initialize_arrays
 
       END IF
 

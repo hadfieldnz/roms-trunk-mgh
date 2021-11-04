@@ -368,6 +368,7 @@
     defined INNER_PRODUCT          || \
     defined I4DVAR                 || \
     defined I4DVAR_ANA_SENSITIVITY || \
+    defined JEDI                   || \
     defined OPT_PERTURBATION       || \
     defined OPT_OBSERVATIONS       || \
     defined PICARD_TEST            || \
@@ -403,6 +404,7 @@
     defined INNER_PRODUCT          || \
     defined I4DVAR                 || \
     defined I4DVAR_ANA_SENSITIVITY || \
+    defined JEDI                   || \
     defined OPT_PERTURBATION       || \
     defined OPT_OBSERVATIONS       || \
     defined RBL4DVAR               || \
@@ -647,6 +649,7 @@
      defined CLIPPING               || \
      defined I4DVAR                 || \
      defined I4DVAR_ANA_SENSITIVITY || \
+     defined JEDI                   || \
      defined PROPAGATOR             || \
      defined RBL4DVAR               || \
      defined R4DVAR                 || \
@@ -666,6 +669,7 @@
      defined CLIPPING               || \
      defined I4DVAR                 || \
      defined I4DVAR_ANA_SENSITIVITY || \
+     defined JEDI                   || \
      defined RBL4DVAR               || \
      defined R4DVAR                 || \
      defined SENSITIVITY_4DVAR      || \

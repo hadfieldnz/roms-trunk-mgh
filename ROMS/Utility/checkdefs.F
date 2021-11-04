@@ -25,16 +25,22 @@
 !
 !  Local variable declarations.
 !
-      integer :: iatms = 0
-      integer :: ibbl = 0
-      integer :: ibiology = 0
-      integer :: idriver = 0
-      integer :: ivelHadv = 0
-      integer :: ivelVadv = 0
-      integer :: ivmix = 0
-      integer :: nearshore = 0
-
+      integer :: iatms, ibbl, ibiology, idriver
+      integer :: ivelHadv, ivelVadv, ivmix, nearshore
       integer :: is, lstr, ng
+!
+!-----------------------------------------------------------------------
+!  Initialze counters
+!-----------------------------------------------------------------------
+!
+      iatms = 0
+      ibbl = 0
+      ibiology = 0
+      idriver = 0
+      ivelHadv = 0
+      ivelVadv = 0
+      ivmix = 0
+      nearshore = 0
 !
 !-----------------------------------------------------------------------
 !  Report activated C-preprocessing options.
@@ -2549,6 +2555,13 @@
      &   'Use surface dissolved oxygen saturation'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+23)=' SURFACE_DO_SATURATION,'
+#endif
+#if defined SUBOBJECT_DEALLOCATION
+!
+      IF (Master) WRITE (stdout,20) 'SUBOBJECT_DEALLOCATION',           &
+     &   'Deallocate each variable in structure objects separately'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+24)=' SUBOBJECT_DEALLOCATION,'
 #endif
 #if defined SUPPRESS_REPORT && defined SPLIT_4DVAR
 !

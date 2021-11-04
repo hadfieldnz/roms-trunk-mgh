@@ -291,6 +291,7 @@
 !-----------------------------------------------------------------------
 !
       foundit=.FALSE.
+      status=nf90_noerr
       VarID=0
       IF (InpThread) THEN
         status=nf90_inq_varid(ncid, TRIM(VarName), VarID)
@@ -7912,7 +7913,7 @@
           END IF
           IF (Ldebug_ncid) THEN
             WRITE (DBout,'(a,1x," <= ",i8,2(2x,a))')                    &
-     &            kernel(model)//' F90: CLOSE', ncid,                   &
+     &            KernelString(model)//' F90: CLOSE', ncid,             &
      &            TRIM(my_ncname), TRIM(SourceFile)
             CALL my_flush (DBout)
           END IF
@@ -8039,7 +8040,7 @@
         END IF
         IF (Ldebug_ncid) THEN
             WRITE (DBout,'(a," ** ",i8,2(2x,a))')                       &
-     &            kernel(model)//' F90: CREATE', ncid,                  &
+     &            KernelString(model)//' F90: CREATE', ncid,            &
      &            TRIM(ncname), TRIM(SourceFile)
           CALL my_flush (DBout)
         END IF
@@ -8280,7 +8281,7 @@
         END IF
         IF (Ldebug_ncid) THEN
            WRITE (DBout,'(a,2x," => ",i8,2(2x,a))')                     &
-     &           kernel(model)//' F90: OPEN', ncid,                     &
+     &           KernelString(model)//' F90: OPEN', ncid,               &
      &           TRIM(ncname), TRIM(SourceFile)
           CALL my_flush (DBout)
         END IF

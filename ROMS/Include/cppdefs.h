@@ -353,7 +353,7 @@
 ** I4DVAR                     if incremental 4D-Var data assimilation        **
 ** I4DVAR_ANA_SENSITIVITY     if I4D-Var observations sensitivity            **
 ** JEDI                       if using Joint Effort for DA Integration       **
-** LCZ_FINAL                  it computing 4D-Var Hessian singular vectors   **
+** LCZ_FINAL                  if computing 4D-Var Hessian singular vectors   **
 ** OPT_OBSERVATIONS           if optimal observations                        **
 ** OPT_PERTURBATION           if optimal perturbations, singular vectors     **
 ** PICARD_TEST                if representer tangent linear model test       **

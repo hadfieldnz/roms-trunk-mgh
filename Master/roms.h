@@ -52,6 +52,8 @@
       USE mod_iounits
       USE mod_scalars
 !
+      USE mod_arrays,      ONLY : ROMS_deallocate_arrays
+!
       USE roms_kernel_mod, ONLY : ROMS_initialize
       USE roms_kernel_mod, ONLY : ROMS_run
       USE roms_kernel_mod, ONLY : ROMS_finalize
@@ -125,6 +127,7 @@
 #if defined PIO_LIB && defined DISTRIBUTE
       CALL finalize_pio
 #endif
+      CALL ROMS_deallocate_arrays
 #if defined DISTRIBUTE && defined MPI
       CALL mpi_finalize (MyError)
 #endif
