@@ -1831,7 +1831,7 @@
 #if defined PIO_LIB && defined DISTRIBUTE
 !
       IF (Master) WRITE (stdout,20) 'PIO_LIB',                          &
-     &   'Using Parallel-IO from the SCORPIO library'
+     &   'Using Parallel-IO from the PIO library'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+9)=' PIO_LIB,'
 #endif
@@ -2126,7 +2126,7 @@
 #ifdef ROMS_STDOUT
 !
       IF (Master) WRITE (stdout,20) 'ROMS_STDOUT',                      &
-     &   'Red tide biological model'
+     &   "Writes ROMS standard output into 'log.roms' file"
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+13)=' ROMS_STDOUT,'
 #endif

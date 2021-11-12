@@ -38,6 +38,8 @@
 !
 !  Local variable declarations.
 !
+      logical, save :: recordless = .TRUE.
+
       logical, dimension(3) :: update =                                 &
      &         (/ .FALSE., .FALSE., .FALSE. /)
 !
@@ -81,7 +83,7 @@
 #  if defined PIO_LIB && defined DISTRIBUTE
      &                     TIDE(ng)%pioFile,                            &
 #  endif
-     &                     1, TIDE(ng), update(1),                      &
+     &                     1, TIDE(ng), recordless, update(1),          &
      &                     1, MTC, 1, 1, 1, NTC(ng), 1,                 &
      &                     TIDES(ng) % Tperiod)
           IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -209,7 +211,7 @@
 #  if defined PIO_LIB && defined DISTRIBUTE
      &                   SSF(ng)%pioFile,                               &
 #  endif
-     &                   1, SSF(ng), update(1),                         &
+     &                   1, SSF(ng), recordless, update(1),             &
      &                   1, Nsrc(ng), 1, 1, 1, Nsrc(ng), 1,             &
      &                   SOURCES(ng) % Xsrc)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -218,7 +220,7 @@
 #  if defined PIO_LIB && defined DISTRIBUTE
      &                   SSF(ng)%pioFile,                               &
 #  endif
-     &                   1, SSF(ng), update(1),                         &
+     &                   1, SSF(ng), recordless, update(1),             &
      &                   1, Nsrc(ng), 1, 1, 1, Nsrc(ng), 1,             &
      &                   SOURCES(ng) % Ysrc)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -227,7 +229,7 @@
 #  if defined PIO_LIB && defined DISTRIBUTE
      &                   SSF(ng)%pioFile,                               &
 #  endif
-     &                   1, SSF(ng), update(1),                         &
+     &                   1, SSF(ng), recordless, update(1),             &
      &                   1, Nsrc(ng), 1, 1, 1, Nsrc(ng), 1,             &
      &                   SOURCES(ng) % Dsrc)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
@@ -238,7 +240,7 @@
 #   if defined PIO_LIB && defined DISTRIBUTE
      &                   SSF(ng)%pioFile,                               &
 #   endif
-     &                   1, SSF(ng), update(1),                         &
+     &                   1, SSF(ng), recordless, update(1),             &
      &                   1, Nsrc(ng), N(ng), 1, 1, Nsrc(ng), N(ng),     &
      &                   SOURCES(ng) % Qshape)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN

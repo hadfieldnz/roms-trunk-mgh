@@ -759,8 +759,10 @@
       logical, dimension(3) :: foundit
 !
       integer :: i, j, ic, Npts, NWpts, status, wtype
+      integer :: Is, Ie, Js, Je
       integer :: Imin, Imax, Jmin, Jmax
-      integer :: Ilen, Jlen, IJlen, MyType
+      integer :: Ilen, Jlen, IJlen
+      integer :: Cgrid, MyType, ghost
 # ifdef DISTRIBUTE
       integer :: Nghost
 # endif
@@ -770,6 +772,7 @@
 
       real(r8), dimension(3) :: AttValue
 
+      real(r8), pointer :: Cwrk(:)               ! used for checksum
       real(r8), allocatable :: wrk(:)
 !
       character (len=12), dimension(3) :: AttName
@@ -783,41 +786,55 @@
 !
       status=nf90_noerr
 !
-!  Set first and last grid point according to staggered C-grid
-!  classification. Set loops offsets.
+!  Set global (interior plus boundary) starting and ending grid cell
+!  indices in the I- and J-directions according to staggered C-grid
+!  classification.
 !
       MyType=gtype
 
       SELECT CASE (ABS(MyType))
         CASE (p2dvar)
-          Imin=IOBOUNDS(ng)%ILB_psi
-          Imax=IOBOUNDS(ng)%IUB_psi
-          Jmin=IOBOUNDS(ng)%JLB_psi
-          Jmax=IOBOUNDS(ng)%JUB_psi
+          Cgrid=1                                         ! PSI-points
+          Is=IOBOUNDS(ng)%ILB_psi
+          Ie=IOBOUNDS(ng)%IUB_psi
+          Js=IOBOUNDS(ng)%JLB_psi
+          Je=IOBOUNDS(ng)%JUB_psi
         CASE (r2dvar)
-          Imin=IOBOUNDS(ng)%ILB_rho
-          Imax=IOBOUNDS(ng)%IUB_rho
-          Jmin=IOBOUNDS(ng)%JLB_rho
-          Jmax=IOBOUNDS(ng)%JUB_rho
+          Cgrid=2                                         ! RHO-points
+          Is=IOBOUNDS(ng)%ILB_rho
+          Ie=IOBOUNDS(ng)%IUB_rho
+          Js=IOBOUNDS(ng)%JLB_rho
+          Je=IOBOUNDS(ng)%JUB_rho
         CASE (u2dvar)
-          Imin=IOBOUNDS(ng)%ILB_u
-          Imax=IOBOUNDS(ng)%IUB_u
-          Jmin=IOBOUNDS(ng)%JLB_u
-          Jmax=IOBOUNDS(ng)%JUB_u
+          Cgrid=3                                         ! U-points
+          Is=IOBOUNDS(ng)%ILB_u
+          Ie=IOBOUNDS(ng)%IUB_u
+          Js=IOBOUNDS(ng)%JLB_u
+          Je=IOBOUNDS(ng)%JUB_u
         CASE (v2dvar)
-          Imin=IOBOUNDS(ng)%ILB_v
-          Imax=IOBOUNDS(ng)%IUB_v
-          Jmin=IOBOUNDS(ng)%JLB_v
-          Jmax=IOBOUNDS(ng)%JUB_v
+          Cgrid=4                                         ! V-points
+          Is=IOBOUNDS(ng)%ILB_v
+          Ie=IOBOUNDS(ng)%IUB_v
+          Js=IOBOUNDS(ng)%JLB_v
+          Je=IOBOUNDS(ng)%JUB_v
         CASE DEFAULT
-          Imin=IOBOUNDS(ng)%ILB_rho
-          Imax=IOBOUNDS(ng)%IUB_rho
-          Jmin=IOBOUNDS(ng)%JLB_rho
-          Jmax=IOBOUNDS(ng)%JUB_rho
+          Cgrid=2                                         ! RHO-points
+          Is=IOBOUNDS(ng)%ILB_rho
+          Ie=IOBOUNDS(ng)%IUB_rho
+          Js=IOBOUNDS(ng)%JLB_rho
+          Je=IOBOUNDS(ng)%JUB_rho
       END SELECT
 
-      Ilen=Imax-Imin+1
-      Jlen=Jmax-Jmin+1
+      Ilen=Ie-Is+1
+      Jlen=Je-Js+1
+!
+!  Set the tile computational I- and J-bounds (no ghost points).
+!
+      ghost=0
+      Imin=BOUNDS(ng)%Imin(Cgrid,ghost,MyRank)
+      Imax=BOUNDS(ng)%Imax(Cgrid,ghost,MyRank)
+      Jmin=BOUNDS(ng)%Jmin(Cgrid,ghost,MyRank)
+      Jmax=BOUNDS(ng)%Jmax(Cgrid,ghost,MyRank)
 
 # ifdef DISTRIBUTE
 !
@@ -827,12 +844,12 @@
 !  appropriate call to any of the routines in "mp_exchange.F".
 !
 #  ifdef NO_READ_GHOST
-      Nghost=0
+      Nghost=0                       ! no ghost points exchange
 #  else
       IF (model.eq.iADM) THEN
-        Nghost=0
+        Nghost=0                     ! no ghost points exchange
       ELSE
-        Nghost=NghostPoints
+        Nghost=NghostPoints          ! do ghost points exchange
       END IF
 #  endif
 # endif
@@ -990,9 +1007,6 @@
             Amin=0.0_r8                        ! the entire data is all
             Amax=0.0_r8                        ! field value, _FillValue
           END IF
-          IF (Lchecksum) THEN
-            CALL get_hash (wrk, Npts, checksum)
-          END IF
         END IF
       END IF
 # ifdef DISTRIBUTE
@@ -1010,6 +1024,9 @@
 !
       IF (.not.interpolate) THEN
 # ifdef DISTRIBUTE
+!
+!  Scatter read data over the distributed memory tiles.
+!
         CALL mp_scatter2d (ng, model, LBi, UBi, LBj, UBj,               &
      &                     Nghost, MyType, Amin, Amax,                  &
 #  if defined READ_WATER && defined MASKING
@@ -1017,10 +1034,14 @@
 #  endif
      &                     Npts, wrk, Adat)
 # else
+!
+!  Unpack data into the global array: serial, serial with partitions,
+!  and shared-memory applications.
+!
         IF (MyType.gt.0) THEN
           ic=0
-          DO j=Jmin,Jmax
-            DO i=Imin,Imax
+          DO j=Js,Je
+            DO i=Is,Ie
               ic=ic+1
               Adat(i,j)=wrk(ic)
             END DO
@@ -1028,8 +1049,8 @@
 #  if defined MASKING || defined READ_WATER
         ELSE
           ic=0
-          DO j=Jmin,Jmax
-            DO i=Imin,Imax
+          DO j=Js,Je
+            DO i=Is,Ie
               IF (Amask(i,j).gt.0.0_r8) THEN
                 ic=ic+1
                 Adat(i,j)=wrk(ic)
@@ -1060,7 +1081,7 @@
      &                          ncvname, ncvarid, MyType, InterpFlag,   &
      &                          Ilen, Jlen, wrk, Amin, Amax,            &
      &                          LBi, UBi, LBj, UBj,                     &
-     &                          Imin, Imax, Jmin, Jmax,                 &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
      &                          Amask,                                  &
 # endif
@@ -1073,7 +1094,7 @@
      &                          ncvname, ncvarid, MyType, InterpFlag,   &
      &                          Ilen, Jlen, wrk, Amin, Amax,            &
      &                          LBi, UBi, LBj, UBj,                     &
-     &                          Imin, Imax, Jmin, Jmax,                 &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
      &                          Amask,                                  &
 # endif
@@ -1088,7 +1109,7 @@
      &                          ncvname, ncvarid, MyType, InterpFlag,   &
      &                          Ilen, Jlen, wrk, Amin, Amax,            &
      &                          LBi, UBi, LBj, UBj,                     &
-     &                          Imin, Imax, Jmin, Jmax,                 &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
      &                          GRID(ng) % rmask,                       &
 # endif
@@ -1101,7 +1122,7 @@
      &                          ncvname, ncvarid, MyType, InterpFlag,   &
      &                          Ilen, Jlen, wrk, Amin, Amax,            &
      &                          LBi, UBi, LBj, UBj,                     &
-     &                          Imin, Imax, Jmin, Jmax,                 &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
      &                          GRID(ng) % rmask,                       &
 # endif
@@ -1116,7 +1137,7 @@
      &                          ncvname, ncvarid, MyType, InterpFlag,   &
      &                          Ilen, Jlen, wrk, Amin, Amax,            &
      &                          LBi, UBi, LBj, UBj,                     &
-     &                          Imin, Imax, Jmin, Jmax,                 &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
      &                          GRID(ng) % umask,                       &
 # endif
@@ -1129,7 +1150,7 @@
      &                          ncvname, ncvarid, MyType, InterpFlag,   &
      &                          Ilen, Jlen, wrk, Amin, Amax,            &
      &                          LBi, UBi, LBj, UBj,                     &
-     &                          Imin, Imax, Jmin, Jmax,                 &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
      &                          GRID(ng) % umask,                       &
 # endif
@@ -1144,7 +1165,7 @@
      &                          ncvname, ncvarid, MyType, InterpFlag,   &
      &                          Ilen, Jlen, wrk, Amin, Amax,            &
      &                          LBi, UBi, LBj, UBj,                     &
-     &                          Imin, Imax, Jmin, Jmax,                 &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
      &                          GRID(ng) % vmask,                       &
 # endif
@@ -1157,7 +1178,7 @@
      &                          ncvname, ncvarid, MyType, InterpFlag,   &
      &                          Ilen, Jlen, wrk, Amin, Amax,            &
      &                          LBi, UBi, LBj, UBj,                     &
-     &                          Imin, Imax, Jmin, Jmax,                 &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
      &                          GRID(ng) % vmask,                       &
 # endif
@@ -1168,33 +1189,52 @@
             END IF
           CASE DEFAULT
             IF (spherical) THEN
-              CALL regrid_nf90 (ng, model, ncname, ncid,                  &
-     &                          ncvname, ncvarid, MyType, InterpFlag,     &
-     &                          Ilen, Jlen, wrk, Amin, Amax,              &
-     &                          LBi, UBi, LBj, UBj,                       &
-     &                          Imin, Imax, Jmin, Jmax,                   &
+              CALL regrid_nf90 (ng, model, ncname, ncid,                &
+     &                          ncvname, ncvarid, MyType, InterpFlag,   &
+     &                          Ilen, Jlen, wrk, Amin, Amax,            &
+     &                          LBi, UBi, LBj, UBj,                     &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
-     &                          GRID(ng) % rmask,                         &
+     &                          GRID(ng) % rmask,                       &
 # endif
-     &                          GRID(ng) % MyLon,                         &
-     &                          GRID(ng) % lonr,                          &
-     &                          GRID(ng) % latr,                          &
+     &                          GRID(ng) % MyLon,                       &
+     &                          GRID(ng) % lonr,                        &
+     &                          GRID(ng) % latr,                        &
      &                          Adat)
             ELSE
-              CALL regrid_nf90 (ng, model, ncname, ncid,                  &
-     &                          ncvname, ncvarid, MyType, InterpFlag,     &
-     &                          Ilen, Jlen, wrk, Amin, Amax,              &
-     &                          LBi, UBi, LBj, UBj,                       &
-     &                          Imin, Imax, Jmin, Jmax,                   &
+              CALL regrid_nf90 (ng, model, ncname, ncid,                &
+     &                          ncvname, ncvarid, MyType, InterpFlag,   &
+     &                          Ilen, Jlen, wrk, Amin, Amax,            &
+     &                          LBi, UBi, LBj, UBj,                     &
+     &                          Is, Ie, Js, Je,                         &
 # ifdef MASKING
-     &                          GRID(ng) % rmask,                         &
+     &                          GRID(ng) % rmask,                       &
 # endif
-     &                          GRID(ng) % MyLon,                         &
-     &                          GRID(ng) % xr,                            &
-     &                          GRID(ng) % yr,                            &
+     &                          GRID(ng) % MyLon,                       &
+     &                          GRID(ng) % xr,                          &
+     &                          GRID(ng) % yr,                          &
      &                          Adat)
             END IF
         END SELECT
+      END IF
+!
+!-----------------------------------------------------------------------
+!  If requested, compute data checksum value.
+!-----------------------------------------------------------------------
+!
+      IF (Lchecksum) THEN
+# ifdef DISTRIBUTE
+        Npts=(Imax-Imin+1)*(Jmax-Jmin+1)
+        IF (.not.associated(Cwrk)) allocate ( Cwrk(Npts) )
+        Cwrk = PACK(Adat(Imin:Imax, Jmin:Jmax), .TRUE.)
+        CALL get_hash (Cwrk, Npts, checksum, .TRUE.)
+# else
+        Npts=(Ie-Is+1)*(Je-Js+1)
+        IF (.not.associated(Cwrk)) allocate ( Cwrk(Npts) )
+        Cwrk = PACK(Adat(Is:Ie, Js:Je), .TRUE.)
+        CALL get_hash (Cwrk, Npts, checksum)
+# endif
+        IF (associated(Cwrk)) deallocate (Cwrk)
       END IF
 !
 !-----------------------------------------------------------------------
@@ -1267,7 +1307,7 @@
 
       logical, dimension(3) :: foundit
 !
-      integer :: i, j, ic, Npts, status
+      integer :: i, j, Npts, status
       integer :: Is, Ie, Js, Je                 ! global bounds
       integer :: Imin, Imax, Jmin, Jmax         ! tile bounds
       integer :: Ilen, Jlen, IJlen
@@ -1302,10 +1342,10 @@
       my_Amin=spval
       my_Amax=-spval
 !
-!  Set first and last tile computational grid point according to the
-!  staggered C-grid location. Ghost points are not included.
+!  Set global (interior plus boundary) starting and ending grid cell
+!  indices in the I- and J-directions according to staggered C-grid
+!  classification.
 !
-      ghost=0
       dkind=pioVar%dkind
       gtype=pioVar%gtype
 !
@@ -1348,8 +1388,9 @@
       Ilen=Ie-Is+1
       Jlen=Je-Js+1
 !
-!  Set the tile computational I- and J-bounds.  The I/O processes
+!  Set the tile computational I- and J-bounds (no ghost points).
 !
+      ghost=0
       Imin=BOUNDS(ng)%Imin(Cgrid,ghost,MyRank)
       Imax=BOUNDS(ng)%Imax(Cgrid,ghost,MyRank)
       Jmin=BOUNDS(ng)%Jmin(Cgrid,ghost,MyRank)
@@ -1433,6 +1474,10 @@
         start(3)=tindex
         total(3)=1
 !
+!  The generic routine "pio_netcdf_get_fvar" checks if the attributes
+!  "scale_factor", "add_offset", and "_FillValue" are present in the
+!  input NetCDF variable and it applies its operators.
+!
         CALL pio_netcdf_get_fvar (ng, model, ncname,                    &
      &                            ncvname, wrk,                         &
      &                            pioFile = pioFile,                    &
@@ -1440,7 +1485,15 @@
      &                            total = total,                        &
      &                            broadcast = .FALSE.,                  &
      &                            min_val = Amin,                       &
-                                  max_val = Amax)
+     &                            max_val = Amax)
+!
+!  Multipy by user metadata scale.
+!
+        DO j=1,Jlen
+          DO i=1,Ilen
+            wrk(i,j)=Ascl*wrk(i,j)
+          END DO
+        END DO
       END IF
 !
 !  Initialize checsum value.
@@ -1464,12 +1517,12 @@
 !
         IF (dkind.eq.PIO_double) THEN           ! double precision
           IF (.not.associated(Awrk8)) THEN
-            allocate ( Awrk8(Imin:Imax,Jmin:Jmax) )
+            allocate ( Awrk8(Imin:Imax, Jmin:Jmax) )
           END IF
           Awrk8=0.0_r8
         ELSE                                    ! single precision
           IF (.not.associated(Awrk4)) THEN
-            allocate ( Awrk4(Imin:Imax,Jmin:Jmax) )
+            allocate ( Awrk4(Imin:Imax, Jmin:Jmax) )
           END IF
           Awrk4=0.0_r4
         END IF
@@ -1527,25 +1580,6 @@
             END DO
           END DO
           IF (associated(Awrk4)) deallocate (Awrk4)
-        END IF
-!
-!  If requested, compute input data checksum value.
-!
-        IF (Lchecksum) THEN
-          Npts=(Imax-Imin+1)*(Jmax-Jmin+1)
-          IF (.not.associated(Cwrk)) THEN
-            allocate ( Cwrk(Npts) )
-            Cwrk=0.0_r8
-          END IF
-          ic=0
-          DO j=Jmin,Jmax
-            DO i=Imin,Imax
-              ic=ic+1
-              Cwrk(ic)=Adat(i,j)
-            END DO
-          END DO
-          CALL get_hash (Cwrk, Npts, checksum, .TRUE.)
-          IF (associated(Cwrk)) deallocate (Cwrk)
         END IF
 !
 !  Compute global minimum and maximum values.
@@ -1719,6 +1753,16 @@
         IF (allocated(wrk)) THEN
           deallocate (wrk)
         END IF
+      END IF
+!
+!  If requested, compute input data checksum value.
+!
+      IF (Lchecksum) THEN
+        Npts=(Imax-Imin+1)*(Jmax-Jmin+1)
+        IF (.not.associated(Cwrk)) allocate ( Cwrk(Npts) )
+        Cwrk=PACK(Adat(Imin:Imax, Jmin:Jmax), .TRUE.)
+        CALL get_hash (Cwrk, Npts, checksum, .TRUE.)
+        IF (associated(Cwrk)) deallocate (Cwrk)
       END IF
 !
       RETURN

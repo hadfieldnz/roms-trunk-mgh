@@ -296,19 +296,8 @@
 !
           IF (Lchecksum) THEN
             Npts=(UBij-LBij+1)*Nrec*4
-            IF (.not.associated(Cwrk)) THEN
-              allocate ( Cwrk(Npts) )
-              Cwrk=0.0_r8
-            END IF
-            ic=0
-            DO ir=1,Nrec
-              DO ib=1,4
-                DO ij=LBij,UBij
-                  ic=ic+1
-                  Cwrk(ic)=wrk(ij,ib,ir)
-                END DO
-              END DO
-            END DO
+            IF (.not.associated(Cwrk)) allocate ( Cwrk(Npts) )
+            Cwrk=PACK(wrk(LBij:UBij, 1:4, 1:Nrec), .TRUE.)
             CALL get_hash (Cwrk, Npts, checksum)
             IF (associated(Cwrk)) deallocate (Cwrk)
           END IF
@@ -582,19 +571,8 @@
 !
         IF (Lchecksum) THEN
           Npts=(UBij-LBij+1)*Nrec*4
-          IF (.not.associated(Cwrk)) THEN
-            allocate ( Cwrk(Npts) )
-            Cwrk=0.0_r8
-          END IF
-          ic=0
-          DO ir=1,Nrec
-            DO ib=1,4
-              DO ij=LBij,UBij
-                ic=ic+1
-                Cwrk(ic)=wrk(ij,ib,ir)
-              END DO
-            END DO
-          END DO
+          IF (.not.associated(Cwrk)) allocate ( Cwrk(Npts) )
+          Cwrk=PACK(wrk(LBij:UBij, 1:4, 1:Nrec), .TRUE.)
           CALL get_hash (Cwrk, Npts, checksum)
           IF (associated(Cwrk)) deallocate (Cwrk)
         END IF

@@ -359,10 +359,9 @@
           Iinfo( 4,ifield,ng)=Nrec
           Iinfo( 5,ifield,ng)=Vsize(1)
           Iinfo( 6,ifield,ng)=Vsize(2)
+          Iinfo( 7,ifield,ng)=Vsize(3)
           Iinfo(10,ifield,ng)=S(ifile)%Nfiles
-          IF (ABS(job).eq.3) THEN
-            Iinfo(7,ifield,ng)=Vsize(3)
-          END IF
+          Iinfo(11,ifield,ng)=nvdim
           Finfo(1,ifield,ng)=Tmin
           Finfo(2,ifield,ng)=Tmax
           Finfo(3,ifield,ng)=Tstr
@@ -951,10 +950,9 @@
           Iinfo( 4,ifield,ng)=Nrec
           Iinfo( 5,ifield,ng)=Vsize(1)
           Iinfo( 6,ifield,ng)=Vsize(2)
+          Iinfo( 7,ifield,ng)=Vsize(3)
           Iinfo(10,ifield,ng)=S(ifile)%Nfiles
-          IF (ABS(job).eq.3) THEN
-            Iinfo(7,ifield,ng)=Vsize(3)
-          END IF
+          Iinfo(11,ifield,ng)=nvdim
           Finfo(1,ifield,ng)=Tmin
           Finfo(2,ifield,ng)=Tmax
           Finfo(3,ifield,ng)=Tstr

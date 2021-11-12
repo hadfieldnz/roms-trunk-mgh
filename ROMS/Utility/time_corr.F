@@ -65,6 +65,8 @@
 !
 !  Local variable declarations.
 !
+      integer :: LBi, UBi, LBj, UBj
+!
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__
 !
@@ -72,6 +74,11 @@
 !  Open existing nonlinear initial conditions NetCDF file and inquire
 !  about its contains and define new variables, if needed.
 !-----------------------------------------------------------------------
+!
+      LBi=BOUNDS(ng)%LBi(tile)
+      UBi=BOUNDS(ng)%UBi(tile)
+      LBj=BOUNDS(ng)%LBj(tile)
+      UBj=BOUNDS(ng)%UBj(tile)
 !
       SELECT CASE (IOtype)
         CASE (io_nf90)

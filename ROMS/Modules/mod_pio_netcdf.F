@@ -181,6 +181,9 @@
       TYPE (IO_desc_t), pointer :: ioDesc_sp_r2dvar(:) ! (i,j)
       TYPE (IO_desc_t), pointer :: ioDesc_sp_u2dvar(:) ! (i,j)
       TYPE (IO_desc_t), pointer :: ioDesc_sp_v2dvar(:) ! (i,j)
+# if defined SSH_TIDES || defined UV_TIDES
+      TYPE (IO_desc_t), pointer :: ioDesc_sp_rtides(:) ! (i,j,NTC)
+# endif
 # ifdef SOLVE3D
 #  ifdef SEDIMENT
       TYPE (IO_desc_t), pointer :: ioDesc_sp_b3dvar(:) ! (i,j,Nbed)
@@ -217,6 +220,9 @@
       TYPE (IO_desc_t), pointer :: ioDesc_dp_r2dvar(:) ! (i,j)
       TYPE (IO_desc_t), pointer :: ioDesc_dp_u2dvar(:) ! (i,j)
       TYPE (IO_desc_t), pointer :: ioDesc_dp_v2dvar(:) ! (i,j)
+# if defined SSH_TIDES || defined UV_TIDES
+      TYPE (IO_desc_t), pointer :: ioDesc_dp_rtides(:) ! (i,j,NTC)
+# endif
 # ifdef SOLVE3D
 #  ifdef SEDIMENT
       TYPE (IO_desc_t), pointer :: ioDesc_dp_b3dvar(:) ! (i,j,Nbed)
@@ -8055,7 +8061,7 @@
 !
       character (len=*), intent(in) :: ncname
 !
-      TYPE (File_desc_t), intent(in) :: pioFile
+      TYPE (File_desc_t) :: pioFile
 !
 !  Local variable declarations.
 !

@@ -126,7 +126,7 @@
      &                               SearchVar = foundit)
             IF (foundit) THEN
               CALL pio_netcdf_get_fvar (ng, iNLM, TIDE(ng)%name,        &
-     &                                  Vname(1,idTref),
+     &                                  Vname(1,idTref),                &
      &                                  zero_phase_date)
             END IF
 # endif

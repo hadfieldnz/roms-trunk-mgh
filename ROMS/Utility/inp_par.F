@@ -29,9 +29,6 @@
 #ifdef DISTRIBUTE
       USE mod_strings
 #endif
-#if defined PIO_LIB && defined DISTRIBUTE
-      USE set_pio_mod
-#endif
 !
       USE dateclock_mod,   ONLY : get_date
 #ifdef DISTRIBUTE
@@ -1266,16 +1263,6 @@
       CALL mp_bcasts (1, model, Coptions)
 #endif
       IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
-#if defined PIO_LIB && defined DISTRIBUTE
-!
-!-----------------------------------------------------------------------
-!  Set PIO single and double precision data decomposition for mapping
-!  between computational and I/O processes.
-!-----------------------------------------------------------------------
-!
-      CALL set_iodecomp
-#endif
 !
 !-----------------------------------------------------------------------
 !  Initialize random number sequence so we can get identical results

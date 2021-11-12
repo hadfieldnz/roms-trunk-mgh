@@ -3239,10 +3239,11 @@
             CASE ('PIO_STRIDE')
               Npts=load_i(Nval, Rval, 1, Ivalue)
               pio_stride=Ivalue(1)
-              IF (pio_stride.lt.1) THEN
+              IF ((pio_stride.lt.1).or.                                 &
+                  (pio_stride*pio_NumIOtasks.gt.numthreads)) THEN
                 IF (Master) WRITE (out,260) 'pio_stride = ',            &
      &                                      pio_stride,                 &
-     &                                      'Must be between 1 and 4'
+     &             'Must be greater than 0 and not exceed NtileI*NtileJ'
                 exit_flag=5
                 RETURN
               END IF

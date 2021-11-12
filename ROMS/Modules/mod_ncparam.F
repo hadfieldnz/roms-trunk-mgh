@@ -51,6 +51,7 @@
 !               Iinfo( 8,*) => rolling two-time levels index.          !
 !               Iinfo( 9,*) => latest processed time record.           !
 !               Iinfo(10,*) => number of field multi-files.            !
+!               Iinfo(11,*) => number of variable dimensions in file.  !
 !                                                                      !
 !  Finfo      Input/output field floating-point information:           !
 !               Finfo( 1,*) => Starting time (days) of data.           !
@@ -925,7 +926,7 @@
       END IF
 
       IF (.not.allocated(Iinfo)) THEN
-        allocate ( Iinfo(10,NV,Ngrids) )
+        allocate ( Iinfo(11,NV,Ngrids) )
         Dmem(1)=Dmem(1)+10.0_r8*REAL(NV*Ngrids,r8)
       END IF
 
@@ -1272,6 +1273,7 @@
           Iinfo(8,i,ng)=2
           Iinfo(9,i,ng)=0
           Iinfo(10,i,ng)=0
+          Iinfo(11,i,ng)=0
           Finfo(1,i,ng)=0.0_r8
           Finfo(2,i,ng)=0.0_r8
           Finfo(3,i,ng)=0.0_r8
