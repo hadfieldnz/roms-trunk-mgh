@@ -3820,8 +3820,8 @@
 #   endif
             Vinfo(22)='coordinates'
             Aval(5)=REAL(r3dvar,r8)
-            AVG(ng)%pioVar(idTvar(itrc))%dkind=PIO_FOUT
-            AVG(ng)%pioVar(idTvar(itrc))%gtype=r3dvar
+            AVG(ng)%pioTrc(itrc)%dkind=PIO_FOUT
+            AVG(ng)%pioTrc(itrc)%gtype=r3dvar
 !
             status=def_var(ng, model, AVG(ng)%pioFile,                  &
      &                     AVG(ng)%pioTrc(itrc)%vd,                     &
@@ -5621,8 +5621,8 @@
             IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idTvar(itrc)))) THEN
               got_var(idTvar(itrc))=.TRUE.
               AVG(ng)%pioTrc(itrc)%vd=var_desc(i)
-              AVG(ng)%pioVar(idTvar(itrc))%dkind=PIO_FOUT
-              AVG(ng)%pioVar(idTvar(itrc))%gtype=r3dvar
+              AVG(ng)%pioTrc(itrc)%dkind=PIO_FOUT
+              AVG(ng)%pioTrc(itrc)%gtype=r3dvar
             END IF
           END DO
           DO itrc=1,NAT

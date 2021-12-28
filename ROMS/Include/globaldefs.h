@@ -468,6 +468,21 @@
 #endif
 
 /*
+** Activate switch for full adjoint output solution. Due to the
+** predictor/corrector and multiple time level schemes, pieces of
+** the adjoint solution are in two-time levels and need to be added
+** in the "_sol" arrays for output purposes.
+*/
+
+#ifdef ADJOINT
+# if !defined AD_OUTPUT_STATE && \
+      defined JEDI            || \
+     (defined STOCHASTIC_OPT  && !defined STOCH_OPT_WHITE)
+#  define AD_OUTPUT_STATE
+# endif
+#endif
+
+/*
 ** Activate bacroclinic pressure gradient response due to the
 ** perturbation of free-surface in the presence of stratification
 ** and bathymetry. This option does not pass the sanity check
@@ -649,7 +664,6 @@
      defined CLIPPING               || \
      defined I4DVAR                 || \
      defined I4DVAR_ANA_SENSITIVITY || \
-     defined JEDI                   || \
      defined PROPAGATOR             || \
      defined RBL4DVAR               || \
      defined R4DVAR                 || \

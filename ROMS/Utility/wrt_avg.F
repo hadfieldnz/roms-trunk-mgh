@@ -1665,6 +1665,8 @@
           RETURN
         END IF
       END IF
+
+#  ifdef SALINITY
 !
 !  Write out surface salt flux  (PSU m/s = kg salt/m2/s).
 !
@@ -1675,9 +1677,9 @@
      &                     AVG(ng)%Vid(idTsur(isalt)),                  &
      &                     AVG(ng)%Rindex, gtype,                       &
      &                     LBi, UBi, LBj, UBj, scale,                   &
-#  ifdef MASKING
+#   ifdef MASKING
      &                     GRID(ng) % rmask,                            &
-#  endif
+#   endif
      &                     AVERAGE(ng) % avgswf)
         IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
@@ -1689,6 +1691,8 @@
           RETURN
         END IF
       END IF
+#  endif
+
 #  ifdef BULK_FLUXES
 !
 !  Write out latent heat flux.
@@ -3999,6 +4003,8 @@
           RETURN
         END IF
       END IF
+
+#   ifdef SALINITY
 !
 !  Write out surface salt flux  (PSU m/s = kg salt/m2/s).
 !
@@ -4014,9 +4020,9 @@
      &                     AVG(ng)%Rindex,                              &
      &                     ioDesc,                                      &
      &                     LBi, UBi, LBj, UBj, scale,                   &
-#   ifdef MASKING
+#    ifdef MASKING
      &                     GRID(ng) % rmask,                            &
-#   endif
+#    endif
      &                     AVERAGE(ng) % avgswf)
         IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
@@ -4028,6 +4034,7 @@
           RETURN
         END IF
       END IF
+#   endif
 
 #   ifdef BULK_FLUXES
 !

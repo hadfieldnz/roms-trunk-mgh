@@ -381,6 +381,7 @@
 ** OPTIONS associated with tangent linear, representer and adjoint models:   **
 **                                                                           **
 ** AD_IMPULSE              to force adjoint model with intermittent impulses **
+** AD_OUTPUT_STATE         to write full adjoint state by adding time levels **
 ** ADJUST_BOUNDARY         if including boundary conditions in 4DVar state   **
 ** ADJUST_STFLUX           if including surface tracer flux in 4DVar state   **
 ** ADJUST_WSTRESS          if including wind-stress in 4DVar state           **

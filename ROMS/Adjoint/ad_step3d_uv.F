@@ -105,6 +105,10 @@
      &                        OCEAN(ng) % ad_u,                         &
      &                        OCEAN(ng) % v,                            &
      &                        OCEAN(ng) % ad_v,                         &
+# ifdef AD_OUTPUT_STATE
+     &                        OCEAN(ng) % ad_u_sol,                     &
+     &                        OCEAN(ng) % ad_v_sol,                     &
+# endif
      &                        OCEAN(ng) % ad_ubar,                      &
      &                        OCEAN(ng) % ad_vbar,                      &
      &                        OCEAN(ng) % ad_ubar_sol,                  &
@@ -159,6 +163,9 @@
 # endif
      &                              u, ad_u,                            &
      &                              v, ad_v,                            &
+# ifdef AD_OUTPUT_STATE
+     &                              ad_u_sol, ad_v_sol,                 &
+# endif
      &                              ad_ubar, ad_vbar,                   &
      &                              ad_ubar_sol, ad_vbar_sol,           &
 # ifdef NEARSHORE_MELLOR
@@ -244,6 +251,10 @@
       real(r8), intent(inout) :: ad_rv(LBi:,LBj:,0:,:)
       real(r8), intent(inout) :: ad_u(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: ad_v(LBi:,LBj:,:,:)
+#  ifdef AD_OUTPUT_STATE
+      real(r8), intent(inout) :: ad_u_sol(LBi:,LBj:,:)
+      real(r8), intent(inout) :: ad_v_sol(LBi:,LBj:,:)
+#  endif
 #  ifdef NEARSHORE_MELLOR
       real(r8), intent(inout) :: ad_ubar_stokes(LBi:,LBj:)
       real(r8), intent(inout) :: ad_vbar_stokes(LBi:,LBj:)
@@ -312,6 +323,10 @@
       real(r8), intent(inout) :: ad_rv(LBi:UBi,LBj:UBj,0:N(ng),2)
       real(r8), intent(inout) :: ad_u(LBi:UBi,LBj:UBj,N(ng),2)
       real(r8), intent(inout) :: ad_v(LBi:UBi,LBj:UBj,N(ng),2)
+#  ifdef AD_OUTPUT_STATE
+      real(r8), intent(inout) :: ad_u_sol(LBi:UBi,LBj:UBj,N(ng))
+      real(r8), intent(inout) :: ad_v_sol(LBi:UBi,LBj:UBj,N(ng))
+#  endif
 #  ifdef NEARSHORE_MELLOR
       real(r8), intent(in) :: ad_ubar_stokes(LBi:UBi,LBj:UBj)
       real(r8), intent(in) :: ad_vbar_stokes(LBi:UBi,LBj:UBj)
@@ -2839,6 +2854,32 @@
           ad_AK(i,0)=0.0_r8
         END DO
       END DO J_LOOP2
+
+# ifdef AD_OUTPUT_STATE
+!
+!-----------------------------------------------------------------------
+!  Initialize full 3D momentum adjoint output arrays. Due to the exact
+!  discrete adjoint and the predictor/corrector time stepping scheme
+!  with multiple time level schemes, this routine contains the first
+!  piece of the adjoint solution at time level "nnew".  The other
+!  piece is computed in "ad_pre_ste3d".
+!-----------------------------------------------------------------------
+!
+      DO j=JstrB,JendB
+        IF (j.ge.JstrM) THEN
+          DO k=1,N(ng)
+            DO i=IstrB,IendB
+              ad_v_sol(i,j,k)=ad_v(i,j,k,nnew)
+            END DO
+          END DO
+        END IF
+        DO k=1,N(ng)
+          DO i=IstrM,IendB
+            ad_u_sol(i,j,k)=ad_u(i,j,k,nnew)
+          END DO
+        END DO
+      END DO
+# endif
 !
       RETURN
       END SUBROUTINE ad_step3d_uv_tile

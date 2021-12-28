@@ -42,8 +42,7 @@
 !
       USE mod_kinds
 !
-#if defined PIO_LIB && defined DISTRIBUTE
-
+#if defined DISTRIBUTE && (defined JEDI || defined PIO_LIB)
       USE distribute_mod, ONLY : mp_reduce
 #endif
       USE mod_scalars,    ONLY : HashMethod, exit_flag
@@ -199,7 +198,7 @@
       integer :: i, j
 !
       integer(i8b) :: Ac, Asum
-#if defined PIO_LIB && defined DISTRIBUTE
+#if defined DISTRIBUTE && (defined JEDI || defined PIO_LIB)
       integer(i8b) :: ibuffer(1)
 !
       character (len=3) :: op_handle(1)
@@ -230,10 +229,14 @@
       END DO
       hash=Asum
 
-#if defined PIO_LIB && defined DISTRIBUTE
+#if defined DISTRIBUTE && (defined JEDI || defined PIO_LIB)
 !
-!  If PIO data processing, sum across all processes. Notice that the
-!  integer arithmetic has not truncation errors. It is order invariant.
+!  If PIO library data processing, sum across all processes. Recall that
+!  one or several PETs are reading and or writing data, so we need a
+!  global reduction of the checksum, which is order invariant for parallel
+!  tiles. The integer arithmetic has no truncation errors. Notice that
+!  such reduction is not required in I/0 processed by the master node
+!  and Lreduce=.FALSE in such cases.
 !
       IF (PRESENT(Lreduce)) THEN
         IF (Lreduce) THEN

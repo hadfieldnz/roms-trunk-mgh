@@ -899,7 +899,7 @@
           RETURN
         ELSE
           IF (Master.and.Lreport) THEN
-            WRITE (stdout,40) TRIM(Vname(2,ifield)), Fmin, Fmax
+            WRITE (stdout,40) TRIM(Vname(2,idTvar(itrc))), Fmin, Fmax
           END IF
         END IF
       END DO

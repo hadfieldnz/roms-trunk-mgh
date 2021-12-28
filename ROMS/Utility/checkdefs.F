@@ -67,6 +67,13 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+13)=' AD_AVERAGES,'
 #endif
+#if defined AD_OUTPUT_STATE && defined ADJOINT
+!
+      IF (Master) WRITE (stdout,20) 'AD_OUTPUT_STATE',                  &
+     &   'Writing full adjoint state solution by adding time levels'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+17)=' AD_OUTPUT_STATE,'
+#endif
 #if defined ADD_FSOBC && defined SSH_TIDES
 !
       IF (Master) WRITE (stdout,20) 'ADD_FSOBC',                        &

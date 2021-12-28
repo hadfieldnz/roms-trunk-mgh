@@ -188,8 +188,7 @@
       ntstart(ng)=INT((time(ng)-dstart*day2sec)/dt(ng))+1
       ntend(ng)=ntstart(ng)+ntimes(ng)-1
       ntfirst(ng)=ntstart(ng)
-!
-      CALL time_string (time(ng), time_code(ng))
+      step_counter(ng)=0
 !
       IniRec=nrrec(ng)
       Tindex=1
@@ -725,14 +724,11 @@
 # endif
 !
 !-----------------------------------------------------------------------
-!  Initialize time-stepping counter and clock.
+!  Initialize time-stepping counter.
 !-----------------------------------------------------------------------
 !
-!  Subsract one time unit to avoid special case due to initialization
-!  in the main time-stepping routine.
-!
-      iic(ng)=ntstart(ng)-1
-      time(ng)=time(ng)-dt(ng)
+      iic(ng)=ntstart(ng)
+      CALL time_string (time(ng), time_code(ng))
 
 # ifdef PROFILE
 !

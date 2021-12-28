@@ -453,7 +453,7 @@
 !
 !  Define 3D v-momentum time-accumulated tide harmonics.
 !
-        IF (.not.got_var(idv3dH).and.Aout(idv3dD,ng)) THEN
+        IF (Aout(idv3dD,ng)) THEN
           Vinfo( 1)=Vname(1,idv3dH)
           Vinfo( 2)=Vname(2,idv3dH)
           Vinfo( 3)=Vname(3,idv3dH)
@@ -1109,7 +1109,7 @@
 !
 !  Define 3D v-momentum time-accumulated tide harmonics.
 !
-        IF (.not.got_var(idv3dH).and.Aout(idv3dD,ng)) THEN
+        IF (Aout(idv3dD,ng)) THEN
           Vinfo( 1)=Vname(1,idv3dH)
           Vinfo( 2)=Vname(2,idv3dH)
           Vinfo( 3)=Vname(3,idv3dH)

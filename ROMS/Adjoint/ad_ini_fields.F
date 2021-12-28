@@ -1659,6 +1659,7 @@
           END DO
         END IF
       END DO
+
 # endif
 !
 # ifdef SOLVE3D
@@ -1705,17 +1706,20 @@
      &                    ad_u)
       END IF
 !
+!  Add second piece of the 3D adjoint momentum solution into IO arrays.
+!  The first is loaded in "ad_step3d_uv".
+!
       DO j=JstrB,JendB
         IF (j.ge.JstrM) THEN
           DO k=1,N(ng)
             DO i=IstrB,IendB
-              ad_v_sol(i,j,k)=ad_v(i,j,k,nstp)+ad_v(i,j,k,nnew)
+              ad_v_sol(i,j,k)=ad_v_sol(i,j,k)+ad_v(i,j,k,nnew)
             END DO
           END DO
         END IF
         DO k=1,N(ng)
           DO i=IstrM,IendB
-            ad_u_sol(i,j,k)=ad_u(i,j,k,nstp)+ad_u(i,j,k,nnew)
+            ad_u_sol(i,j,k)=ad_u_sol(i,j,k)+ad_u(i,j,k,nnew)
           END DO
         END DO
       END DO
