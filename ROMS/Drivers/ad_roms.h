@@ -150,6 +150,7 @@
 !
         CALL ROMS_allocate_arrays (allocate_vars)
         CALL ROMS_initialize_arrays
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       END IF
 

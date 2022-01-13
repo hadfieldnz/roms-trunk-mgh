@@ -193,6 +193,7 @@
         CALL netcdf_get_satt (ng, iNLM, OBS(ng)%name, nf90_global,      &
      &                        AttName, AttValue, foundAtt,              &
      &                        ncid = OBSncid)
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
 !  Create model/observation (DAV) file
 !

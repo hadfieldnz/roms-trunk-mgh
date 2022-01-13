@@ -147,9 +147,13 @@
 !
 !  Set-up point Sources/Sink number (Nsrc), direction (Dsrc), I- and
 !  J-grid locations (Isrc,Jsrc). Currently, the direction can be along
-!  XI-direction (Dsrc = 0) or along ETA-direction (Dsrc > 0).  The
+!  XI-direction (Dsrc=0) or along ETA-direction (Dsrc=1).  The
 !  mass sources are located at U- or V-points so the grid locations
 !  should range from 1 =< Isrc =< L  and  1 =< Jsrc =< M.
+!
+!  Vertical mass sources can be added my setting a W-direction (Dsrc=2)
+!  and mass sources are located at Rho-points so the grid locations
+!  should range from 0 =< Isrc =< L  and  0 =< Jsrc =< M.
 !
 #if defined MY_APPLICATION
         IF (Master.and.DOMAIN(ng)%SouthWest_Test(tile)) THEN

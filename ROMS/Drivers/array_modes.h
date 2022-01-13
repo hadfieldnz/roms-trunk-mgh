@@ -216,10 +216,7 @@
 !
         CALL ROMS_allocate_arrays (allocate_vars)
         CALL ROMS_initialize_arrays
-!
-!  Allocate and initialize observation arrays.
-!
-        CALL initialize_fourdvar
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       END IF
 

@@ -682,6 +682,9 @@
 !  Apply tracers point sources to the horizontal advection terms,
 !  if any.
 !
+!    Dsrc(is) = 0,  flow across grid cell u-face (positive or negative)
+!    Dsrc(is) = 1,  flow across grid cell v-face (positive or negative)
+!
           IF (LuvSrc(ng)) THEN
             DO is=1,Nsrc(ng)
               Isrc=SOURCES(ng)%Isrc(is)
@@ -1249,34 +1252,37 @@
 !  added volume to keep the receiving cell concentration unchanged.
 !  J. Levin (Jupiter Intelligence Inc.) and J. Wilkin
 !
+!    Dsrc(is) = 2,  flow across grid cell v-face (positive or negative)
+!
       IF (LwSrc(ng)) THEN
         DO itrc=1,NT(ng)
           IF (.not.((tl_Hadvection(itrc,ng)%MPDATA).and.                &
      &              (tl_Vadvection(itrc,ng)%MPDATA))) THEN
             DO is=1,Nsrc(ng)
-              Isrc=SOURCES(ng)%Isrc(is)
-              Jsrc=SOURCES(ng)%Jsrc(is)
-              IF (((Istr.le.Isrc).and.(Isrc.le.Iend+1)).and.            &
-     &            ((Jstr.le.Jsrc).and.(Jsrc.le.Jend+1))) THEN
-                DO k=1,N(ng)
-                  cff=dt(ng)*pm(i,j)*pn(i,j)
+              IF (INT(SOURCES(ng)%Dsrc(is)).eq.2) THEN
+                Isrc=SOURCES(ng)%Isrc(is)
+                Jsrc=SOURCES(ng)%Jsrc(is)
+                IF (((Istr.le.Isrc).and.(Isrc.le.Iend+1)).and.          &
+     &              ((Jstr.le.Jsrc).and.(Jsrc.le.Jend+1))) THEN
+                  DO k=1,N(ng)
+                    cff=dt(ng)*pm(i,j)*pn(i,j)
 # ifdef SPLINES_VDIFF
-                  cff=cff*oHz(Isrc,Jsrc,k)
-                  tl_cff=cff*tl_oHz(Isrc,Jsrc,k)
+                    cff=cff*oHz(Isrc,Jsrc,k)
+                    tl_cff=cff*tl_oHz(Isrc,Jsrc,k)
 # endif
-                  IF (LtracerSrc(itrc,ng)) THEN
-                    cff3=SOURCES(ng)%Tsrc(is,k,itrc)
-                    tl_cff3=SOURCES(ng)%tl_Tsrc(is,k,itrc)
-                  ELSE
-                    cff3=t(Isrc,Jsrc,k,3,itrc)
-                    tl_cff3=tl_t(Isrc,Jsrc,k,3,itrc)
-                  END IF
-!^                t(Isrc,Jsrc,k,nnew,itrc)=t(Isrc,Jsrc,k,nnew,itrc)+    &
-!^   &                                     cff*SOURCES(ng)%Qsrc(is,k)*  &
-!^   &                                     cff3
+                    IF (LtracerSrc(itrc,ng)) THEN
+                      cff3=SOURCES(ng)%Tsrc(is,k,itrc)
+                      tl_cff3=SOURCES(ng)%tl_Tsrc(is,k,itrc)
+                    ELSE
+                      cff3=t(Isrc,Jsrc,k,3,itrc)
+                      tl_cff3=tl_t(Isrc,Jsrc,k,3,itrc)
+                    END IF
+!^                  t(Isrc,Jsrc,k,nnew,itrc)=t(Isrc,Jsrc,k,nnew,itrc)+  &
+!^   &                                       cff*SOURCES(ng)%Qsrc(is,k)*&
+!^   &                                       cff3
 !^
 # ifdef SPLINES_VDIFF
-                  tl_t(Isrc,Jsrc,k,nnew,itrc)=                          &
+                    tl_t(Isrc,Jsrc,k,nnew,itrc)=                        &
      &                                  tl_t(Isrc,Jsrc,k,nnew,itrc)+    &
      &                                  cff*(SOURCES(ng)%tl_Qsrc(is,k)* &
      &                                       cff3+                      &
@@ -1289,7 +1295,7 @@
      &                                  SOURCES(ng)%Qsrc(is,k)*cff3
 #  endif
 # else
-                  tl_t(Isrc,Jsrc,k,nnew,itrc)=                          &
+                    tl_t(Isrc,Jsrc,k,nnew,itrc)=                        &
      &                                  tl_t(Isrc,Jsrc,k,nnew,itrc)+    &
      &                                  cff*(SOURCES(ng)%tl_Qsrc(is,k)* &
      &                                       cff3+                      &
@@ -1300,7 +1306,8 @@
      &                                  cff3
 #  endif
 # endif
-                END DO
+                  END DO
+                END IF
               END IF
             END DO
           END IF

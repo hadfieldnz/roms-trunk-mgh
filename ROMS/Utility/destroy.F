@@ -444,9 +444,9 @@
 !
       integer, intent(in) :: ng, line
 !
-      real(dp), intent(inout) :: Varray(:)
+      real(dp), pointer, intent(inout) :: Varray(:)
 !
-      character (len=*) :: Vstring
+      character (len=*) :: Vstring, routine
 !
 !  Local variable declarations.
 !
@@ -498,9 +498,9 @@
 !
       integer, intent(in) :: ng, line
 !
-      real(dp), intent(inout) :: Varray(:,:)
+      real(dp), pointer, intent(inout) :: Varray(:,:)
 !
-      character (len=*) :: Vstring
+      character (len=*) :: Vstring, routine
 !
 !  Local variable declarations.
 !
@@ -552,9 +552,9 @@
 !
       integer, intent(in) :: ng, line
 !
-      real(dp), intent(inout) :: Varray(:,:,:)
+      real(dp), pointer, intent(inout) :: Varray(:,:,:)
 !
-      character (len=*) :: Vstring
+      character (len=*) :: Vstring, routine
 !
 !  Local variable declarations.
 !
@@ -606,9 +606,9 @@
 !
       integer, intent(in) :: ng, line
 !
-      real(dp), intent(inout) :: Varray(:,:,:,:)
+      real(dp), pointer, intent(inout) :: Varray(:,:,:,:)
 !
-      character (len=*) :: Vstring
+      character (len=*) :: Vstring, routine
 !
 !  Local variable declarations.
 !
@@ -660,9 +660,9 @@
 !
       integer, intent(in) :: ng, line
 !
-      real(dp), intent(inout) :: Varray(:,:,:,:,:)
+      real(dp), pointer, intent(inout) :: Varray(:,:,:,:,:)
 !
-      character (len=*) :: Vstring
+      character (len=*) :: Vstring, routine
 !
 !  Local variable declarations.
 !
