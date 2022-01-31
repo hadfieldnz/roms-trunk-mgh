@@ -3034,7 +3034,7 @@
         Vinfo( 2)='user generic parameters'
         Vinfo(14)='user, scalar'
         Vinfo(24)='_FillValue'
-        Aval(6)=0.0_r8
+        Aval(6)=spval
         status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
      &                 1, (/usrdim/), Aval, Vinfo, ncname,              &
      &               SetParAccess = .FALSE.)
@@ -6428,7 +6428,7 @@
         Vinfo( 2)='user generic parameters'
         Vinfo(14)='user, scalar'
         Vinfo(24)='_FillValue'
-        Aval(6)=0.0_r8
+        Aval(6)=spval
         status=def_var(ng, model, pioFile, pioVar, PIO_TYPE,            &
      &                 1, (/usrdim/), Aval, Vinfo, ncname,              &
      &               SetParAccess = .FALSE.)
