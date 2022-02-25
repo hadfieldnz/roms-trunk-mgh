@@ -189,7 +189,7 @@ setenv MY_PROJECT_DIR        ${PWD}
 # If any of the coupling component use the HDF5 Fortran API for primary
 # I/O, we need to compile the main driver with the HDF5 library.
 
-#setevn USE_HDF5            on          # compile with HDF5 library
+#setenv USE_HDF5            on          # compile with HDF5 library
 
 #--------------------------------------------------------------------------
 # If coupling Earth Systems Models (ESM), set the location of the ESM
