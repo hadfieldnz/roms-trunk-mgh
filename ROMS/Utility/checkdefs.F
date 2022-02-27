@@ -1481,13 +1481,6 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+9)=' MB_Z0BL,'
 # endif
-# ifdef MB_Z0RIP
-!
-      IF (Master) WRITE (stdout,20) 'MB_Z0RIP',                         &
-     &   'Bedform roughness ripple height and length'
-      is=LEN_TRIM(Coptions)+1
-      Coptions(is:is+10)=' MB_Z0RIP,'
-# endif
 #endif
 #if defined MCT_LIB && defined MODEL_COUPLING
 !
@@ -1495,6 +1488,13 @@
      &   'Using Model Coupling Toolkit library'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+9)=' MCT_LIB,'
+#endif
+#ifdef METADATA_REPORT
+!
+      IF (Master) WRITE (stdout,20) 'METADATA_REPORT',                  &
+     &   'Reports/dumps YAML metadata dictionary'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+10)=' METADATA_REPORT,'
 #endif
 #if defined MINRES && defined FOUR_DVAR
 !

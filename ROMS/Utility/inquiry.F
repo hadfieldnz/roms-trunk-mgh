@@ -283,7 +283,7 @@
           END IF
 !
 !  If the associated time variable is different to that specified in
-!  "varinfo.dat" (Nrec still zero), reset associated time-variable name
+!  "varinfo.yaml" (Nrec still zero), reset associated time-variable name
 !  to that specified in the "time" attribute.  If founded, also check
 !  for a C-language null termination character in the time variable
 !  string, which is possible in NetCDF files generated from C-programs.
@@ -870,7 +870,7 @@
           END IF
 !
 !  If the associated time variable is different to that specified in
-!  "varinfo.dat" (Nrec still zero), reset associated time-variable name
+!  "varinfo.yaml" (Nrec still zero), reset associated time-variable name
 !  to that specified in the "time" attribute.  If founded, also check
 !  for a C-language null termination character in the time variable
 !  string, which is possible in NetCDF files generated from C-programs.

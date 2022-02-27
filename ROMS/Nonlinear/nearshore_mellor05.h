@@ -33,6 +33,7 @@
       SUBROUTINE radiation_stress (ng, tile)
 !***********************************************************************
 !
+      USE mod_param
       USE mod_forces
       USE mod_grid
       USE mod_mixing
@@ -1232,6 +1233,6 @@
 #endif
 !
       RETURN
-      END SUBROUTINE radiation_stress_05_tile
+      END SUBROUTINE nearshore_mellor05_tile
 
       END MODULE radiation_stress_mod

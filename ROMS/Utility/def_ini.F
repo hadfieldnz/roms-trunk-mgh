@@ -435,6 +435,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           status=def_var(ng, iNLM, INI(ng)%ncid, INI(ng)%Vid(ifield),   &
      &                   NF_FOUT, 4, t2dobc, Aval, Vinfo, ncname,       &
@@ -452,6 +453,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           status=def_var(ng, iNLM, INI(ng)%ncid, INI(ng)%Vid(ifield),   &
      &                   NF_FOUT, 4, t2dobc, Aval, Vinfo, ncname,       &
@@ -469,6 +471,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           status=def_var(ng, iNLM, INI(ng)%ncid, INI(ng)%Vid(ifield),   &
      &                   NF_FOUT, 4, t2dobc, Aval, Vinfo, ncname,       &
@@ -488,6 +491,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           status=def_var(ng, iNLM, INI(ng)%ncid, INI(ng)%Vid(ifield),   &
      &                   NF_FOUT, 5, t3dobc, Aval, Vinfo, ncname,       &
@@ -505,6 +509,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           status=def_var(ng, iNLM, INI(ng)%ncid, INI(ng)%Vid(ifield),   &
      &                   NF_FOUT, 5, t3dobc, Aval, Vinfo, ncname,       &
@@ -523,6 +528,7 @@
             Vinfo( 3)=Vname(3,ifield)
             Vinfo(14)=Vname(4,ifield)
             Vinfo(16)=Vname(1,idtime)
+            Vinfo(21)=Vname(6,ifield)
             Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
             status=def_var(ng, iNLM, INI(ng)%ncid, INI(ng)%Vid(ifield), &
      &                     NF_FOUT, 5, t3dobc, Aval, Vinfo, ncname,     &
@@ -1256,6 +1262,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           INI(ng)%pioVar(ifield)%dkind=PIO_FOUT
           INI(ng)%pioVar(ifield)%gtype=r2dobc
@@ -1277,6 +1284,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           INI(ng)%pioVar(ifield)%dkind=PIO_FOUT
           INI(ng)%pioVar(ifield)%gtype=u2dobc
@@ -1298,6 +1306,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           INI(ng)%pioVar(ifield)%dkind=PIO_FOUT
           INI(ng)%pioVar(ifield)%gtype=v2dobc
@@ -1321,6 +1330,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           INI(ng)%pioVar(ifield)%dkind=PIO_FOUT
           INI(ng)%pioVar(ifield)%gtype=u3dobc
@@ -1342,6 +1352,7 @@
           Vinfo( 3)=Vname(3,ifield)
           Vinfo(14)=Vname(4,ifield)
           Vinfo(16)=Vname(1,idtime)
+          Vinfo(21)=Vname(6,ifield)
           Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
           INI(ng)%pioVar(ifield)%dkind=PIO_FOUT
           INI(ng)%pioVar(ifield)%gtype=v3dobc
@@ -1364,6 +1375,7 @@
             Vinfo( 3)=Vname(3,ifield)
             Vinfo(14)=Vname(4,ifield)
             Vinfo(16)=Vname(1,idtime)
+            Vinfo(21)=Vname(6,ifield)
             Aval(5)=REAL(Iinfo(1,ifield,ng),r8)
             INI(ng)%pioVar(ifield)%dkind=PIO_FOUT
             INI(ng)%pioVar(ifield)%gtype=r3dobc

@@ -689,6 +689,29 @@
 !
       integer :: NghostPoints
 !
+!-----------------------------------------------------------------------
+!  Staggered C-grid location identifiers.
+!-----------------------------------------------------------------------
+!
+      integer, parameter :: p2dvar = 1         ! 2D PSI-variable
+      integer, parameter :: r2dvar = 2         ! 2D RHO-variable
+      integer, parameter :: u2dvar = 3         ! 2D U-variable
+      integer, parameter :: v2dvar = 4         ! 2D V-variable
+      integer, parameter :: p3dvar = 5         ! 3D PSI-variable
+      integer, parameter :: r3dvar = 6         ! 3D RHO-variable
+      integer, parameter :: u3dvar = 7         ! 3D U-variable
+      integer, parameter :: v3dvar = 8         ! 3D V-variable
+      integer, parameter :: w3dvar = 9         ! 3D W-variable
+      integer, parameter :: b3dvar = 10        ! 3D BED-sediment
+      integer, parameter :: l3dvar = 11        ! 3D spectral light
+      integer, parameter :: l4dvar = 12        ! 4D spectral light
+      integer, parameter :: r2dobc = 13        ! 2D OBC RHO-variable
+      integer, parameter :: u2dobc = 14        ! 2D OBC U-variable
+      integer, parameter :: v2dobc = 15        ! 2D OBC V-variable
+      integer, parameter :: r3dobc = 16        ! 3D OBC RHO-variable
+      integer, parameter :: u3dobc = 17        ! 3D OBC U-variable
+      integer, parameter :: v3dobc = 18        ! 3D OBC V-variable
+!
       CONTAINS
 !
       SUBROUTINE allocate_param

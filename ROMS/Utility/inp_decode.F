@@ -193,6 +193,7 @@
 !
 !  SP    32        Space
 !  !     33        Exclamation mark
+!  #     35        Number sign, hash, or pound sign
 !  *     42        Asterisk (star, multiply)
 !  +     43        Plus
 !  -     45        Hyphen, dash, minus
@@ -207,6 +208,7 @@
 !  7     55        Seven
 !  8     56        Eight
 !  9     57        Nine
+!  :     58        colon sign
 !  =     61        Equals sign
 !  \     92        Reverse slant (Backslash)
 !  |    124        Vertical line

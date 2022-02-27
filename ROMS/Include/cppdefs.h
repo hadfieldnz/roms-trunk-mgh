@@ -559,6 +559,7 @@
 ** CHECK_OPEN_FILES        to report number opened/closed/created files      **
 ** DEFLATE                 to set compression NetCDF-4/HDF5 format files     **
 ** HDF5                    to create NetCDF-4/HDF5 format files              **
+** METADATA_REPORT         to report/dump YAML metadata dictionary           **
 ** NO_LBC_ATT              to not check NLM_LBC global attribute on restart  **
 ** NO_READ_GHOST           to not include ghost points during read/scatter   **
 ** NO_WRITE_GRID           if not writing grid arrays                        **

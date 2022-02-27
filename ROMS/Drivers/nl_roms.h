@@ -317,7 +317,7 @@
 !
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", ROMS_finalize"
-!
+
 #ifdef ENKF_RESTART
 !
 !-----------------------------------------------------------------------

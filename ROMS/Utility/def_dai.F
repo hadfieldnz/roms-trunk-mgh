@@ -387,6 +387,7 @@
         WRITE (Vinfo( 3),'(a,a)') 'seconds since ', TRIM(Rclock%string)
         Vinfo( 4)=TRIM(Rclock%calendar)
         Vinfo(14)=Vname(4,idtime)
+        Vinfo(21)=Vname(6,idtime)
         status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Vid(idtime),     &
      &                 NF_TOUT, 1, (/recdim/), Aval, Vinfo, ncname,     &
      &                 SetParAccess = .TRUE.)
@@ -399,6 +400,7 @@
         Vinfo( 3)=Vname(3,idFsur)
         Vinfo(14)=Vname(4,idFsur)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idFsur)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idFsur,ng),r8)
         status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Vid(idFsur),     &
@@ -418,6 +420,7 @@
         Vinfo( 3)=Vname(3,idUbar)
         Vinfo(14)=Vname(4,idUbar)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idUbar)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idUbar,ng),r8)
         status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Vid(idUbar),     &
@@ -431,6 +434,7 @@
         Vinfo( 3)=Vname(3,idVbar)
         Vinfo(14)=Vname(4,idVbar)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idVbar)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idVbar,ng),r8)
         status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Vid(idVbar),     &
@@ -446,6 +450,7 @@
         Vinfo( 3)=Vname(3,idUvel)
         Vinfo(14)=Vname(4,idUvel)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idUvel)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idUvel,ng),r8)
         status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Vid(idUvel),     &
@@ -459,6 +464,7 @@
         Vinfo( 3)=Vname(3,idVvel)
         Vinfo(14)=Vname(4,idVvel)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idVvel)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idVvel,ng),r8)
         status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Vid(idVvel),     &
@@ -480,6 +486,7 @@
             END IF
           END DO
 #  endif
+          Vinfo(21)=Vname(6,idTvar(itrc))
           Vinfo(22)='coordinates'
           Aval(5)=REAL(r3dvar,r8)
           status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Tid(itrc),     &
@@ -494,6 +501,7 @@
         Vinfo( 3)=Vname(3,idVvis)
         Vinfo(14)=Vname(4,idVvis)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idVvis)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idVvis,ng),r8)
         status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Vid(idVvis),     &
@@ -508,6 +516,7 @@
         Vinfo( 3)=Vname(3,idTdif)
         Vinfo(14)=Vname(4,idTdif)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idTdif)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idTdif,ng),r8)
         status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Vid(idTdif),     &
@@ -523,6 +532,7 @@
         Vinfo( 3)=Vname(3,idSdif)
         Vinfo(14)=Vname(4,idSdif)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idSdif)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idSdif,ng),r8)
         status=def_var(ng, iNLM, DAI(ng)%ncid, DAI(ng)%Vid(idSdif),     &
@@ -1038,6 +1048,7 @@
         WRITE (Vinfo( 3),'(a,a)') 'seconds since ', TRIM(Rclock%string)
         Vinfo( 4)=TRIM(Rclock%calendar)
         Vinfo(14)=Vname(4,idtime)
+        Vinfo(21)=Vname(6,idtime)
         DAI(ng)%pioVar(idtime)%dkind=PIO_TOUT
         DAI(ng)%pioVar(idtime)%gtype=0
 !
@@ -1054,6 +1065,7 @@
         Vinfo( 3)=Vname(3,idFsur)
         Vinfo(14)=Vname(4,idFsur)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idFsur)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idFsur,ng),r8)
         DAI(ng)%pioVar(idFsur)%dkind=PIO_FRST
@@ -1077,6 +1089,7 @@
         Vinfo( 3)=Vname(3,idUbar)
         Vinfo(14)=Vname(4,idUbar)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idUbar)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idUbar,ng),r8)
         DAI(ng)%pioVar(idUbar)%dkind=PIO_FRST
@@ -1094,6 +1107,7 @@
         Vinfo( 3)=Vname(3,idVbar)
         Vinfo(14)=Vname(4,idVbar)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idVbar)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idVbar,ng),r8)
         DAI(ng)%pioVar(idVbar)%dkind=PIO_FRST
@@ -1113,6 +1127,7 @@
         Vinfo( 3)=Vname(3,idUvel)
         Vinfo(14)=Vname(4,idUvel)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idUvel)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idUvel,ng),r8)
         DAI(ng)%pioVar(idUvel)%dkind=PIO_FRST
@@ -1130,6 +1145,7 @@
         Vinfo( 3)=Vname(3,idVvel)
         Vinfo(14)=Vname(4,idVvel)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idVvel)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idVvel,ng),r8)
         DAI(ng)%pioVar(idVvel)%dkind=PIO_FRST
@@ -1155,6 +1171,7 @@
             END IF
           END DO
 #   endif
+          Vinfo(21)=Vname(6,idTvar(itrc))
           Vinfo(22)='coordinates'
           Aval(5)=REAL(r3dvar,r8)
           DAI(ng)%pioTrc(itrc)%dkind=PIO_FRST
@@ -1173,6 +1190,7 @@
         Vinfo( 3)=Vname(3,idVvis)
         Vinfo(14)=Vname(4,idVvis)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idVvis)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idVvis,ng),r8)
         DAI(ng)%pioVar(idVvis)%dkind=PIO_FRST
@@ -1191,6 +1209,7 @@
         Vinfo( 3)=Vname(3,idTdif)
         Vinfo(14)=Vname(4,idTdif)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idTdif)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idTdif,ng),r8)
         DAI(ng)%pioVar(idTdif)%dkind=PIO_FRST
@@ -1211,6 +1230,7 @@
         Vinfo( 3)=Vname(3,idSdif)
         Vinfo(14)=Vname(4,idSdif)
         Vinfo(16)=Vname(1,idtime)
+        Vinfo(21)=Vname(6,idSdif)
         Vinfo(22)='coordinates'
         Aval(5)=REAL(Iinfo(1,idSdif,ng),r8)
         DAI(ng)%pioVar(idSdif)%dkind=PIO_FRST

@@ -39,7 +39,7 @@
 **        sediment_inp.h                                              **
 **                                                                    **
 **   *  Code to assign indices to model variables during the          **
-**      reading of metadata information from "varinfo.dat":           **
+**      reading of metadata information from "varinfo.yaml":          **
 **                                                                    **
 **        sediment_var.h                                              **
 **                                                                    **

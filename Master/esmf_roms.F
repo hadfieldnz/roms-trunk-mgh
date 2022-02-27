@@ -85,11 +85,50 @@
 !
       USE mod_esmf_esm          ! ESM coupling structures and variables
 !
-      USE roms_kernel_mod, ONLY : ROMS_initialize,                      &
-     &                            ROMS_run,                             &
-     &                            ROMS_finalize
+!-----------------------------------------------------------------------
+!  ROMS module association: parameters, variables, derived-type objects.
+!-----------------------------------------------------------------------
 !
+      USE roms_kernel_mod,  ONLY : ROMS_initialize,                     &
+     &                             ROMS_run,                            &
+     &                             ROMS_finalize
+!
+      USE dateclock_mod,    ONLY : ROMS_clock, caldate, time_string
+      USE exchange_2d_mod,  ONLY : exchange_r2d_tile,                   &
+     &                             exchange_u2d_tile,                   &
+     &                             exchange_v2d_tile
+      USE get_metadata_mod, ONLY : CouplingField,                       &
+     &                             cmeps_metadata
+      USE mod_kinds,        ONLY : dp, i4b, i8b, r4, r8
+      USE mod_forces,       ONLY : FORCES
+      USE mod_grid,         ONLY : GRID
+      USE mod_iounits,      ONLY : Iname, SourceFile, stdout
+      USE mod_mixing,       ONLY : MIXING
+      USE mod_ncparam,      ONLY : Iinfo,  idLdwn, idLrad, idPair,      &
+     &                             idQair, idrain, idSrad, idTair,      &
+     &                             idTsur, idUair, idUsms, idVair,      &
+     &                             idVsms
+# ifdef TIME_INTERP
+      USE mod_netcdf,       ONLY : netcdf_get_ivar,                     &
+     &                             netcdf_get_svar,                     &
+     &                             netcdf_get_time
+# endif
+      USE mod_ocean,        ONLY : OCEAN
+      USE mod_param,        ONLY : BOUNDS, Lm, Mm, N, NghostPoints,     &
+     &                             Ngrids, NtileI, NtileJ, iNLM,        &
+     &                             r2dvar, u2dvar, v2dvar
+      USE mod_scalars,      ONLY : Cp, EWperiodic, NSperiodic, NoError, &
+     &                             Rclock, dt, exit_flag, itemp, isalt, &
+     &                             ntfirst, ntend, ntimes,              &
+     &                             rho0, sec2day, tdays, time_ref
+      USE mod_stepping,     ONLY : nstp
+      USE mp_exchange_mod,  ONLY : mp_exchange2d
+      USE stdinp_mod,       ONLY : getpar_i
+      USE strings_mod,      ONLY : FoundError
+!
+!-----------------------------------------------------------------------
       implicit none
+!-----------------------------------------------------------------------
 !
       PUBLIC  :: ROMS_SetServices
 
@@ -108,7 +147,9 @@
       PRIVATE :: ROMS_Import
       PRIVATE :: ROMS_Export
 !
+!-----------------------------------------------------------------------
       CONTAINS
+!-----------------------------------------------------------------------
 !
       SUBROUTINE ROMS_SetServices (model, rc)
 !
@@ -486,8 +527,6 @@
 !                                                                      !
 !=======================================================================
 !
-      USE mod_scalars, ONLY : dt, ntfirst, ntend, NoError, exit_flag
-!
 !  Imported variable declarations.
 !
       integer, intent(out) :: rc
@@ -781,11 +820,6 @@
 !  time.                                                               !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_scalars
-!
-      USE dateclock_mod, ONLY : caldate, time_string
 !
 !  Imported variable declarations.
 !
@@ -1476,9 +1510,6 @@
 !                                                                      !
 !=======================================================================
 !
-      USE mod_param
-      USE mod_grid
-!
 !  Imported variable declarations.
 !
       integer, intent(in)  :: ng, tile
@@ -1896,8 +1927,6 @@
 !  state.                                                              !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
 !
 !  Imported variable declarations.
 !
@@ -2360,8 +2389,6 @@
 !                                                                      !
 !=======================================================================
 !
-      USE mod_scalars, ONLY : dt, NoError, exit_flag
-!
 !  Imported variable declarations.
 !
       integer, intent(out) :: rc
@@ -2600,8 +2627,6 @@
 !                                                                      !
 !=======================================================================
 !
-      USE mod_iounits, ONLY : stdout
-!
 !  Imported variable declarations.
 !
       integer, intent(out) :: rc
@@ -2653,23 +2678,6 @@
 !  ROMS kernel.                                                        !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_grid
-      USE mod_forces
-      USE mod_ncparam
-      USE mod_scalars
-!
-      USE dateclock_mod,   ONLY : ROMS_clock
-# ifdef TIME_INTERP
-      USE mod_iounits,     ONLY : SourceFile
-      USE mod_netcdf,      ONLY : netcdf_get_ivar
-      USE mod_netcdf,      ONLY : netcdf_get_svar
-      USE mod_netcdf,      ONLY : netcdf_get_time
-# endif
-      USE exchange_2d_mod
-      USE mp_exchange_mod, ONLY : mp_exchange2d
-      USE strings_mod,     ONLY : FoundError
 !
 !  Imported variable declarations.
 !
@@ -3752,7 +3760,7 @@
               got_stress(2)=.TRUE.
               romsScale=StressScale
               ifield=idVsms
-              gtype=r2dvar
+              gtype=v2dvar
               Tindex=3-Iinfo(8,ifield,ng)
               DO j=JstrR,JendR
                 DO i=IstrR,IendR
@@ -4019,13 +4027,6 @@
 !  Exports ROMS fields to other coupled gridded components.            !
 !                                                                      !
 !=======================================================================
-!
-      USE mod_param
-      USE mod_grid
-      USE mod_ocean
-      USE mod_mixing
-      USE mod_scalars
-      USE mod_stepping
 !
 !  Imported variable declarations.
 !

@@ -49,7 +49,6 @@
       USE mod_param
       USE mod_parallel
       USE mod_iounits
-      USE mod_ncparam
       USE mod_scalars
 !
       implicit none
