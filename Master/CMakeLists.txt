@@ -8,7 +8,6 @@
 # Source code list for sub-directory "Master"
 
 list( APPEND _files
-      Master/cmeps_roms.F
       Master/coupler.F
       Master/esmf_roms.F
       Master/propagator.F
