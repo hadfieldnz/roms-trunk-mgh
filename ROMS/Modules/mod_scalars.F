@@ -777,7 +777,7 @@
 !  Vector containing USER generic parameters.
 !
         integer :: Nuser
-        real(r8), dimension(25) :: user(25)
+        real(r8), allocatable :: user(:)
 !
 !  Weights for the time average of 2D fields.
 !
