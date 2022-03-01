@@ -793,7 +793,8 @@
 !
       END SUBROUTINE coupling_metadata
 !
-      FUNCTION io_metadata (Vinfo, scale, offset) RESULT (Ldone)
+      FUNCTION io_metadata (FirstPass, Vinfo, scale, offset)            &
+                    RESULT (Ldone)
 !
 !=======================================================================
 !                                                                      !
@@ -801,6 +802,8 @@
 !  'varinfo.dat'  or 'varinfo.yaml' dictionary.                        !
 !                                                                      !
 !  On Output:                                                          !
+!                                                                      !
+!     FirsPass   Switch to initialize metadata processing (logical)    !
 !                                                                      !
 !     Vinfo      I/O Variable information (string array)               !
 !                  Vinfo(1):  Field variable short-name                !
@@ -835,13 +838,14 @@
 !
 !  Imported variable declarations.
 !
+      logical, intent(inout) :: FirstPass
+!
       real(dp), intent(out) :: offset, scale
 !
       character (len=*), intent(out) :: Vinfo(:)
 !
 !  Local variable declarations.
 !
-      logical, save :: FirstPass = .TRUE.
       logical, save :: IsDat     = .FALSE.
       logical, save :: IsYaml    = .FALSE.
       logical :: Ldone
@@ -862,7 +866,6 @@
 !  Initialize.
 !
       Ldone=.FALSE.
-
 !
 !  Determine metadata file extension: 'varinfo.dat'  or
 !                                     'varinfo.yaml'

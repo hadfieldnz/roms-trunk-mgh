@@ -1407,7 +1407,7 @@
 !
       IF (Nuser.gt.0) THEN
         CALL netcdf_put_fvar (ng, model, ncname, 'user',                &
-     &                        user, (/1/), (/25/),                      &
+     &                        user, (/1/), (/Nuser/),                   &
      &                        ncid = ncid)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
@@ -3716,7 +3716,7 @@
 !
       IF (Nuser.gt.0) THEN
         CALL pio_netcdf_put_fvar (ng, model, ncname, 'user',            &
-     &                            user, (/1/), (/25/),                  &
+     &                            user, (/1/), (/Nuser/),               &
      &                            pioFile = pioFile)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF

@@ -193,7 +193,8 @@
 !  Set dimension for generic user parameters.
 !
       IF ((Nuser.gt.0).and.(ncid.ne.GST(ng)%ncid)) THEN
-        status=def_dim(ng, model, ncid, ncname, 'Nuser', 25, usrdim)
+        status=def_dim(ng, model, ncid, ncname, 'Nuser',                &
+     &                 Nuser, usrdim)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
@@ -2953,7 +2954,6 @@
       Vinfo( 2)='S-coordinate at RHO-points'
       Vinfo( 5)='valid_min'
       Vinfo( 6)='valid_max'
-      Vinfo(14)='s_rho, scalar'
       IF (Vtransform(ng).eq.1) THEN
         Vinfo(21)='ocean_s_coordinate_g1'
       ELSE IF (Vtransform(ng).eq.2) THEN
@@ -2978,7 +2978,6 @@
       Vinfo( 2)='S-coordinate at W-points'
       Vinfo( 5)='valid_min'
       Vinfo( 6)='valid_max'
-      Vinfo(14)='s_w, scalar'
       Vinfo(21)='ocean_s_coordinate'
       IF (Vtransform(ng).eq.1) THEN
         Vinfo(21)='ocean_s_coordinate_g1'
@@ -3004,7 +3003,6 @@
       Vinfo( 2)='S-coordinate stretching curves at RHO-points'
       Vinfo( 5)='valid_min'
       Vinfo( 6)='valid_max'
-      Vinfo(14)='Cs_r, scalar'
       Aval(2)=-1.0_r8
       Aval(3)=0.0_r8
       status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
@@ -3018,7 +3016,6 @@
       Vinfo( 2)='S-coordinate stretching curves at W-points'
       Vinfo( 5)='valid_min'
       Vinfo( 6)='valid_max'
-      Vinfo(14)='Cs_w, scalar'
       Aval(2)=-1.0_r8
       Aval(3)=0.0_r8
       status=def_var(ng, model, ncid, varid, NF_TOUT,                   &
@@ -3032,7 +3029,6 @@
       IF (Nuser.gt.0) THEN
         Vinfo( 1)='user'
         Vinfo( 2)='user generic parameters'
-        Vinfo(14)='user, scalar'
         Vinfo(24)='_FillValue'
         Aval(6)=spval
         status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
@@ -3624,7 +3620,8 @@
 !  Set dimension for generic user parameters.
 !
       IF ((Nuser.gt.0).and.(FileH.ne.ABS(GST(ng)%pioFile%fh))) THEN
-        status=def_dim(ng, model, pioFile, ncname, 'Nuser', 25, usrdim)
+        status=def_dim(ng, model, pioFile, ncname, 'Nuser',             &
+     &                 Nuser, usrdim)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END IF
 !
@@ -6371,7 +6368,6 @@
       Vinfo( 2)='S-coordinate at RHO-points'
       Vinfo( 5)='valid_min'
       Vinfo( 6)='valid_max'
-      Vinfo(14)='s_rho, scalar'
       IF (Vtransform(ng).eq.1) THEN
         Vinfo(21)='ocean_s_coordinate_g1'
       ELSE IF (Vtransform(ng).eq.2) THEN
@@ -6396,7 +6392,6 @@
       Vinfo( 2)='S-coordinate at W-points'
       Vinfo( 5)='valid_min'
       Vinfo( 6)='valid_max'
-      Vinfo(14)='s_w, scalar'
       Vinfo(21)='ocean_s_coordinate'
       IF (Vtransform(ng).eq.1) THEN
         Vinfo(21)='ocean_s_coordinate_g1'
@@ -6422,7 +6417,6 @@
       Vinfo( 2)='S-coordinate stretching curves at RHO-points'
       Vinfo( 5)='valid_min'
       Vinfo( 6)='valid_max'
-      Vinfo(14)='Cs_r, scalar'
       Aval(2)=-1.0_r8
       Aval(3)=0.0_r8
       status=def_var(ng, model, pioFile, pioVar, PIO_TOUT,              &
@@ -6436,7 +6430,6 @@
       Vinfo( 2)='S-coordinate stretching curves at W-points'
       Vinfo( 5)='valid_min'
       Vinfo( 6)='valid_max'
-      Vinfo(14)='Cs_w, scalar'
       Aval(2)=-1.0_r8
       Aval(3)=0.0_r8
       status=def_var(ng, model, pioFile, pioVar, PIO_TOUT,              &
@@ -6450,7 +6443,6 @@
       IF (Nuser.gt.0) THEN
         Vinfo( 1)='user'
         Vinfo( 2)='user generic parameters'
-        Vinfo(14)='user, scalar'
         Vinfo(24)='_FillValue'
         Aval(6)=spval
         status=def_var(ng, model, pioFile, pioVar, PIO_TYPE,            &

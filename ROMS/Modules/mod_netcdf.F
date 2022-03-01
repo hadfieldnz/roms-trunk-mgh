@@ -8547,7 +8547,7 @@
 !  with the "bio_file" attribute.
 !
         IF (.not.PRESENT(Lupdate)) THEN
-          my_Lupdate=.TRUE.
+          my_Lupdate=.FALSE.
         ELSE
           my_Lupdate=Lupdate
         END IF

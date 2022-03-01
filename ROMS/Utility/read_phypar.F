@@ -3167,8 +3167,15 @@
             CASE ('NUSER')
               Npts=load_i(Nval, Rval, 1, Ivalue)
               Nuser=Ivalue(1)
+              IF (Nuser.gt.0) THEN
+                IF (allocated(user)) deallocate (user)
+                allocate ( user(Nuser) )
+                user=spval
+              END IF
             CASE ('USER')
-              Npts=load_r(Nval, Rval, MAX(1,Nuser), user)
+              IF (Nuser.gt.0) THEN
+                Npts=load_r(Nval, Rval, Nuser, user)
+              END IF
             CASE ('INP_LIB')
               Npts=load_i(Nval, Rval, 1, Ivalue)
 #if defined PIO_LIB && defined DISTRIBUTE

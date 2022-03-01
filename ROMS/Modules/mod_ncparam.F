@@ -1098,7 +1098,7 @@
 !
 !  Local variable declarations.
 !
-      logical :: Ldone, load
+      logical :: FirstPass, Ldone, load
 !
 #ifdef DISTRIBUTE
       integer :: Itile, Jtile
@@ -1325,12 +1325,13 @@
 !
       varid=0
       Ldone=.FALSE.
+      FirstPass=.TRUE.                  ! initialize metadata processing
 !
       METADATA_LOOP : DO WHILE (.not.Ldone)
 !
 !  Load I/O metadata information.
 !
-        Ldone = io_metadata(Vinfo, scale, add_offset)
+        Ldone = io_metadata(FirstPass, Vinfo, scale, add_offset)
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
         IF (Ldone) EXIT
 !
