@@ -249,6 +249,7 @@
       PUBLIC  :: yaml_get
       PUBLIC  :: yaml_initialize
 !
+      PRIVATE :: yaml_CountKeys
       PRIVATE :: yaml_LowerCase
       PRIVATE :: yaml_UpperCase
       PRIVATE :: yaml_ValueType
@@ -694,7 +695,7 @@
      &                                 keystring, LenStr),              &
      &               NoErr, __LINE__, MyFile)) RETURN
 !
-      nkeys=COUNT((/ (Kstring(i:i), i=1,Lstr) /) == CHAR(46)) + 1
+      nkeys=yaml_CountKeys(Kstring, CHAR(46))
 !
 !  Allocate key structure.
 !
@@ -1243,7 +1244,7 @@
      &                                 keystring, LenStr),              &
      &               NoErr, __LINE__, MyFile)) RETURN
 !
-      nkeys=COUNT((/ (Kstring(i:i), i=1,Lstr) /) == CHAR(46)) + 1
+      nkeys=yaml_CountKeys(Kstring, CHAR(46))
 !
 !  Check single key.
 !
@@ -1617,6 +1618,54 @@
 !
       RETURN
       END FUNCTION yaml_AssignString
+!
+      FUNCTION yaml_CountKeys (string, token) RESULT (nkeys)
+!
+!=======================================================================
+!                                                                      !
+!  It counts the number of concatenated key separated by the specified !
+!  token during processing extraction from YAML object.  The same task !
+!  can be done elegantly as:                                           !
+!                                                                      !
+!  nkeys=COUNT((/ (string(i:i), i=1,Lstr) /) == token) + 1             !
+!                                                                      !
+!  But compilier like 'gfortran' cannot handle such abstraction.       !
+!                                                                      !
+!  On Input:                                                           !
+!                                                                      !
+!     string     Aggregated YAML keys (string)                         !
+!     token      Key separator (string)                                !
+!                                                                      !
+!  On Output:                                                          !
+!                                                                      !
+!     nkeys      Number of aggregated keys (integer)                   !
+!                                                                      !
+!=======================================================================
+!
+!  Imported variable declarations.
+!
+      character (len=*), intent(in) :: string
+      character (len=*), intent(in) :: token
+!
+!  Local variable declarations.
+!
+      integer :: nkeys
+      integer :: Lstr, i
+!
+!-----------------------------------------------------------------------
+!  Count number of concatenated keys in input string.
+!-----------------------------------------------------------------------
+!
+      nkeys=1
+      Lstr=LEN_TRIM(string)
+      DO i=1,Lstr
+        IF (string(i:i).eq.token) THEN
+          nkeys=nkeys+1
+        END IF
+      END DO
+!
+      RETURN
+      END FUNCTION yaml_CountKeys
 !
       FUNCTION yaml_Error (flag, NoErr, line, routine) RESULT (foundit)
 !
