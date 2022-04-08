@@ -1079,7 +1079,7 @@
       logical, intent(in), optional :: SetFillVal
       logical, intent(in), optional :: SetParAccess
 !
-      integer, intent(in) :: ng, model, FileH, Vtype, nVdim
+      integer, intent(in) :: ng, model, Vtype, nVdim
 
       integer, dimension(:), intent (in) :: Vdim
 !
@@ -1096,6 +1096,7 @@
 #ifdef MASKING
       logical :: LandFill
 #endif
+      integer :: FileH
       integer :: i, j, latt
       integer :: status
 !

@@ -7,19 +7,26 @@
 
 local_sub  := Master
 
-local_src  := $(wildcard $(local_sub)/*.F)
-#local_objs := $(call source-to-object,$(local_src))
-local_objs := $(subst .F,.o,$(local_src))
-local_objs := $(addprefix $(SCRATCH_DIR)/, $(notdir $(local_objs)))
+ifdef EXEC
+  local_src  := $(wildcard $(local_sub)/*.F)
+  local_objs := $(subst .F,.o,$(local_src))
+  local_objs := $(addprefix $(SCRATCH_DIR)/, $(notdir $(local_objs)))
 
-sources    += $(local_src)
+  sources    += $(local_src)
 
-ifdef LD_WINDOWS
-$(BIN):	$(libraries) $(local_objs)
-	$(LD) $(FFLAGS) $(local_objs) -o $@ $(libraries) $(LIBS_WIN32) $(LDFLAGS)
+  ifdef LD_WINDOWS
+  $(BIN):	$(libraries) $(local_objs)
+		$(LD) $(FFLAGS) $(local_objs) -o $@ $(ROMS_LIB) $(LIBS_WIN32) $(LDFLAGS)
+  else
+  $(BIN):	$(libraries) $(local_objs)
+		$(LD) $(FFLAGS) $(LDFLAGS) $(local_objs) -o $@ $(ROMS_LIB) $(LIBS)
+  endif
 else
-$(BIN):	$(libraries) $(local_objs)
-	$(LD) $(FFLAGS) $(LDFLAGS) $(local_objs) -o $@ $(libraries) $(LIBS)
+  local_src  := $(local_sub)/roms_kernel.F
+  local_objs := $(subst .F,.o,$(local_src))
+  local_objs := $(addprefix $(SCRATCH_DIR)/, $(notdir $(local_objs)))
+
+  sources    += $(local_src)
 endif
 
 $(eval $(compile-rules))

@@ -364,7 +364,7 @@ fi
 
 my_hdir="-DMY_HEADER_DIR=${MY_HEADER_DIR}"
 
-if [ $dprint -eq 0 ]; then
+if [[ $dprint -eq 0 && $clean -eq 1 ]]; then
   if [[ -z ${USE_ECBUILD+x} || "${USE_ECBUILD}" == "off" ]]; then
     conf_com="cmake"
     cmake -DAPP=${ROMS_APPLICATION} \

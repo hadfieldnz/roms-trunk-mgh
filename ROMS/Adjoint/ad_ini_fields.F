@@ -1684,27 +1684,27 @@
         CALL ad_exchange_u3d_tile (ng, tile,                            &
      &                             LBi, UBi, LBj, UBj, 1, N(ng),        &
      &                             ad_u(:,:,:,nnew))
-      CALL ad_v3dbc_tile (ng, tile,                                     &
-     &                    LBi, UBi, LBj, UBj, N(ng),                    &
-     &                    IminS, ImaxS, JminS, JmaxS,                   &
-     &                    nstp, nnew,                                   &
-     &                    ad_v)
-      CALL ad_v3dbc_tile (ng, tile,                                     &
-     &                    LBi, UBi, LBj, UBj, N(ng),                    &
-     &                    IminS, ImaxS, JminS, JmaxS,                   &
-     &                    nstp, nstp,                                   &
-     &                    ad_v)
-      CALL ad_u3dbc_tile (ng, tile,                                     &
-     &                    LBi, UBi, LBj, UBj, N(ng),                    &
-     &                    IminS, ImaxS, JminS, JmaxS,                   &
-     &                    nstp, nnew,                                   &
-     &                    ad_u)
-      CALL ad_u3dbc_tile (ng, tile,                                     &
-     &                    LBi, UBi, LBj, UBj, N(ng),                    &
-     &                    IminS, ImaxS, JminS, JmaxS,                   &
-     &                    nstp, nstp,                                   &
-     &                    ad_u)
       END IF
+      CALL ad_v3dbc_tile (ng, tile,                                     &
+     &                    LBi, UBi, LBj, UBj, N(ng),                    &
+     &                    IminS, ImaxS, JminS, JmaxS,                   &
+     &                    nstp, nnew,                                   &
+     &                    ad_v)
+      CALL ad_v3dbc_tile (ng, tile,                                     &
+     &                    LBi, UBi, LBj, UBj, N(ng),                    &
+     &                    IminS, ImaxS, JminS, JmaxS,                   &
+     &                    nstp, nstp,                                   &
+     &                    ad_v)
+      CALL ad_u3dbc_tile (ng, tile,                                     &
+     &                    LBi, UBi, LBj, UBj, N(ng),                    &
+     &                    IminS, ImaxS, JminS, JmaxS,                   &
+     &                    nstp, nnew,                                   &
+     &                    ad_u)
+      CALL ad_u3dbc_tile (ng, tile,                                     &
+     &                    LBi, UBi, LBj, UBj, N(ng),                    &
+     &                    IminS, ImaxS, JminS, JmaxS,                   &
+     &                    nstp, nstp,                                   &
+     &                    ad_u)
 !
 !  Add second piece of the 3D adjoint momentum solution into IO arrays.
 !  The first is loaded in "ad_step3d_uv".

@@ -17,11 +17,19 @@
 # HDF5_LIBDIR    HDF5 library directory
 # HDF5_LIBS      HDF5 library switches
 # LIBS           Required libraries during linking
+# ROMS_LIB       Directory and name for ROMS library
 # NF_CONFIG      NetCDF Fortran configuration script
 # NETCDF_INCDIR  NetCDF include directory
 # NETCDF_LIBDIR  NetCDF library directory
 # NETCDF_LIBS    NetCDF library switches
-# LD             Program to load the objects into an executable
+# PIO_INCDIR     Parallel-IO (PIO) from SCORPIO library include directory
+# PIO_LIBDIR     Parallel-IO (PIO) from SCORPIO libary directory
+# PIO_LIBS       Parallel-IO (PIO) from SCORPIO library switches
+# PNETCDF_INCDIR PNetCDF include directory
+# PNETCDF_LIBDIR PNetCDF libary directory
+# PNETCDF_LIBS   PNetCDF library switches
+
+# LD             Program to load the objects into an executable or shared library
 # LDFLAGS        Flags to the loader
 # RANLIB         Name of ranlib command
 # MDEPFLAGS      Flags for sfmakedepend  (-s if you keep .f files)
@@ -37,7 +45,8 @@
            INCDIR := /usr/include /usr/local/bin
             SLIBS := -L/usr/local/lib -L/usr/lib
             ULIBS :=
-             LIBS := $(SCRATCH_DIR)/libNLM.a         # cyclic dependencies
+             LIBS :=
+         ROMS_LIB := -L$(SCRATCH_DIR) -lROMS
        MOD_SUFFIX := mod
                LD := $(FC)
           LDFLAGS :=
@@ -49,6 +58,8 @@
            RANLIB := ranlib
              PERL := perl
              TEST := test
+      ST_LIB_NAME := libROMS.a
+      SH_LIB_NAME := libROMS.so
 
 #--------------------------------------------------------------------------
 # Compiling flags for ROMS Applications.
@@ -66,6 +77,13 @@ ifdef USE_ROMS
            FFLAGS += -O3
            FFLAGS += -ffast-math
  endif
+ ifdef SHARED
+          LDFLAGS += -Wl,-rpath,$(SCRATCH_DIR)
+
+           FFLAGS += -fPIC
+       SH_LDFLAGS += -shared
+ endif
+
         MDEPFLAGS := --cpp --fext=f90 --file=- --objdir=$(SCRATCH_DIR)
 endif
 
@@ -141,7 +159,30 @@ endif
 # Library locations, can be overridden by environment variables.
 #--------------------------------------------------------------------------
 
-          LDFLAGS := $(FFLAGS)
+
+ifdef USE_PIO
+       PIO_INCDIR ?= /opt/cray/pe/pio/default/gnu/7.1/include
+       PIO_LIBDIR ?= /opt/cray/pe/pio/default/gnu/7.1/lib
+           FFLAGS += -I$(PIO_INCDIR)
+             LIBS += -L$(PIO_LIBDIR) -lpiof -lpioc
+
+   PNETCDF_INCDIR ?= /opt/cray/pe/pnetcdf/default/gnu/7.1/include
+   PNETCDF_LIBDIR ?= /opt/cray/pe/pnetcdf/default/gnu/7.1/lib
+           FFLAGS += -I$(PNETCDF_INCDIR)
+             LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
+endif
+
+ifdef USE_SCORPIO
+       PIO_INCDIR ?= /opt/cray/pe/scorpio/default/gnu/7.1/include
+       PIO_LIBDIR ?= /opt/cray/pe/scorpio/default/gnu/7.1/lib
+           FFLAGS += -I$(PIO_INCDIR)
+             LIBS += -L$(PIO_LIBDIR) -lpiof -lpioc
+
+   PNETCDF_INCDIR ?= /opt/cray/pe/pnetcdf/default/gnu/7.1/include
+   PNETCDF_LIBDIR ?= /opt/cray/pe/pnetcdf/default/gnu/7.1/lib
+           FFLAGS += -I$(PNETCDF_INCDIR)
+             LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
+endif
 
 ifdef USE_NETCDF4
         NF_CONFIG ?= nf-config
@@ -179,7 +220,8 @@ endif
 
 ifdef USE_OpenMP
          CPPFLAGS += -D_OPENMP
-           FFLAGS += -fopenmp
+           FFLAGS += -fopenmp -static-libgcc
+#            LIBS += -lgomp
 endif
 
 ifdef USE_MCT

@@ -7,9 +7,8 @@
 
 local_sub  := ROMS/Tangent/Biology
 
-local_lib  := libTLM_bio.a
 local_src  := $(wildcard $(local_sub)/*.F)
 
-$(eval $(call make-library,$(local_lib),$(local_src)))
+sources    += $(local_src)
 
 $(eval $(compile-rules))
