@@ -123,8 +123,8 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_quick_nf90"
@@ -555,7 +555,7 @@
 !
         IF (Qout(idpthR,ng)) THEN
           Vinfo( 1)=Vname(1,idpthR)
-          WRITE (Vinfo( 2),40) Vname(2,idpthR)
+          WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthR))
           Vinfo( 3)=Vname(3,idpthR)
           Vinfo(14)=Vname(4,idpthR)
           Vinfo(16)=Vname(1,idtime)
@@ -575,7 +575,7 @@
 !
         IF (Qout(idpthU,ng)) THEN
           Vinfo( 1)=Vname(1,idpthU)
-          WRITE (Vinfo( 2),40) Vname(2,idpthU)
+          WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthU))
           Vinfo( 3)=Vname(3,idpthU)
           Vinfo(14)=Vname(4,idpthU)
           Vinfo(16)=Vname(1,idtime)
@@ -595,7 +595,7 @@
 !
         IF (Qout(idpthV,ng)) THEN
           Vinfo( 1)=Vname(1,idpthV)
-          WRITE (Vinfo( 2),40) Vname(2,idpthV)
+          WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthV))
           Vinfo( 3)=Vname(3,idpthV)
           Vinfo(14)=Vname(4,idpthV)
           Vinfo(16)=Vname(1,idtime)
@@ -615,7 +615,7 @@
 !
         IF (Qout(idpthW,ng)) THEN
           Vinfo( 1)=Vname(1,idpthW)
-          WRITE (Vinfo( 2),40) Vname(2,idpthW)
+          WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthW))
           Vinfo( 3)=Vname(3,idpthW)
           Vinfo(14)=Vname(4,idpthW)
           Vinfo(16)=Vname(1,idtime)
@@ -3359,8 +3359,8 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_quick_pio"
@@ -3815,7 +3815,7 @@
 !
         IF (Qout(idpthR,ng)) THEN
           Vinfo( 1)=Vname(1,idpthR)
-          WRITE (Vinfo( 2),40) Vname(2,idpthR)
+          WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthR))
           Vinfo( 3)=Vname(3,idpthR)
           Vinfo(14)=Vname(4,idpthR)
           Vinfo(16)=Vname(1,idtime)
@@ -3839,7 +3839,7 @@
 !
         IF (Qout(idpthU,ng)) THEN
           Vinfo( 1)=Vname(1,idpthU)
-          WRITE (Vinfo( 2),40) Vname(2,idpthU)
+          WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthU))
           Vinfo( 3)=Vname(3,idpthU)
           Vinfo(14)=Vname(4,idpthU)
           Vinfo(16)=Vname(1,idtime)
@@ -3863,7 +3863,7 @@
 !
         IF (Qout(idpthV,ng)) THEN
           Vinfo( 1)=Vname(1,idpthV)
-          WRITE (Vinfo( 2),40) Vname(2,idpthV)
+          WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthV))
           Vinfo( 3)=Vname(3,idpthV)
           Vinfo(14)=Vname(4,idpthV)
           Vinfo(16)=Vname(1,idtime)
@@ -3887,7 +3887,7 @@
 !
         IF (Qout(idpthW,ng)) THEN
           Vinfo( 1)=Vname(1,idpthW)
-          WRITE (Vinfo( 2),40) Vname(2,idpthW)
+          WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthW))
           Vinfo( 3)=Vname(3,idpthW)
           Vinfo(14)=Vname(4,idpthW)
           Vinfo(16)=Vname(1,idtime)

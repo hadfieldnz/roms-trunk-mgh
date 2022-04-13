@@ -121,8 +121,8 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", tl_def_ini_nf90"
@@ -1090,8 +1090,8 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", tl_def_ini_pio"

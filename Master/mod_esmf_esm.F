@@ -4644,6 +4644,7 @@
 !
       USE mod_parallel,   ONLY : OCN_COMM_WORLD
       USE mod_iounits,    ONLY : SourceFile, ioerror
+      USE mod_ncparam,    ONLY : MaxLen
       USE mod_scalars,    ONLY : NoError, exit_flag
 !
       USE def_dim_mod,    ONLY : def_dim
@@ -4670,8 +4671,8 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len= 80) :: text
-      character (len=120) :: Vinfo(Natt)
+      character (len= 80)    :: text
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_FieldAtt"

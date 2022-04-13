@@ -126,12 +126,12 @@
       real(r8) :: Aval(6)
 !
 # ifdef ADJOINT
-      character (len=21) :: Prefix
+      character (len=21)     :: Prefix
 # else
-      character (len=13) :: Prefix
+      character (len=13)     :: Prefix
 # endif
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_avg_nf90"
@@ -3054,12 +3054,12 @@
       real(r8) :: Aval(6)
 !
 #  ifdef ADJOINT
-      character (len=21) :: Prefix
+      character (len=21)     :: Prefix
 #  else
-      character (len=13) :: Prefix
+      character (len=13)     :: Prefix
 #  endif
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_avg_pio"

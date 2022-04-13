@@ -1481,6 +1481,13 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+9)=' MB_Z0BL,'
 # endif
+# ifdef MB_Z0RIP
+!
+      IF (Master) WRITE (stdout,20) 'MB_Z0RIP',                         &
+     &   'Bedform roughness ripple height and length'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+10)=' MB_Z0RIP,'
+# endif
 #endif
 #if defined MCT_LIB && defined MODEL_COUPLING
 !

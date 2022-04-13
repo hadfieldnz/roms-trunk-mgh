@@ -111,8 +111,8 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_dai_nf90"
@@ -326,7 +326,7 @@
 !  Define time independent (unperturb) depths of RHO-points.
 !
         Vinfo( 1)=Vname(1,idpthR)
-        WRITE (Vinfo( 2),40) Vname(2,idpthR)
+        WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthR))
         Vinfo( 3)=Vname(3,idpthR)
         Vinfo(11)='downwards'
         Vinfo(22)='coordinates'
@@ -339,7 +339,7 @@
 !  Define time independent (unperturb) depths of U-points.
 !
         Vinfo( 1)=Vname(1,idpthU)
-        WRITE (Vinfo( 2),40) Vname(2,idpthU)
+        WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthU))
         Vinfo( 3)=Vname(3,idpthU)
         Vinfo(11)='downwards'
         Vinfo(22)='coordinates'
@@ -352,7 +352,7 @@
 !  Define time independent (unperturb) depths of V-points.
 !
         Vinfo( 1)=Vname(1,idpthV)
-        WRITE (Vinfo( 2),40) Vname(2,idpthV)
+        WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthV))
         Vinfo( 3)=Vname(3,idpthV)
         Vinfo(11)='downwards'
         Vinfo(22)='coordinates'
@@ -365,7 +365,7 @@
 !  Define time independent (unperturb) depths of W-points.
 !
         Vinfo( 1)=Vname(1,idpthW)
-        WRITE (Vinfo( 2),40) Vname(2,idpthW)
+        WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthW))
         Vinfo( 3)=Vname(3,idpthW)
         Vinfo(11)='downwards'
         Vinfo(22)='coordinates'
@@ -756,8 +756,8 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_dai_pio"
@@ -971,7 +971,7 @@
 !  Define time independent (unperturb) depths of RHO-points.
 !
         Vinfo( 1)=Vname(1,idpthR)
-        WRITE (Vinfo( 2),40) Vname(2,idpthR)
+        WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthR))
         Vinfo( 3)=Vname(3,idpthR)
         Vinfo(11)='downwards'
         Vinfo(22)='coordinates'
@@ -988,7 +988,7 @@
 !  Define time independent (unperturb) depths of U-points.
 !
         Vinfo( 1)=Vname(1,idpthU)
-        WRITE (Vinfo( 2),40) Vname(2,idpthU)
+        WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthU))
         Vinfo( 3)=Vname(3,idpthU)
         Vinfo(11)='downwards'
         Vinfo(22)='coordinates'
@@ -1005,7 +1005,7 @@
 !  Define time independent (unperturb) depths of V-points.
 !
         Vinfo( 1)=Vname(1,idpthV)
-        WRITE (Vinfo( 2),40) Vname(2,idpthV)
+        WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthV))
         Vinfo( 3)=Vname(3,idpthV)
         Vinfo(11)='downwards'
         Vinfo(22)='coordinates'
@@ -1022,7 +1022,7 @@
 !  Define time independent (unperturb) depths of W-points.
 !
         Vinfo( 1)=Vname(1,idpthW)
-        WRITE (Vinfo( 2),40) Vname(2,idpthW)
+        WRITE (Vinfo( 2),40) TRIM(Vname(2,idpthW))
         Vinfo( 3)=Vname(3,idpthW)
         Vinfo(11)='downwards'
         Vinfo(22)='coordinates'

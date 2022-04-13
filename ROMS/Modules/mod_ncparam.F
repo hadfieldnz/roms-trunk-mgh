@@ -516,6 +516,8 @@
 !
       logical, allocatable :: Linfo(:,:,:)
 !
+      integer, parameter :: MaxLen = 160    ! information string length
+
       integer, allocatable :: Iinfo(:,:,:)
 !
       real(dp), allocatable :: Finfo(:,:,:)
@@ -524,12 +526,12 @@
       real(dp), allocatable :: Tintrp(:,:,:)
       real(dp), allocatable :: Vtime(:,:,:)
 !
-      character (len=5  ) :: version = '4.1  '
-      character (len=40 ) :: varnam(MV)
-      character (len=44 ) :: date_str
-      character (len=46 ) :: Tname(0:NV)
-      character (len=120) :: history
-      character (len=120) :: Vname(6,0:NV)
+      character (len=5  )    :: version = '4.1  '
+      character (len=40 )    :: varnam(MV)
+      character (len=44 )    :: date_str
+      character (len=46 )    :: Tname(0:NV)
+      character (len=MaxLen) :: history
+      character (len=MaxLen) :: Vname(6,0:NV)
 
       character (len=256), allocatable :: Cinfo(:,:)
 
@@ -1109,8 +1111,8 @@
       real(dp), parameter :: spv = 0.0_dp
       real(dp) :: add_offset, scale
 !
-      character (len=120) :: string
-      character (len=120), dimension(8) :: Vinfo
+      character (len=MaxLen) :: string
+      character (len=MaxLen), dimension(8) :: Vinfo
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//"initialize_ncparam"

@@ -122,9 +122,9 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=60 ) :: Text
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=60 )    :: Text
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_norm_nf90"
@@ -1062,9 +1062,9 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=60 ) :: Text
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=60 )    :: Text
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_norm_pio"

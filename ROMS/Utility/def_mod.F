@@ -122,12 +122,12 @@
       real(dp) :: Tstart, Tfinal
       real(r8) :: Aval(6)
 !
-      character (len=22 )  :: str_date, end_date
-      character (len=40 )  :: Aname, AttName(2)
-      character (len=80 )  :: string
-      character (len=120)  :: Vinfo(Natt)
-      character (len=256)  :: ncname
-      character (len=2048) :: AttValue(2)
+      character (len=22 )    :: str_date, end_date
+      character (len=40 )    :: Aname, AttName(2)
+      character (len=80 )    :: string
+      character (len=256)    :: ncname
+      character (len=2048)   :: AttValue(2)
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_mod_nf90"
@@ -2453,12 +2453,12 @@
       real(dp) :: Tstart, Tfinal
       real(r8) :: Aval(6)
 !
-      character (len=22 )  :: str_date, end_date
-      character (len=40 )  :: Aname, AttName(2)
-      character (len=80 )  :: string
-      character (len=120)  :: Vinfo(Natt)
-      character (len=256)  :: ncname
-      character (len=2048) :: AttValue(2)
+      character (len=22 )    :: str_date, end_date
+      character (len=40 )    :: Aname, AttName(2)
+      character (len=80 )    :: string
+      character (len=256)    :: ncname
+      character (len=2048)   :: AttValue(2)
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_mod_pio"

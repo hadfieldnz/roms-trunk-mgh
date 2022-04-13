@@ -138,17 +138,17 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=11 ) :: bryatt, clmatt, frcatt
-      character (len=50 ) :: tiling
-      character (len=80 ) :: type
-      character (len=120) :: Vinfo(Natt)
+      character (len=11 )    :: bryatt, clmatt, frcatt
+      character (len=50 )    :: tiling
+      character (len=80 )    :: type
 #ifdef FOUR_DVAR
-      character (len=512) :: state_vector
+      character (len=512)    :: state_vector
 #endif
 #ifdef BIOLOGY
-      character (len=512) :: bio_file
+      character (len=512)    :: bio_file
 #endif
-      character (len=4096) :: string
+      character (len=4096)   :: string
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_info_nf90"
@@ -3559,17 +3559,17 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=11 ) :: bryatt, clmatt, frcatt
-      character (len=50 ) :: tiling
-      character (len=80 ) :: type
-      character (len=120) :: Vinfo(Natt)
+      character (len=11 )    :: bryatt, clmatt, frcatt
+      character (len=50 )    :: tiling
+      character (len=80 )    :: type
 # ifdef FOUR_DVAR
-      character (len=512) :: state_vector
+      character (len=512)    :: state_vector
 # endif
 # ifdef BIOLOGY
-      character (len=512) :: bio_file
+      character (len=512)    :: bio_file
 # endif
-      character (len=4096) :: string
+      character (len=4096)   :: string
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_info_pio"
