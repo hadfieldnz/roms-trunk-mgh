@@ -209,7 +209,7 @@
 !
       TYPE, PUBLIC :: yaml_Svec                      ! string structure
         character (len=:), allocatable :: value      ! scalar value
-        TYPE (yaml_Svec),  allocatable :: vector(:)  ! recursive vector
+        TYPE (yaml_Svec),  pointer :: vector(:)      ! recursive vector
       END TYPE yaml_Svec                             ! values
 !
 !  Derived-type structure, extended/inherited from parent "yaml_Svec",
