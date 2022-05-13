@@ -3556,12 +3556,37 @@
 # endif
 # if !defined BULK_FLUXES
 !
-!  Surface downwelling longwave radiation (W m-2).  Used for debugging
+!  Net longwave radiation flux(W m-2). Used for debugging and plotting
+!  purposes to check the fluxes used for the computation of the surface
+!  net heat flux in NUOPC cap file "esmf_atm.F".
+!
+            CASE ('lwr', 'LWrad')
+              romsScale=TracerFluxScale
+              ifield=idLrad
+              gtype=r2dvar
+              Tindex=3-Iinfo(8,ifield,ng)
+              DO j=JstrR,JendR
+                DO i=IstrR,IendR
+                  IF (ABS(ptr2d(i,j)).lt.TOL_dp) THEN
+                    Fval=scale*ptr2d(i,j)+add_offset
+                  ELSE
+                    Fval=0.0_dp
+                  END IF
+                  MyFmin(1)=MIN(MyFmin(1),Fval)
+                  MyFmax(1)=MAX(MyFmax(1),Fval)
+                  Fval=Fval*romsScale
+                  MyFmin(2)=MIN(MyFmin(2),Fval)
+                  MyFmax(2)=MAX(MyFmax(2),Fval)
+                  FORCES(ng)%lrflx(i,j)=Fval
+                END DO
+              END DO
+!
+!  Surface downward longwave radiation flux(W m-2). Used for debugging
 !  and plotting purposes to check the fluxes used for the computation
 !  of the surface net heat flux in NUOPC cap file "esmf_atm.F".
 !
             CASE ('dlwr', 'dLWrad', 'lwrad_down')
-              romsScale=scale
+              romsScale=TracerFluxScale
               ifield=idLdwn
               gtype=r2dvar
               Tindex=3-Iinfo(8,ifield,ng)
@@ -3577,10 +3602,11 @@
                   Fval=Fval*romsScale
                   MyFmin(2)=MIN(MyFmin(2),Fval)
                   MyFmax(2)=MAX(MyFmax(2),Fval)
+                  FORCES(ng)%lrflx(i,j)=Fval
                 END DO
               END DO
 !
-!  Surface latent heat flux (W m-2).  Used for plotting and debugging
+!  Surface latent heat flux (W m-2). Used for plotting and debugging
 !  purposes (DebugLevel=3) to check the components of the net surface
 !  net heat flux computation.
 !
@@ -3599,10 +3625,11 @@
                   Fval=Fval*romsScale
                   MyFmin(2)=MIN(MyFmin(2),Fval)
                   MyFmax(2)=MAX(MyFmax(2),Fval)
+                  FORCES(ng)%lhflx(i,j)=Fval
                 END DO
               END DO
 !
-!  Surface sensible heat flux (W m-2).  Used for plotting and debugging
+!  Surface sensible heat flux (W m-2). Used for plotting and debugging
 !  purposes (DebugLevel=3) to check the components of the net surface
 !  net heat flux computation.
 !
@@ -3621,6 +3648,7 @@
                   Fval=Fval*romsScale
                   MyFmin(2)=MIN(MyFmin(2),Fval)
                   MyFmax(2)=MAX(MyFmax(2),Fval)
+                  FORCES(ng)%shflx(i,j)=Fval
                 END DO
               END DO
 !

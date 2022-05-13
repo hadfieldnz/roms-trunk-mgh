@@ -1325,7 +1325,7 @@ metadata:
 
   - variable:       *SWRAD                                           # Input/Output
     standard_name:  net_downward_shortwave_flux_at_sea_water_surface
-    long_name:      solar shortwave radiation flux
+    long_name:      net solar shortwave radiation flux
     units:          watt meter-2                                     # Input:  [Watt/m2]
     field:          shortwave radiation                              # [Celsius m/s]
     time:           srf_time                                         # Output: [Watt/m2]
@@ -1336,7 +1336,7 @@ metadata:
 
   - variable:       lwrad_down                                       # Input
     standard_name:  surface_downward_longwave_flux
-    long_name:      downwelling longwave radiation flux
+    long_name:      downward longwave radiation flux
     units:          watt meter-2                                     # Input:  [Watt/m2]
     field:          downwelling longwave radiation                   # [Celsius m/s]
     time:           lrf_time

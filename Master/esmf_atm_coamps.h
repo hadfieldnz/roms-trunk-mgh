@@ -3935,7 +3935,7 @@
                 END DO
               END DO
 !
-!  Surface longwave radiation flux (W m-2; positive upward).
+!  Surface net longwave radiation flux (W m-2; positive upward).
 !
             CASE ('lwrd', 'LWrad')
               MyFmin(1)= MISSING_dp
@@ -3963,7 +3963,7 @@
                 END DO
               END DO
 !
-!  Surface shortwave radiation (W m-2; positive into ocean).
+!  Surface net shortwave radiation (W m-2; positive into ocean).
 !
             CASE ('swrd', 'SWrad')
               MyFmin(1)= MISSING_dp

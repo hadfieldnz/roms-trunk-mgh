@@ -1693,7 +1693,7 @@
       END IF
 #  endif
 
-#  ifdef BULK_FLUXES
+#  if defined BULK_FLUXES || defined FRC_COUPLING
 !
 !  Write out latent heat flux.
 !
@@ -1747,7 +1747,7 @@
         END IF
       END IF
 !
-!  Write out longwave radiation flux.
+!  Write out net longwave radiation flux.
 !
       IF (Aout(idLrad,ng)) THEN
 #   ifdef ADJOINT
@@ -1772,6 +1772,9 @@
           RETURN
         END IF
       END IF
+#  endif
+
+#  ifdef BULK_FLUXES
 #   ifdef EMINUSP
 !
 !  Write out evaportaion rate (kg/m2/s).
@@ -1821,7 +1824,7 @@
 #  endif
 #  ifdef SHORTWAVE
 !
-!  Write out shortwave radiation flux.
+!  Write out net shortwave radiation flux.
 !
       IF (Aout(idSrad,ng)) THEN
 #    ifdef ADJOINT
@@ -4036,7 +4039,7 @@
       END IF
 #   endif
 
-#   ifdef BULK_FLUXES
+#   if defined BULK_FLUXES || defined FRC_COUPLING
 !
 !  Write out latent heat flux.
 !
@@ -4102,7 +4105,7 @@
         END IF
       END IF
 !
-!  Write out longwave radiation flux.
+!  Write out net longwave radiation flux.
 !
       IF (Aout(idLrad,ng)) THEN
 #    ifdef ADJOINT
@@ -4133,7 +4136,9 @@
           RETURN
         END IF
       END IF
+#   endif
 
+#   ifdef BULK_FLUXES
 #    ifdef EMINUSP
 !
 !  Write out evaportaion rate (kg/m2/s).
@@ -4195,7 +4200,7 @@
 #   endif
 #   ifdef SHORTWAVE
 !
-!  Write out shortwave radiation flux.
+!  Write out net shortwave radiation flux.
 !
       IF (Aout(idSrad,ng)) THEN
 #     ifdef ADJOINT
