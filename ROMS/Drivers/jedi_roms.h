@@ -1,5 +1,6 @@
       MODULE roms_kernel_mod
 !
+!git $Id$
 !svn $Id$
 !================================================== Hernan G. Arango ===
 !  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
@@ -505,7 +506,7 @@
 !
       PHASE1 : IF (Phase.eq.1) THEN
 !
-        IF (Master.and.ANY(SetGridConfig)) THEN
+        IF (Master) THEN
           WRITE (stdout,10) 'NLM_INITIAL: Phase 1 Initialization: ',    &
      &                      'Configuring ROMS nonlinear kernel ...'
         END IF
@@ -928,7 +929,7 @@
 !
       PHASE1 : IF (Phase.eq.1) THEN
 !
-        IF (Master.and.ANY(SetGridConfig)) THEN
+        IF (Master) THEN
           WRITE (stdout,10) 'TLM_INITIAL: Phase 1 Initialization: ',    &
      &                      'Configuring ROMS tangent linear kernel ...'
         END IF
@@ -1299,7 +1300,7 @@
 !
       PHASE1 : IF (Phase.eq.1) THEN
 !
-        IF (Master.and.ANY(SetGridConfig)) THEN
+        IF (Master) THEN
           WRITE (stdout,10) 'ADM_INITIAL: Phase 1 Initialization: ',    &
      &                      'Configuring ROMS nonlinear kernel ...'
         END IF
