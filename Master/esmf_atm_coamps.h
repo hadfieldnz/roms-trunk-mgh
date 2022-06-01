@@ -4,7 +4,7 @@
 !
 !svn $Id$
 !=======================================================================
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license         Hernan G. Arango     !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -3935,7 +3935,7 @@
                 END DO
               END DO
 !
-!  Surface longwave radiation flux (W m-2; positive upward).
+!  Surface net longwave radiation flux (W m-2; positive upward).
 !
             CASE ('lwrd', 'LWrad')
               MyFmin(1)= MISSING_dp
@@ -3963,7 +3963,7 @@
                 END DO
               END DO
 !
-!  Surface shortwave radiation (W m-2; positive into ocean).
+!  Surface net shortwave radiation (W m-2; positive into ocean).
 !
             CASE ('swrd', 'SWrad')
               MyFmin(1)= MISSING_dp

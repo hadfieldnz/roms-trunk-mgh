@@ -6,7 +6,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -126,7 +126,7 @@
      &                               SearchVar = foundit)
             IF (foundit) THEN
               CALL pio_netcdf_get_fvar (ng, iNLM, TIDE(ng)%name,        &
-     &                                  Vname(1,idTref),
+     &                                  Vname(1,idTref),                &
      &                                  zero_phase_date)
             END IF
 # endif

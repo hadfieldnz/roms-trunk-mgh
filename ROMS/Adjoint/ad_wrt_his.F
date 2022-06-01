@@ -4,7 +4,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -170,7 +170,10 @@
       gfactor=1
 # endif
 !
-!  Determine time index to write.
+!  Determine time index to write. The "nout" index is updated to the
+!  version of "ad_main3d" that updates the "iic" counter at the bottom.
+!  Therefore, we need to change the conditional "iic(ng).ne.ntend(ng)"
+!  to "iic(ng).gt.ntend(ng)" to get identical solutions.
 !
 # ifdef SOLVE3D
       kout=kstp(ng)
@@ -181,13 +184,13 @@
       kfout=2
 # endif
 # ifdef SOLVE3D
-      IF (iic(ng).ne.ntend(ng)) THEN
+      IF (iic(ng).gt.ntend(ng)) THEN
         nout=nnew(ng)
-# if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+# ifdef AD_OUTPUT_STATE
         LwrtState3d(ng)=.FALSE.
 # endif
       ELSE
-# if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+# ifdef AD_OUTPUT_STATE
         LwrtState3d(ng)=.TRUE.
 # endif
         nout=nstp(ng)
@@ -615,27 +618,27 @@
 #  endif
           scale=1.0_dp
           gtype=gfactor*u3dvar
-#  if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+#  ifdef AD_OUTPUT_STATE
           IF (LwrtState3d(ng)) THEN
 #  endif
-          status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                    &
-     &                       ADM(ng)%Vid(idUvel),                       &
-     &                       ADM(ng)%Rindex, gtype,                     &
-     &                       LBi, UBi, LBj, UBj, 1, N(ng), scale,       &
+            status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                  &
+     &                         ADM(ng)%Vid(idUvel),                     &
+     &                         ADM(ng)%Rindex, gtype,                   &
+     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
 #    ifdef MASKING
-     &                       GRID(ng) % umask_full,                     &
+     &                         GRID(ng) % umask_full,                   &
 #    endif
-     &                       OCEAN(ng) % ad_u(:,:,:,nout))
-#  if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+     &                         OCEAN(ng) % ad_u(:,:,:,nout))
+#  ifdef AD_OUTPUT_STATE
           ELSE
-          status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                    &
-     &                       ADM(ng)%Vid(idUvel),                       &
-     &                       ADM(ng)%Rindex, gtype,                     &
-     &                       LBi, UBi, LBj, UBj, 1, N(ng), scale,       &
+            status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                  &
+     &                         ADM(ng)%Vid(idUvel),                     &
+     &                         ADM(ng)%Rindex, gtype,                   &
+     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
 #    ifdef MASKING
-     &                       GRID(ng) % umask_full,                     &
+     &                         GRID(ng) % umask_full,                   &
 #    endif
-     &                       OCEAN(ng) % ad_u_sol(:,:,:))
+     &                         OCEAN(ng) % ad_u_sol(:,:,:))
           ENDIF
 #  endif
           IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
@@ -703,27 +706,27 @@
 #  endif
           scale=1.0_dp
           gtype=gfactor*v3dvar
-#  if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+#  ifdef AD_OUTPUT_STATE
           IF (LwrtState3d(ng)) THEN
 #  endif
-          status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                    &
-     &                       ADM(ng)%Vid(idVvel),                       &
-     &                       ADM(ng)%Rindex, gtype,                     &
-     &                       LBi, UBi, LBj, UBj, 1, N(ng), scale,       &
+            status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                  &
+     &                         ADM(ng)%Vid(idVvel),                     &
+     &                         ADM(ng)%Rindex, gtype,                   &
+     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
 #   ifdef MASKING
-     &                       GRID(ng) % vmask_full,                     &
+     &                         GRID(ng) % vmask_full,                   &
 #   endif
-     &                       OCEAN(ng) % ad_v(:,:,:,nout))
-#  if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+     &                         OCEAN(ng) % ad_v(:,:,:,nout))
+#  ifdef AD_OUTPUT_STATE
           ELSE
-          status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                    &
-     &                       ADM(ng)%Vid(idVvel),                       &
-     &                       ADM(ng)%Rindex, gtype,                     &
-     &                       LBi, UBi, LBj, UBj, 1, N(ng), scale,       &
+            status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                  &
+     &                         ADM(ng)%Vid(idVvel),                     &
+     &                         ADM(ng)%Rindex, gtype,                   &
+     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
 #   ifdef MASKING
-     &                       GRID(ng) % vmask_full,                     &
+     &                         GRID(ng) % vmask_full,                   &
 #   endif
-     &                       OCEAN(ng) % ad_v_sol(:,:,:))
+     &                         OCEAN(ng) % ad_v_sol(:,:,:))
           END IF
 #  endif
           IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
@@ -793,27 +796,27 @@
 #  endif
             scale=1.0_dp
             gtype=gfactor*r3dvar
-#  if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+#  ifdef AD_OUTPUT_STATE
             IF (LwrtState3d(ng)) THEN
 #  endif
-            status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                  &
-     &                         ADM(ng)%Tid(itrc),                       &
-     &                         ADM(ng)%Rindex, gtype,                   &
-     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
+              status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                &
+     &                           ADM(ng)%Tid(itrc),                     &
+     &                           ADM(ng)%Rindex, gtype,                 &
+     &                           LBi, UBi, LBj, UBj, 1, N(ng), scale,   &
 #   ifdef MASKING
-     &                         GRID(ng) % rmask,                        &
+     &                           GRID(ng) % rmask,                      &
 #   endif
-     &                         OCEAN(ng) % ad_t(:,:,:,nout,itrc))
-#  if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+     &                           OCEAN(ng) % ad_t(:,:,:,nout,itrc))
+#  ifdef AD_OUTPUT_STATE
             ELSE
-            status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                  &
-     &                         ADM(ng)%Tid(itrc),                       &
-     &                         ADM(ng)%Rindex, gtype,                   &
-     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
+              status=nf_fwrite3d(ng, iADM, ADM(ng)%ncid,                &
+     &                           ADM(ng)%Tid(itrc),                     &
+     &                           ADM(ng)%Rindex, gtype,                 &
+     &                           LBi, UBi, LBj, UBj, 1, N(ng), scale,   &
 #   ifdef MASKING
-     &                         GRID(ng) % rmask,                        &
+     &                           GRID(ng) % rmask,                      &
 #   endif
-     &                         OCEAN(ng) % ad_t_sol(:,:,:,itrc))
+     &                           OCEAN(ng) % ad_t_sol(:,:,:,itrc))
             END IF
 #  endif
             IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
@@ -1184,7 +1187,10 @@
 !
       IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 !
-!  Determine time index to write.
+!  Determine time index to write. The "nout" index is updated to the
+!  version of "ad_main3d" that updates the "iic" counter at the bottom.
+!  Therefore, we need to change the conditional "iic(ng).ne.ntend(ng)"
+!  to "iic(ng).gt.ntend(ng)" to get identical solutions.
 !
 #  ifdef SOLVE3D
       kout=kstp(ng)
@@ -1195,13 +1201,13 @@
       kfout=2
 #  endif
 #  ifdef SOLVE3D
-      IF (iic(ng).ne.ntend(ng)) THEN
+      IF (iic(ng).gt.ntend(ng)) THEN
         nout=nnew(ng)
-#  if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+#  ifdef AD_OUTPUT_STATE
         LwrtState3d(ng)=.FALSE.
 #  endif
       ELSE
-#  if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+#  ifdef AD_OUTPUT_STATE
         LwrtState3d(ng)=.TRUE.
 #  endif
         nout=nstp(ng)
@@ -1686,27 +1692,27 @@
           END IF
         ELSE
 #   endif
-#   if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+#   ifdef AD_OUTPUT_STATE
           IF (LwrtState3d(ng)) THEN
 #   endif
-          status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,                 &
-     &                       ADM(ng)%pioVar(idUvel),                    &
-     &                       ADM(ng)%Rindex, ioDesc,                    &
-     &                       LBi, UBi, LBj, UBj, 1, N(ng), scale,       &
+            status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,               &
+     &                         ADM(ng)%pioVar(idUvel),                  &
+     &                         ADM(ng)%Rindex, ioDesc,                  &
+     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
 #     ifdef MASKING
-     &                       GRID(ng) % umask_full,                     &
+     &                         GRID(ng) % umask_full,                   &
 #     endif
-     &                       OCEAN(ng) % ad_u(:,:,:,nout))
-#   if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+     &                         OCEAN(ng) % ad_u(:,:,:,nout))
+#   ifdef AD_OUTPUT_STATE
           ELSE
-          status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,                 &
-     &                       ADM(ng)%pioVar(idUvel),                    &
-     &                       ADM(ng)%Rindex, ioDesc,                    &
-     &                       LBi, UBi, LBj, UBj, 1, N(ng), scale,       &
+            status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,               &
+     &                         ADM(ng)%pioVar(idUvel),                  &
+     &                         ADM(ng)%Rindex, ioDesc,                  &
+     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
 #     ifdef MASKING
-     &                       GRID(ng) % umask_full,                     &
+     &                         GRID(ng) % umask_full,                   &
 #     endif
-     &                       OCEAN(ng) % ad_u_sol(:,:,:))
+     &                         OCEAN(ng) % ad_u_sol(:,:,:))
           ENDIF
 #   endif
           IF (FoundError(status, PIO_noerr, __LINE__, MyFile)) THEN
@@ -1784,27 +1790,27 @@
           END IF
         ELSE
 #   endif
-#   if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+#   ifdef AD_OUTPUT_STATE
           IF (LwrtState3d(ng)) THEN
 #   endif
-          status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,                 &
-     &                       ADM(ng)%pioVar(idVvel),                    &
-     &                       ADM(ng)%Rindex, ioDesc,                    &
-     &                       LBi, UBi, LBj, UBj, 1, N(ng), scale,       &
+            status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,               &
+     &                         ADM(ng)%pioVar(idVvel),                  &
+     &                         ADM(ng)%Rindex, ioDesc,                  &
+     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
 #    ifdef MASKING
-     &                       GRID(ng) % vmask_full,                     &
+     &                         GRID(ng) % vmask_full,                   &
 #    endif
-     &                       OCEAN(ng) % ad_v(:,:,:,nout))
-#   if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+     &                         OCEAN(ng) % ad_v(:,:,:,nout))
+#   ifdef AD_OUTPUT_STATE
           ELSE
-          status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,                 &
-     &                       ADM(ng)%pioVar(idVvel),                    &
-     &                       ADM(ng)%Rindex, ioDesc,                    &
-     &                       LBi, UBi, LBj, UBj, 1, N(ng), scale,       &
+            status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,               &
+     &                         ADM(ng)%pioVar(idVvel),                  &
+     &                         ADM(ng)%Rindex, ioDesc,                  &
+     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
 #    ifdef MASKING
-     &                       GRID(ng) % vmask_full,                     &
+     &                         GRID(ng) % vmask_full,                   &
 #    endif
-     &                       OCEAN(ng) % ad_v_sol(:,:,:))
+     &                         OCEAN(ng) % ad_v_sol(:,:,:))
           END IF
 #   endif
           IF (FoundError(status, PIO_noerr, __LINE__, MyFile)) THEN
@@ -1885,27 +1891,27 @@
             END IF
           ELSE
 #   endif
-#   if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+#   ifdef AD_OUTPUT_STATE
             IF (LwrtState3d(ng)) THEN
 #   endif
-            status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,               &
-     &                         ADM(ng)%pioTrc(itrc),                    &
-     &                         ADM(ng)%Rindex, ioDesc,                  &
-     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
+              status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,             &
+     &                           ADM(ng)%pioTrc(itrc),                  &
+     &                           ADM(ng)%Rindex, ioDesc,                &
+     &                           LBi, UBi, LBj, UBj, 1, N(ng), scale,   &
 #    ifdef MASKING
-     &                         GRID(ng) % rmask,                        &
+     &                           GRID(ng) % rmask,                      &
 #    endif
-     &                         OCEAN(ng) % ad_t(:,:,:,nout,itrc))
-#   if defined STOCHASTIC_OPT && !defined STOCH_OPT_WHITE
+     &                           OCEAN(ng) % ad_t(:,:,:,nout,itrc))
+#   ifdef AD_OUTPUT_STATE
             ELSE
-            status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,               &
-     &                         ADM(ng)%pioTrc(itrc),                    &
-     &                         ADM(ng)%Rindex, ioDesc,                  &
-     &                         LBi, UBi, LBj, UBj, 1, N(ng), scale,     &
+              status=nf_fwrite3d(ng, iADM, ADM(ng)%pioFile,             &
+     &                           ADM(ng)%pioTrc(itrc),                  &
+     &                           ADM(ng)%Rindex, ioDesc,                &
+     &                           LBi, UBi, LBj, UBj, 1, N(ng), scale,   &
 #    ifdef MASKING
-     &                         GRID(ng) % rmask,                        &
+     &                           GRID(ng) % rmask,                      &
 #    endif
-     &                         OCEAN(ng) % ad_t_sol(:,:,:,itrc))
+     &                           OCEAN(ng) % ad_t_sol(:,:,:,itrc))
             END IF
 #   endif
             IF (FoundError(status, PIO_noerr, __LINE__, MyFile)) THEN

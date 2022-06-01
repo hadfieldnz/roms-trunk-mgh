@@ -3,7 +3,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -283,7 +283,7 @@
           END IF
 !
 !  If the associated time variable is different to that specified in
-!  "varinfo.dat" (Nrec still zero), reset associated time-variable name
+!  "varinfo.yaml" (Nrec still zero), reset associated time-variable name
 !  to that specified in the "time" attribute.  If founded, also check
 !  for a C-language null termination character in the time variable
 !  string, which is possible in NetCDF files generated from C-programs.
@@ -359,10 +359,9 @@
           Iinfo( 4,ifield,ng)=Nrec
           Iinfo( 5,ifield,ng)=Vsize(1)
           Iinfo( 6,ifield,ng)=Vsize(2)
+          Iinfo( 7,ifield,ng)=Vsize(3)
           Iinfo(10,ifield,ng)=S(ifile)%Nfiles
-          IF (ABS(job).eq.3) THEN
-            Iinfo(7,ifield,ng)=Vsize(3)
-          END IF
+          Iinfo(11,ifield,ng)=nvdim
           Finfo(1,ifield,ng)=Tmin
           Finfo(2,ifield,ng)=Tmax
           Finfo(3,ifield,ng)=Tstr
@@ -871,7 +870,7 @@
           END IF
 !
 !  If the associated time variable is different to that specified in
-!  "varinfo.dat" (Nrec still zero), reset associated time-variable name
+!  "varinfo.yaml" (Nrec still zero), reset associated time-variable name
 !  to that specified in the "time" attribute.  If founded, also check
 !  for a C-language null termination character in the time variable
 !  string, which is possible in NetCDF files generated from C-programs.
@@ -951,10 +950,9 @@
           Iinfo( 4,ifield,ng)=Nrec
           Iinfo( 5,ifield,ng)=Vsize(1)
           Iinfo( 6,ifield,ng)=Vsize(2)
+          Iinfo( 7,ifield,ng)=Vsize(3)
           Iinfo(10,ifield,ng)=S(ifile)%Nfiles
-          IF (ABS(job).eq.3) THEN
-            Iinfo(7,ifield,ng)=Vsize(3)
-          END IF
+          Iinfo(11,ifield,ng)=nvdim
           Finfo(1,ifield,ng)=Tmin
           Finfo(2,ifield,ng)=Tmax
           Finfo(3,ifield,ng)=Tstr

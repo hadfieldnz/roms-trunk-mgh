@@ -2,7 +2,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -105,7 +105,7 @@
 !  Initialize parallel control switches. These scalars switches are
 !  independent from standard input parameters.
 !
-        CALL ROMS_initialize_parallel
+        CALL initialize_parallel
 !
 !  Read in model tunable parameters from standard input. Allocate and
 !  initialize variables in several modules after the number of nested
@@ -156,6 +156,7 @@
         CALL ROMS_allocate_arrays (allocate_vars)
         CALL ROMS_initialize_arrays
 !$OMP END PARALLEL
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       END IF
 
@@ -208,7 +209,7 @@
       DO ng=1,Ngrids
         LreadFWD(ng)=.TRUE.
 !$OMP PARALLEL
-        CALL tl_initial (ng, .TRUE.)
+        CALL tl_initial (ng)
 !$OMP END PARALLEL
         IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
       END DO

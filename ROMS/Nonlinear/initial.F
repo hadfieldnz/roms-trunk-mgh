@@ -3,7 +3,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -171,7 +171,6 @@
 !$OMP END MASTER
 !$OMP BARRIER
         step_counter(ng)=0
-        CALL time_string (time(ng), time_code(ng))
       END DO
 !
 !  Initialize global diagnostics variables.
@@ -847,16 +846,14 @@
 # endif
 !
 !-----------------------------------------------------------------------
-!  Initialize time-stepping counter and clock.
+!  Initialize time-stepping counter and date/time string. Save NLM
+!  initial conditions time.
 !-----------------------------------------------------------------------
 !
-!  Subsract one time unit to avoid special case due to initialization
-!  in the main time-stepping routine.
-!
       DO ng=1,Ngrids
-        iic(ng)=ntstart(ng)-1
-        INItime(ng)=time(ng)         ! Save NLM initial conditions time
-        time(ng)=time(ng)-dt(ng)
+        INItime(ng)=time(ng)
+        iic(ng)=ntstart(ng)
+        CALL time_string (time(ng), time_code(ng))
       END DO
 
 #ifdef PROFILE

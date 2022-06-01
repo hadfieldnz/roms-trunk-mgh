@@ -7,7 +7,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -1665,6 +1665,8 @@
           RETURN
         END IF
       END IF
+
+#  ifdef SALINITY
 !
 !  Write out surface salt flux  (PSU m/s = kg salt/m2/s).
 !
@@ -1675,9 +1677,9 @@
      &                     AVG(ng)%Vid(idTsur(isalt)),                  &
      &                     AVG(ng)%Rindex, gtype,                       &
      &                     LBi, UBi, LBj, UBj, scale,                   &
-#  ifdef MASKING
+#   ifdef MASKING
      &                     GRID(ng) % rmask,                            &
-#  endif
+#   endif
      &                     AVERAGE(ng) % avgswf)
         IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
@@ -1689,7 +1691,9 @@
           RETURN
         END IF
       END IF
-#  ifdef BULK_FLUXES
+#  endif
+
+#  if defined BULK_FLUXES || defined FRC_COUPLING
 !
 !  Write out latent heat flux.
 !
@@ -1743,7 +1747,7 @@
         END IF
       END IF
 !
-!  Write out longwave radiation flux.
+!  Write out net longwave radiation flux.
 !
       IF (Aout(idLrad,ng)) THEN
 #   ifdef ADJOINT
@@ -1768,6 +1772,9 @@
           RETURN
         END IF
       END IF
+#  endif
+
+#  ifdef BULK_FLUXES
 #   ifdef EMINUSP
 !
 !  Write out evaportaion rate (kg/m2/s).
@@ -1817,7 +1824,7 @@
 #  endif
 #  ifdef SHORTWAVE
 !
-!  Write out shortwave radiation flux.
+!  Write out net shortwave radiation flux.
 !
       IF (Aout(idSrad,ng)) THEN
 #    ifdef ADJOINT
@@ -3999,6 +4006,8 @@
           RETURN
         END IF
       END IF
+
+#   ifdef SALINITY
 !
 !  Write out surface salt flux  (PSU m/s = kg salt/m2/s).
 !
@@ -4014,9 +4023,9 @@
      &                     AVG(ng)%Rindex,                              &
      &                     ioDesc,                                      &
      &                     LBi, UBi, LBj, UBj, scale,                   &
-#   ifdef MASKING
+#    ifdef MASKING
      &                     GRID(ng) % rmask,                            &
-#   endif
+#    endif
      &                     AVERAGE(ng) % avgswf)
         IF (FoundError(status, nf90_noerr, __LINE__, MyFile)) THEN
           IF (Master) THEN
@@ -4028,8 +4037,9 @@
           RETURN
         END IF
       END IF
+#   endif
 
-#   ifdef BULK_FLUXES
+#   if defined BULK_FLUXES || defined FRC_COUPLING
 !
 !  Write out latent heat flux.
 !
@@ -4095,7 +4105,7 @@
         END IF
       END IF
 !
-!  Write out longwave radiation flux.
+!  Write out net longwave radiation flux.
 !
       IF (Aout(idLrad,ng)) THEN
 #    ifdef ADJOINT
@@ -4126,7 +4136,9 @@
           RETURN
         END IF
       END IF
+#   endif
 
+#   ifdef BULK_FLUXES
 #    ifdef EMINUSP
 !
 !  Write out evaportaion rate (kg/m2/s).
@@ -4188,7 +4200,7 @@
 #   endif
 #   ifdef SHORTWAVE
 !
-!  Write out shortwave radiation flux.
+!  Write out net shortwave radiation flux.
 !
       IF (Aout(idSrad,ng)) THEN
 #     ifdef ADJOINT

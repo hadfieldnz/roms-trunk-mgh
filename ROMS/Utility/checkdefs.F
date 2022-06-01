@@ -3,7 +3,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -66,6 +66,13 @@
      &   'Writing out time-averaged adjoint model fields'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+13)=' AD_AVERAGES,'
+#endif
+#if defined AD_OUTPUT_STATE && defined ADJOINT
+!
+      IF (Master) WRITE (stdout,20) 'AD_OUTPUT_STATE',                  &
+     &   'Writing full adjoint state solution by adding time levels'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+17)=' AD_OUTPUT_STATE,'
 #endif
 #if defined ADD_FSOBC && defined SSH_TIDES
 !
@@ -1495,6 +1502,13 @@
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+9)=' MCT_LIB,'
 #endif
+#ifdef METADATA_REPORT
+!
+      IF (Master) WRITE (stdout,20) 'METADATA_REPORT',                  &
+     &   'Reports/dumps YAML metadata dictionary'
+      is=LEN_TRIM(Coptions)+1
+      Coptions(is:is+10)=' METADATA_REPORT,'
+#endif
 #if defined MINRES && defined FOUR_DVAR
 !
       IF (Master) WRITE (stdout,20) 'MINRES',                           &
@@ -1837,7 +1851,7 @@
 #if defined PIO_LIB && defined DISTRIBUTE
 !
       IF (Master) WRITE (stdout,20) 'PIO_LIB',                          &
-     &   'Using Parallel-IO from the SCORPIO library'
+     &   'Using Parallel-IO from the PIO library'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+9)=' PIO_LIB,'
 #endif
@@ -2132,7 +2146,7 @@
 #ifdef ROMS_STDOUT
 !
       IF (Master) WRITE (stdout,20) 'ROMS_STDOUT',                      &
-     &   'Red tide biological model'
+     &   "Writes ROMS standard output into 'log.roms' file"
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+13)=' ROMS_STDOUT,'
 #endif

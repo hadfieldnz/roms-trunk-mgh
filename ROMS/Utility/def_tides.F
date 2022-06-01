@@ -5,7 +5,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -110,8 +110,8 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_tides_nf90"
@@ -335,6 +335,7 @@
         Vinfo( 1)=Vname(1,idTper)
         Vinfo( 2)=Vname(2,idTper)
         Vinfo( 3)=Vname(3,idTper)
+        Vinfo(21)=Vname(6,idTper)
         status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idTper),     &
      &                 NF_TOUT, 1, (/tharm(1)/), Aval, Vinfo, ncname,   &
      &                 SetParAccess = .FALSE.)
@@ -345,6 +346,7 @@
         Vinfo( 1)=Vname(1,idCosW)
         Vinfo( 2)=Vname(2,idCosW)
         Vinfo( 3)=Vname(3,idCosW)
+        Vinfo(21)=Vname(6,idCosW)
         status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idCosW),     &
      &                 NF_TOUT, 1, (/tharm(1)/), Aval, Vinfo, ncname,   &
      &                 SetParAccess = .FALSE.)
@@ -355,6 +357,7 @@
         Vinfo( 1)=Vname(1,idSinW)
         Vinfo( 2)=Vname(2,idSinW)
         Vinfo( 3)=Vname(3,idSinW)
+        Vinfo(21)=Vname(6,idSinW)
         status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idSinW),     &
      &                 NF_TOUT, 1, (/tharm(1)/), Aval, Vinfo, ncname,   &
      &                 SetParAccess = .FALSE.)
@@ -365,6 +368,7 @@
         Vinfo( 1)=Vname(1,idCos2)
         Vinfo( 2)=Vname(2,idCos2)
         Vinfo( 3)=Vname(3,idCos2)
+        Vinfo(21)=Vname(6,idCos2)
         status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idCos2),     &
      &                 NF_TOUT, 2, tharm, Aval, Vinfo, ncname,          &
      &                 SetParAccess = .FALSE.)
@@ -375,6 +379,7 @@
         Vinfo( 1)=Vname(1,idSin2)
         Vinfo( 2)=Vname(2,idSin2)
         Vinfo( 3)=Vname(3,idSin2)
+        Vinfo(21)=Vname(6,idSin2)
         status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idSin2),     &
      &                 NF_TOUT, 2, tharm, Aval, Vinfo, ncname,          &
      &                 SetParAccess = .FALSE.)
@@ -385,6 +390,7 @@
         Vinfo( 1)=Vname(1,idSWCW)
         Vinfo( 2)=Vname(2,idSWCW)
         Vinfo( 3)=Vname(3,idSWCW)
+        Vinfo(21)=Vname(6,idSWCW)
         status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idSWCW),     &
      &                 NF_TOUT, 2, tharm, Aval, Vinfo, ncname,          &
      &                 SetParAccess = .FALSE.)
@@ -400,6 +406,7 @@
 # if defined WRITE_WATER && defined MASKING
           Vinfo(20)='mask_rho'
 # endif
+          Vinfo(21)=Vname(6,idFsuH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idFsuH,ng),r8)
           status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idFsuH),   &
@@ -414,6 +421,7 @@
           Vinfo( 2)=Vname(2,idu2dH)
           Vinfo( 3)=Vname(3,idu2dH)
           Vinfo(14)=Vname(4,idu2dH)
+          Vinfo(21)=Vname(6,idu2dH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idu2dH,ng),r8)
           status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idu2dH),   &
@@ -428,6 +436,7 @@
           Vinfo( 2)=Vname(2,idv2dH)
           Vinfo( 3)=Vname(3,idv2dH)
           Vinfo(14)=Vname(4,idv2dH)
+          Vinfo(21)=Vname(6,idv2dH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idv2dH,ng),r8)
           status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idv2dH),   &
@@ -444,6 +453,7 @@
           Vinfo( 2)=Vname(2,idu3dH)
           Vinfo( 3)=Vname(3,idu3dH)
           Vinfo(14)=Vname(4,idu3dH)
+          Vinfo(21)=Vname(6,idu3dH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idu3dH,ng),r8)
           status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idu3dH),   &
@@ -453,11 +463,12 @@
 !
 !  Define 3D v-momentum time-accumulated tide harmonics.
 !
-        IF (.not.got_var(idv3dH).and.Aout(idv3dD,ng)) THEN
+        IF (Aout(idv3dD,ng)) THEN
           Vinfo( 1)=Vname(1,idv3dH)
           Vinfo( 2)=Vname(2,idv3dH)
           Vinfo( 3)=Vname(3,idv3dH)
           Vinfo(14)=Vname(4,idv3dH)
+          Vinfo(21)=Vname(6,idv3dH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idv3dH,ng),r8)
           status=def_var(ng, iNLM, HAR(ng)%ncid, HAR(ng)%Vid(idv3dH),   &
@@ -473,6 +484,7 @@
             Vinfo( 2)=Vname(2,idTrcH(itrc))
             Vinfo( 3)=Vname(3,idTrcH(itrc))
             Vinfo(14)=Vname(4,idTrcH(itrc))
+            Vinfo(21)=Vname(6,idTrcH(itrc))
             Vinfo(22)='coordinates'
             Aval(5)=REAL(Iinfo(1,idv3dH,ng),r8)
             status=def_var(ng, iNLM, HAR(ng)%ncid,                      &
@@ -720,8 +732,8 @@
 !
       real(r8) :: Aval(6)
 !
-      character (len=120) :: Vinfo(Natt)
-      character (len=256) :: ncname
+      character (len=256)    :: ncname
+      character (len=MaxLen) :: Vinfo(Natt)
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", def_tides_pio"
@@ -951,6 +963,7 @@
         Vinfo( 1)=Vname(1,idTper)
         Vinfo( 2)=Vname(2,idTper)
         Vinfo( 3)=Vname(3,idTper)
+        Vinfo(21)=Vname(6,idTper)
         HAR(ng)%pioVar(idTper)%dkind=PIO_TOUT
         HAR(ng)%pioVar(idTper)%gtype=0
 !
@@ -965,6 +978,7 @@
         Vinfo( 1)=Vname(1,idCosW)
         Vinfo( 2)=Vname(2,idCosW)
         Vinfo( 3)=Vname(3,idCosW)
+        Vinfo(21)=Vname(6,idCosW)
         HAR(ng)%pioVar(idCosW)%dkind=PIO_TOUT
         HAR(ng)%pioVar(idCosW)%gtype=0
 !
@@ -979,6 +993,7 @@
         Vinfo( 1)=Vname(1,idSinW)
         Vinfo( 2)=Vname(2,idSinW)
         Vinfo( 3)=Vname(3,idSinW)
+        Vinfo(21)=Vname(6,idSinW)
         HAR(ng)%pioVar(idSinW)%dkind=PIO_TOUT
         HAR(ng)%pioVar(idSinW)%gtype=0
 !
@@ -993,6 +1008,7 @@
         Vinfo( 1)=Vname(1,idCos2)
         Vinfo( 2)=Vname(2,idCos2)
         Vinfo( 3)=Vname(3,idCos2)
+        Vinfo(21)=Vname(6,idCos2)
         HAR(ng)%pioVar(idCos2)%dkind=PIO_TOUT
         HAR(ng)%pioVar(idCos2)%gtype=0
 !
@@ -1007,6 +1023,7 @@
         Vinfo( 1)=Vname(1,idSin2)
         Vinfo( 2)=Vname(2,idSin2)
         Vinfo( 3)=Vname(3,idSin2)
+        Vinfo(21)=Vname(6,idSin2)
         HAR(ng)%pioVar(idSin2)%dkind=PIO_TOUT
         HAR(ng)%pioVar(idSin2)%gtype=0
 !
@@ -1021,6 +1038,7 @@
         Vinfo( 1)=Vname(1,idSWCW)
         Vinfo( 2)=Vname(2,idSWCW)
         Vinfo( 3)=Vname(3,idSWCW)
+        Vinfo(21)=Vname(6,idSWCW)
         HAR(ng)%pioVar(idSWCW)%dkind=PIO_TOUT
         HAR(ng)%pioVar(idSWCW)%gtype=0
 !
@@ -1040,6 +1058,7 @@
 #  if defined WRITE_WATER && defined MASKING
           Vinfo(20)='mask_rho'
 #  endif
+          Vinfo(21)=Vname(6,idFsuH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idFsuH,ng),r8)
           HAR(ng)%pioVar(idFsuH)%dkind=PIO_FRST
@@ -1058,6 +1077,7 @@
           Vinfo( 2)=Vname(2,idu2dH)
           Vinfo( 3)=Vname(3,idu2dH)
           Vinfo(14)=Vname(4,idu2dH)
+          Vinfo(21)=Vname(6,idu2dH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idu2dH,ng),r8)
           HAR(ng)%pioVar(idu2dH)%dkind=PIO_FRST
@@ -1076,6 +1096,7 @@
           Vinfo( 2)=Vname(2,idv2dH)
           Vinfo( 3)=Vname(3,idv2dH)
           Vinfo(14)=Vname(4,idv2dH)
+          Vinfo(21)=Vname(6,idv2dH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idv2dH,ng),r8)
           HAR(ng)%pioVar(idv2dH)%dkind=PIO_FRST
@@ -1096,6 +1117,7 @@
           Vinfo( 2)=Vname(2,idu3dH)
           Vinfo( 3)=Vname(3,idu3dH)
           Vinfo(14)=Vname(4,idu3dH)
+          Vinfo(21)=Vname(6,idu3dH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idu3dH,ng),r8)
           HAR(ng)%pioVar(idu3dH)%dkind=PIO_FRST
@@ -1109,11 +1131,12 @@
 !
 !  Define 3D v-momentum time-accumulated tide harmonics.
 !
-        IF (.not.got_var(idv3dH).and.Aout(idv3dD,ng)) THEN
+        IF (Aout(idv3dD,ng)) THEN
           Vinfo( 1)=Vname(1,idv3dH)
           Vinfo( 2)=Vname(2,idv3dH)
           Vinfo( 3)=Vname(3,idv3dH)
           Vinfo(14)=Vname(4,idv3dH)
+          Vinfo(21)=Vname(6,idv3dH)
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idv3dH,ng),r8)
           HAR(ng)%pioVar(idv3dH)%dkind=PIO_FRST
@@ -1133,6 +1156,7 @@
             Vinfo( 2)=Vname(2,idTrcH(itrc))
             Vinfo( 3)=Vname(3,idTrcH(itrc))
             Vinfo(14)=Vname(4,idTrcH(itrc))
+            Vinfo(21)=Vname(6,idTrcH(itrc))
             Vinfo(22)='coordinates'
             Aval(5)=REAL(Iinfo(1,idv3dH,ng),r8)
             HAR(ng)%pioVar(idTrcH)%dkind=PIO_FRST

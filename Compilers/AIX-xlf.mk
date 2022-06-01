@@ -1,6 +1,6 @@
 # svn $Id$
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# Copyright (c) 2002-2021 The ROMS/TOMS Group                           :::
+# Copyright (c) 2002-2022 The ROMS/TOMS Group                           :::
 #   Licensed under a MIT/X style license                                :::
 #   See License_ROMS.txt                                                :::
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -15,6 +15,8 @@
 # CPPFLAGS       Flags to the C-preprocessor
 # NF_CONFIG      NetCDF Fortran configuration script
 # LIBS           Required libraries during linking
+# ROMS_LIB       Directory and name for ROMS library
+# NF_CONFIG      NetCDF Fortran configuration script
 # NETCDF_INCDIR  NetCDF include directory
 # NETCDF_LIBDIR  NetCDF library directory
 # NETCDF_LIBS    NetCDF library switches
@@ -26,22 +28,115 @@
 # First the defaults
 #
                FC := xlf95_r
-           FFLAGS := -qsuffix=f=f90 -qmaxmem=-1 -qarch=pwr6 -qnoextname
+           FFLAGS := -qsuffix=f=f90 -qmaxmem=-1
+           FFLAGS += -qarch=pwr4 -qtune=pwr4
+       FIXEDFLAGS := -qfixed
+        FREEFLAGS := -qfree
               CPP := /usr/lib/cpp
          CPPFLAGS := -P
-             LIBS := $(SCRATCH_DIR)/libNLM.a         # cyclic dependencies
+           INCDIR := /usr/include /usr/local/bin
+            SLIBS := -L/usr/local/lib -L/usr/lib
+            ULIBS :=
+             LIBS :=
+         ROMS_LIB := -L$(SCRATCH_DIR) -lROMS
+       MOD_SUFFIX := mod
+               LD := $(FC)
           LDFLAGS :=
                AR := /usr/bin/ar
           ARFLAGS := -r
             MKDIR := mkdir -p
+               CP := cp -p -v
                RM := rm -f
            RANLIB := ranlib
              PERL := perl
              TEST := test
+      ST_LIB_NAME := libROMS.a
+      SH_LIB_NAME := libROMS.dylib
+
+#--------------------------------------------------------------------------
+# Compiling flags for ROMS Applications.
+#--------------------------------------------------------------------------
+
+ifdef USE_ROMS
+ ifdef USE_DEBUG
+           FFLAGS += -g
+#          FFLAGS += -O3
+           FFLAGS += -qfullpath
+           FFLAGS += -qflttrap=enable:zerodivide:invalid
+ else
+           FFLAGS += -O3
+           FFLAGS += -qstrict
+ endif
+ ifdef SHARED
+       SH_LDFLAGS += -bdynamic
+ endif
 
         MDEPFLAGS := --cpp --fext=f90 --file=- --objdir=$(SCRATCH_DIR)
+endif
 
-#
+#--------------------------------------------------------------------------
+# Compiling flags for CICE Applications.
+#--------------------------------------------------------------------------
+
+ifdef CICE_APPLICATION
+          CPPDEFS := -DLINUS $(MY_CPP_FLAGS)
+ ifdef USE_DEBUG
+           FFLAGS := -g
+ else
+           FFLAGS := -O2
+           FFLAGS += -qalign
+ endif
+endif
+
+#--------------------------------------------------------------------------
+# Coupled models libraries.
+#--------------------------------------------------------------------------
+
+ifdef USE_COAMPS
+             LIBS += $(COAMPS_LIB_DIR)/libashare.a
+             LIBS += $(COAMPS_LIB_DIR)/libcoamps.a
+             LIBS += $(COAMPS_LIB_DIR)/libaa.a
+             LIBS += $(COAMPS_LIB_DIR)/libam.a
+             LIBS += $(COAMPS_LIB_DIR)/libfishpak.a
+             LIBS += $(COAMPS_LIB_DIR)/libfnoc.a
+             LIBS += $(COAMPS_LIB_DIR)/libtracer.a
+#            LIBS += $(COAMPS_LIB_DIR)/libnl_beq.a
+endif
+
+ifdef CICE_APPLICATION
+            SLIBS += $(SLIBS) $(LIBS)
+endif
+
+ifdef USE_WRF
+ ifeq "$(strip $(WRF_LIB_DIR))" "$(WRF_SRC_DIR)"
+             LIBS += $(WRF_LIB_DIR)/main/module_wrf_top.o
+             LIBS += $(WRF_LIB_DIR)/main/libwrflib.a
+             LIBS += $(WRF_LIB_DIR)/external/fftpack/fftpack5/libfftpack.a
+             LIBS += $(WRF_LIB_DIR)/external/io_grib1/libio_grib1.a
+             LIBS += $(WRF_LIB_DIR)/external/io_grib_share/libio_grib_share.a
+             LIBS += $(WRF_LIB_DIR)/external/io_int/libwrfio_int.a
+             LIBS += $(WRF_LIB_DIR)/external/esmf_time_f90/libesmf_time.a
+             LIBS += $(WRF_LIB_DIR)/external/RSL_LITE/librsl_lite.a
+             LIBS += $(WRF_LIB_DIR)/frame/module_internal_header_util.o
+             LIBS += $(WRF_LIB_DIR)/frame/pack_utils.o
+             LIBS += $(WRF_LIB_DIR)/external/io_netcdf/libwrfio_nf.a
+     WRF_MOD_DIRS  = main frame phys share external/esmf_time_f90
+ else
+             LIBS += $(WRF_LIB_DIR)/module_wrf_top.o
+             LIBS += $(WRF_LIB_DIR)/libwrflib.a
+             LIBS += $(WRF_LIB_DIR)/libfftpack.a
+             LIBS += $(WRF_LIB_DIR)/libio_grib1.a
+             LIBS += $(WRF_LIB_DIR)/libio_grib_share.a
+             LIBS += $(WRF_LIB_DIR)/libwrfio_int.a
+             LIBS += $(WRF_LIB_DIR)/libesmf_time.a
+             LIBS += $(WRF_LIB_DIR)/librsl_lite.a
+             LIBS += $(WRF_LIB_DIR)/module_internal_header_util.o
+             LIBS += $(WRF_LIB_DIR)/pack_utils.o
+             LIBS += $(WRF_LIB_DIR)/libwrfio_nf.a
+ endif
+endif
+
+#--------------------------------------------------------------------------
 # Library locations, can be overridden by environment variables.
 #
 
@@ -51,6 +146,30 @@ ifdef USE_LARGE
           LDFLAGS += -bmaxdata:0x200000000
 else
           LDFLAGS += -bmaxdata:0x70000000
+endif
+
+ifdef USE_PIO
+       PIO_INCDIR ?= /usr/local/include
+       PIO_LIBDIR ?= /usr/local/lib
+           FFLAGS += -I$(PIO_INCDIR)
+             LIBS += -L$(PIO_LIBDIR) -lpiof -lpioc
+
+   PNETCDF_INCDIR ?= /usr/local/include
+   PNETCDF_LIBDIR ?= /usr/local/lib
+           FFLAGS += -I$(PNETCDF_INCDIR)
+             LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
+endif
+
+ifdef USE_SCORPIO
+       PIO_INCDIR ?= /usr/local/include
+       PIO_LIBDIR ?= /usr/local/lib
+           FFLAGS += -I$(PIO_INCDIR)
+             LIBS += -L$(PIO_LIBDIR) -lpiof -lpioc
+
+   PNETCDF_INCDIR ?= /usr/local/include
+   PNETCDF_LIBDIR ?= /usr/local/lib
+           FFLAGS += -I$(PNETCDF_INCDIR)
+             LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
 endif
 
 ifdef USE_NETCDF4
@@ -83,17 +202,12 @@ ifdef USE_OpenMP
            FFLAGS += -qsmp=omp
 endif
 
-ifdef USE_DEBUG
-           FFLAGS += -g -qfullpath -qflttrap=enable:zerodivide:invalid
-else
-           FFLAGS += -O3 -qstrict
-endif
-
 ifdef USE_MCT
        MCT_INCDIR ?= /usr/local/pkg/mct/include
        MCT_LIBDIR ?= /usr/local/pkg/mct/lib
            FFLAGS += -I$(MCT_INCDIR)
              LIBS += -L$(MCT_LIBDIR) -lmct -lmpeu
+           INCDIR += $(MCT_INCDIR) $(INCDIR)
 endif
 
 ifdef USE_ESMF
@@ -105,58 +219,79 @@ ifdef USE_ESMF
              LIBS += $(ESMF_F90LINKPATHS) $(ESMF_F90ESMFLINKLIBS)
 endif
 
-#
 # Use full path of compiler.
-#
+
                FC := $(shell which ${FC})
                LD := $(FC)
 
-#
-# Set free form format in source files to allow long string for
+#--------------------------------------------------------------------------
+# ROMS specific rules.
+#--------------------------------------------------------------------------
+
+# Set free form format in some ROMS source files to allow long string for
 # local directory and compilation flags inside the code.
-#
 
-$(SCRATCH_DIR)/mod_ncparam.o: FFLAGS += -qfree=f90
-$(SCRATCH_DIR)/mod_strings.o: FFLAGS += -qfree=f90
-$(SCRATCH_DIR)/analytical.o: FFLAGS += -qfree=f90
-$(SCRATCH_DIR)/biology.o: FFLAGS += -qfree=f90
-ifdef USE_ADJOINT
-$(SCRATCH_DIR)/ad_biology.o: FFLAGS += -qfree=f90
-endif
-ifdef USE_REPRESENTER
-$(SCRATCH_DIR)/rp_biology.o: FFLAGS += -qfree=f90
-endif
-ifdef USE_TANGENT
-$(SCRATCH_DIR)/tl_biology.o: FFLAGS += -qfree=f90
+ifdef USE_ROMS
+ $(SCRATCH_DIR)/mod_ncparam.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/mod_strings.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/analytical.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/biology.o: FFLAGS += $(FREEFLAGS)
+
+ ifdef USE_ADJOINT
+  $(SCRATCH_DIR)/ad_biology.o: FFLAGS += $(FREEFLAGS)
+ endif
+ ifdef USE_REPRESENTER
+  $(SCRATCH_DIR)/rp_biology.o: FFLAGS += $(FREEFLAGS)
+ endif
+ ifdef USE_TANGENT
+  $(SCRATCH_DIR)/tl_biology.o: FFLAGS += $(FREEFLAGS)
+ endif
 endif
 
-#
+#--------------------------------------------------------------------------
+# Model coupling specific rules.
+#--------------------------------------------------------------------------
+
+# Add COAMPS library directory to include path of ESMF coupling files.
+
+ifdef USE_COAMPS
+ $(SCRATCH_DIR)/esmf_atm.o: FFLAGS += -I$(COAMPS_LIB_DIR)
+ $(SCRATCH_DIR)/esmf_esm.o: FFLAGS += -I$(COAMPS_LIB_DIR)
+endif
+
+# Add WRF library directory to include path of ESMF coupling files.
+
+ifdef USE_WRF
+ ifeq "$(strip $(WRF_LIB_DIR))" "$(WRF_SRC_DIR)"
+  $(SCRATCH_DIR)/esmf_atm.o: FFLAGS += $(addprefix -I$(WRF_LIB_DIR)/,$(WRF_MOD_DIRS))
+ else
+  $(SCRATCH_DIR)/esmf_atm.o: FFLAGS += -I$(WRF_LIB_DIR)
+ endif
+endif
+
 # Supress free format in SWAN source files since there are comments
 # beyond column 72.
-#
 
 ifdef USE_SWAN
-
-$(SCRATCH_DIR)/ocpcre.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/ocpids.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/ocpmix.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swancom1.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swancom2.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swancom3.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swancom4.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swancom5.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swanmain.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swanout1.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swanout2.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swanparll.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swanpre1.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swanpre2.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swanser.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swmod1.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/swmod2.o: FFLAGS += -qfixed
-$(SCRATCH_DIR)/m_constants.o: FFLAGS += -qfree=f90
-$(SCRATCH_DIR)/m_fileio.o: FFLAGS += -qfree=f90
-$(SCRATCH_DIR)/mod_xnl4v5.o: FFLAGS += -qfree=f90
-$(SCRATCH_DIR)/serv_xnl4v5.o: FFLAGS += -qfree=f90
-
+ $(SCRATCH_DIR)/ocpcre.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/ocpids.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/ocpmix.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom1.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom2.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom3.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom4.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swancom5.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanmain.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanout1.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanout2.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanparll.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanpre1.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanpre2.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swanser.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swmod1.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/swmod2.o: FFLAGS += $(FIXEDFLAGS)
+ $(SCRATCH_DIR)/m_constants.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/m_fileio.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/mod_xnl4v5.o: FFLAGS += $(FREEFLAGS)
+ $(SCRATCH_DIR)/serv_xnl4v5.o: FFLAGS += $(FREEFLAGS)
 endif

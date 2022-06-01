@@ -3,7 +3,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -28,9 +28,6 @@
       USE mod_scalars
 #ifdef DISTRIBUTE
       USE mod_strings
-#endif
-#if defined PIO_LIB && defined DISTRIBUTE
-      USE set_pio_mod
 #endif
 !
       USE dateclock_mod,   ONLY : get_date
@@ -1266,16 +1263,6 @@
       CALL mp_bcasts (1, model, Coptions)
 #endif
       IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
-
-#if defined PIO_LIB && defined DISTRIBUTE
-!
-!-----------------------------------------------------------------------
-!  Set PIO single and double precision data decomposition for mapping
-!  between computational and I/O processes.
-!-----------------------------------------------------------------------
-!
-      CALL set_iodecomp
-#endif
 !
 !-----------------------------------------------------------------------
 !  Initialize random number sequence so we can get identical results

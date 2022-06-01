@@ -2,7 +2,7 @@
 !
 !svn $Id$
 !=================================================== Andrew M. Moore ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group      Hernan G. Arango   !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group      Hernan G. Arango   !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -216,10 +216,7 @@
 !
         CALL ROMS_allocate_arrays (allocate_vars)
         CALL ROMS_initialize_arrays
-!
-!  Allocate and initialize observation arrays.
-!
-        CALL initialize_fourdvar
+        IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
       END IF
 

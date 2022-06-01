@@ -5,7 +5,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -198,7 +198,7 @@
       character (len=40 ) :: code
       character (len=80 ) :: string
       character (len=256) :: io_errmsg
-      character (len=120), dimension(5) :: Vinfo
+      character (len=MaxLen), dimension(5) :: Vinfo
 !
 !-----------------------------------------------------------------------
 !  Read in coupling export/import variable information.

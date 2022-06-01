@@ -1,7 +1,7 @@
 /*
 ** svn $Id$
 *************************************************** Hernan G. Arango ***
-** Copyright (c) 2002-2021 The ROMS/TOMS Group                        **
+** Copyright (c) 2002-2022 The ROMS/TOMS Group                        **
 **   Licensed under a MIT/X style license                             **
 **   See License_ROMS.txt                                             **
 ************************************************************************
@@ -35,7 +35,7 @@
      &                          pioFile = pioFile)
       IF (FoundError(exit_flag, NoError, __LINE__, MyFile)) RETURN
 
-      IF (ncid.ne.DIA(ng)%ncid) THEN
+      IF (FileH.ne.DIA(ng)%pioFile%fh) THEN
         CALL pio_netcdf_put_fvar (ng, model, ncname, 'light',           &
      &                            ec_wave_ab, (/1/), (/NBands/),        &
      &                            pioFile = pioFile)

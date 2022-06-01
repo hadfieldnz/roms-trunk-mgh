@@ -3,7 +3,7 @@
 !
 !svn $Id$
 !================================================== Hernan G. Arango ===
-!  Copyright (c) 2002-2021 The ROMS/TOMS Group                         !
+!  Copyright (c) 2002-2022 The ROMS/TOMS Group                         !
 !    Licensed under a MIT/X style license                              !
 !    See License_ROMS.txt                                              !
 !=======================================================================
@@ -3169,8 +3169,15 @@
             CASE ('NUSER')
               Npts=load_i(Nval, Rval, 1, Ivalue)
               Nuser=Ivalue(1)
+              IF (Nuser.gt.0) THEN
+                IF (allocated(user)) deallocate (user)
+                allocate ( user(Nuser) )
+                user=spval
+              END IF
             CASE ('USER')
-              Npts=load_r(Nval, Rval, MAX(1,Nuser), user)
+              IF (Nuser.gt.0) THEN
+                Npts=load_r(Nval, Rval, Nuser, user)
+              END IF
             CASE ('INP_LIB')
               Npts=load_i(Nval, Rval, 1, Ivalue)
 #if defined PIO_LIB && defined DISTRIBUTE
@@ -3241,10 +3248,11 @@
             CASE ('PIO_STRIDE')
               Npts=load_i(Nval, Rval, 1, Ivalue)
               pio_stride=Ivalue(1)
-              IF (pio_stride.lt.1) THEN
+              IF ((pio_stride.lt.1).or.                                 &
+                  (pio_stride*pio_NumIOtasks.gt.numthreads)) THEN
                 IF (Master) WRITE (out,260) 'pio_stride = ',            &
      &                                      pio_stride,                 &
-     &                                      'Must be between 1 and 4'
+     &             'Must be greater than 0 and not exceed NtileI*NtileJ'
                 exit_flag=5
                 RETURN
               END IF
@@ -3672,23 +3680,6 @@
         END IF
       END IF
 #endif
-!
-!  Check if both point sources methodologies are activated.  Only one
-!  method is allowed for a particular grid.  Otherwise, the point
-!  source will be applies twice.
-!
-      DO ng=1,Ngrids
-        IF (LuvSrc(ng).and.LwSrc(ng)) THEN
-          IF (Master) THEN
-            WRITE (out,260) 'LuvSrc', LuvSrc(ng),                       &
-     &            'Because LwSrc  is also ON; only one method is legal.'
-            WRITE (out,260) 'LwSrc', LwSrc(ng),                         &
-     &            'Because LuvSrc is also ON; only one method is legal.'
-          END IF
-          exit_flag=4
-          RETURN
-        END IF
-      END DO
 
 #ifdef SP4DVAR
 !
