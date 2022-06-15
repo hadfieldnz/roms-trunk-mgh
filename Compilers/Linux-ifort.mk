@@ -241,6 +241,7 @@ endif
 ifdef USE_OpenMP
          CPPFLAGS += -D_OPENMP
            FFLAGS += -qopenmp -fpp
+             LIBS += -liomp5
 endif
 
 ifdef USE_MCT
@@ -258,6 +259,7 @@ ifdef USE_ESMF
                      include $(ESMF_MK_DIR)/esmf.mk
            FFLAGS += $(ESMF_F90COMPILEPATHS)
              LIBS += $(ESMF_F90LINKPATHS) $(ESMF_F90ESMFLINKLIBS)
+             LIBS += -liomp5
 endif
 
 # Use full path of compiler.

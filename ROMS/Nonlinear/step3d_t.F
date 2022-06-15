@@ -1143,7 +1143,7 @@
      &                 ((Jstr.le.Jsrc).and.(Jsrc.le.Jend+1)).and.       &
      &                 (j.eq.Jsrc)) THEN
                     DO k=1,N(ng)
-                      cff=dt(ng)*pm(i,j)*pn(i,j)
+                      cff=dt(ng)*pm(Isrc,Jsrc)*pn(Isrc,Jsrc)
                       IF (LtracerSrc(itrc,ng)) THEN
                         cff3=SOURCES(ng)%Tsrc(is,k,itrc)
                       ELSE
@@ -1339,7 +1339,7 @@
                 IF (((Istr.le.Isrc).and.(Isrc.le.Iend+1)).and.          &
      &              ((Jstr.le.Jsrc).and.(Jsrc.le.Jend+1))) THEN
                   DO k=1,N(ng)
-                    cff=dt(ng)*pm(i,j)*pn(i,j)
+                    cff=dt(ng)*pm(Isrc,Jsrc)*pn(Isrc,Jsrc)
 # ifdef SPLINES_VDIFF
                     cff=cff*oHz(Isrc,Jsrc,k)
 # endif
