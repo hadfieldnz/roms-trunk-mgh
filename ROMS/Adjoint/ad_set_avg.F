@@ -932,7 +932,7 @@
         END IF
 #  endif
 
-#  defined BULK_FLUXES && defined EMINUSP
+#  if defined BULK_FLUXES && defined EMINUSP
         IF (Aout(idevap,ng)) THEN
           DO j=JstrR,JendR
             DO i=IstrR,IendR

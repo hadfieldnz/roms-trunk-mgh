@@ -10,8 +10,9 @@
 # Script called from "build_wrf.csh" to check whether WRF source code   :::
 # has been patched for NetCDF4 library depencies, added configure       :::
 # options, creating clean .f90 files for debugging, rename modules to   :::
-# WRF_ESMF_*, and correct optional argment from defaultCalendar to      :::
-# defaultCalKind in ESMF_Initialize call.                               :::
+# WRF_ESMF_*, correct optional argment from defaultCalendar to          :::
+# defaultCalKind in ESMF_Initialize call, and remove limits on the      :::
+# moisture and latent heat flux.                                        :::
 #                                                                       :::
 # Usage:                                                                :::
 #                                                                       :::
@@ -83,3 +84,23 @@ if (! `grep -c "${CHECK_STRING}" ${WRF_ROOT_DIR}/external/esmf_time_f90/Test1.F9
 else
   echo "   No need to replace: ${WRF_ROOT_DIR}/external/esmf_time_f90/Test1.F90"
 endif
+
+# We are not sure why moisture flux and sensible heat flux are limited in
+# phys/module_sf_sfclay.F and phys/module_sf_sfclayrev.F, but it causes
+# incorrect results in our hurricane, upwelling and sea-breeze simiulations.
+#
+# The -i.orig option saves the original file before performing the replacement.
+
+if (! -f ${WRF_ROOT_DIR}/phys/module_sf_sfclay.F.orig) then
+  echo "Patching ${WRF_ROOT_DIR}/phys/module_sf_sfclay.F"
+  perl -i.orig -pe 's/^(\s*)\s([QH]FX\(I\)=AMAX1)/\!$1$2/' ${WRF_ROOT_DIR}/phys/module_sf_sfclay.F
+else
+  echo "   No need to patch:   ${WRF_ROOT_DIR}/phys/module_sf_sfclay.F"
+endif
+if (! -f ${WRF_ROOT_DIR}/phys/module_sf_sfclayrev.F.orig) then
+  echo "Patching ${WRF_ROOT_DIR}/phys/module_sf_sfclayrev.F"
+  perl -i.orig -pe 's/^(\s*)\s([QH]FX\(I\)=AMAX1)/\!$1$2/' ${WRF_ROOT_DIR}/phys/module_sf_sfclayrev.F
+else
+  echo "   No need to patch:   ${WRF_ROOT_DIR}/phys/module_sf_sfclayrev.F"
+endif
+

@@ -476,7 +476,6 @@
 
 #ifdef ADJOINT
 # if !defined AD_OUTPUT_STATE && \
-      defined JEDI            || \
      (defined STOCHASTIC_OPT  && !defined STOCH_OPT_WHITE)
 #  define AD_OUTPUT_STATE
 # endif

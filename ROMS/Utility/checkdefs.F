@@ -1819,7 +1819,7 @@
       Coptions(is:is+13)=' PARALLEL_IO,'
 #endif
 #if defined CARBON && defined BIO_FENNEL
-# if defined PC02AIR_DATA
+# if defined PCO2AIR_DATA
 !
       IF (Master) WRITE (stdout,20) 'PCO2AIR_DATA',                     &
      &   'CO2 gas exchange from Laurent et al. (2017)'

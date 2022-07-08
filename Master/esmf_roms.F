@@ -60,6 +60,10 @@
 !    ROMS_Export             Exports ROMS fields to other gridded      !
 !                            components.                               !
 !                                                                      !
+!    ROMS_Rotate             Rotates exchanged vector components from  !
+!                            computational grid to geographical EAST   !
+!                            and NORTH directions or vice versa.       !
+!                                                                      !
 !  ESMF:   Earth System Modeling Framework (Version 7 or higher)       !
 !            https://www.earthsystemcog.org/projects/esmf              !
 !                                                                      !
@@ -93,6 +97,7 @@
      &                             ROMS_run,                            &
      &                             ROMS_finalize
 !
+      USE bc_2d_mod,        ONLY : bc_r2d_tile
       USE dateclock_mod,    ONLY : ROMS_clock, caldate, time_string
       USE exchange_2d_mod,  ONLY : exchange_r2d_tile,                   &
      &                             exchange_u2d_tile,                   &
@@ -121,10 +126,10 @@
      &                             Rclock, dt, exit_flag, itemp, isalt, &
      &                             ntfirst, ntend, ntimes,              &
      &                             rho0, sec2day, tdays, time_ref
-      USE mod_stepping,     ONLY : nstp
+      USE mod_stepping,     ONLY : nstp, knew
       USE mp_exchange_mod,  ONLY : mp_exchange2d
       USE stdinp_mod,       ONLY : getpar_i
-      USE strings_mod,      ONLY : FoundError
+      USE strings_mod,      ONLY : FoundError, assign_string
 !
 !-----------------------------------------------------------------------
       implicit none
@@ -146,6 +151,18 @@
       PRIVATE :: ROMS_SetFinalize
       PRIVATE :: ROMS_Import
       PRIVATE :: ROMS_Export
+      PRIVATE :: ROMS_Rotate
+!
+      PRIVATE
+!
+!  Define parameters to rotate exchanged fields from geographical (EAST,
+!  NORTH) to computational directions or vice versa. The resulting
+!  vector components can be staggered (U- and V-points) or at cell
+!  center (RHO-points: full or interior grid).
+!
+      integer, parameter :: geo2grid     = 0        ! U- and V-points
+      integer, parameter :: geo2grid_rho = 0        ! RHO-points
+      integer, parameter :: grid2geo_rho = 1        ! export vector
 !
 !-----------------------------------------------------------------------
       CONTAINS
@@ -178,7 +195,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_SetServices',        &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -330,7 +347,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_SetServices',        &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
       RETURN
@@ -373,7 +390,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_SetInitializeP1',    &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -393,7 +410,7 @@
       END IF
 !
 !-----------------------------------------------------------------------
-!  Set ROMS import state and fields.
+!  Set ROMS Import State metadata.
 !-----------------------------------------------------------------------
 !
 !  Add ROMS import state(s). If nesting, each grid has its own import
@@ -456,7 +473,7 @@
       END IF IMPORTING
 !
 !-----------------------------------------------------------------------
-!  Set ROMS export state and fields.
+!  Set ROMS Export State metadata.
 !-----------------------------------------------------------------------
 !
 !  Add ROMS import state. If nesting, each grid has its own import
@@ -503,7 +520,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_SetInitializeP1',    &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
 # ifdef LONGWAVE_OUT
@@ -512,6 +529,7 @@
      &        'use instead ',a,/,24x,'or deactivate option: ',a,/)
 !
 # endif
+!
       RETURN
       END SUBROUTINE ROMS_SetInitializeP1
 !
@@ -560,7 +578,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_SetInitializeP2',    &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -723,7 +741,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_SetInitializeP2',    &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
   10  FORMAT (/,' ROMS_SetInitializeP2 - inconsitent configuration ',   &
@@ -765,7 +783,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_DataInit',           &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -804,7 +822,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_DataInit',           &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
       RETURN
@@ -859,7 +877,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_SetClock',           &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -1157,7 +1175,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_SetClock',           &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
  10   FORMAT (2x,a,2x,a/,2x,a,2x,a,/,2x,a,2x,a,/)
@@ -1198,7 +1216,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_SetRunClock',        &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -1256,7 +1274,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_SetRunClock',        &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
       RETURN
@@ -1307,7 +1325,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_CheckImport',        &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -1492,7 +1510,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_CheckImport',        &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
   10  FORMAT (1x,'ROMS_CheckImport - ',a,':',t32,'TimeStamp = ',a,      &
@@ -1546,7 +1564,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_SetGridArrays',      &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -1907,9 +1925,9 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_SetGridArrays',      &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
-      IF (DebugLevel.gt.0) CALL my_flush (cplout)
+      IF (DebugLevel.gt.0) FLUSH (cplout)
 !
   10  FORMAT (2x,'ROMS_DistGrid - Grid = ',i2.2,',',3x,'Mesh = ',a,',', &
      &        3x,'Partition = ',i0,' x ',i0)
@@ -1966,7 +1984,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_SetStates',          &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -2354,7 +2372,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_SetStates',          &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
  10   FORMAT (1x,'ROMS_SetStates - Removing field ''',a,''' from ',a,   &
@@ -2424,7 +2442,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_ModelAdvance',       &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -2568,13 +2586,13 @@
         IF (ESM_track) THEN
           WRITE (trac,'(a,a,i0)') '==> Entering ROMS_Run',              &
      &                            ', PET', PETrank
-          CALL my_flush (trac)
+          FLUSH (trac)
         END IF
         CALL ROMS_run (RunInterval)
         IF (ESM_track) THEN
           WRITE (trac,'(a,a,i0)') '==> Exiting  ROMS_Run',              &
      &                            ', PET', PETrank
-          CALL my_flush (trac)
+          FLUSH (trac)
         END IF
       END IF
 !
@@ -2608,7 +2626,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_ModelAdvance',       &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
   10  FORMAT (3x,'ModelAdvance - ESMF, Running ROMS:',t42,a,            &
@@ -2648,7 +2666,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_SetFinalize',        &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -2658,12 +2676,12 @@
 !-----------------------------------------------------------------------
 !
       CALL ROMS_finalize
-      CALL my_flush (stdout)              ! flush standard output buffer
+      FLUSH (stdout)                      ! flush standard output buffer
 !
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_SetFinalize',        &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
 !
       RETURN
@@ -2690,6 +2708,9 @@
 !
       logical :: LoadIt, isPresent
       logical :: got_stress(2), got_wind(2)
+# if defined WIND_MINUS_CURRENT && !defined BULK_FLUXES
+      logical :: got_RhoAir, got_Wstar, got_wind_sbl(2)
+# endif
 !
       integer :: Istr,  Iend,  Jstr,  Jend
       integer :: IstrR, IendR, JstrR, JendR
@@ -2703,6 +2724,8 @@
       integer, save :: record = 0
 !
 # endif
+      real (dp), parameter :: eps = 1.0E-10_dp
+!
       real (dp) :: TimeInDays, Time_Current, Tmin, Tmax, Tstr, Tend
 # ifdef TIME_INTERP
       real (dp) :: MyTimeInDays
@@ -2711,11 +2734,22 @@
       real (dp) :: MyTintrp(2), MyVtime(2)
 
       real (dp) :: MyFmax(2), MyFmin(2), Fmin(2), Fmax(2), Fval
-      real (dp) :: add_offset, romsScale, scale, cff1, cff2
+      real (dp) :: add_offset, romsScale, scale, cff1, cff2, cff3
       real (dp) :: FreshWaterScale, StressScale, TracerFluxScale
+# if defined WIND_MINUS_CURRENT && !defined BULK_FLUXES
+      real (dp) :: Urel, Vrel, Wmag, Wrel
+# endif
       real (dp) :: AttValues(14)
 !
       real (dp), pointer :: ptr2d(:,:) => NULL()
+!
+# if defined WIND_MINUS_CURRENT && !defined BULK_FLUXES
+      real (dp), allocatable  :: RhoAir(:,:),  Wstar(:,:)
+      real (dp), allocatable  :: Uwrk(:,:),    Vwrk(:,:)
+      real (dp), allocatable  :: Xwind(:,:),   Ywind(:,:)
+# endif
+      real (dp), allocatable  :: Ustress(:,:), Vstress(:,:)
+      real (dp), allocatable  :: Uwind(:,:),   Vwind(:,:)
 !
       character (len=22)      :: MyDate(2)
 # ifdef TIME_INTERP
@@ -2748,7 +2782,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_Import',             &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -2904,6 +2938,11 @@
 !
       got_stress(1:2)=.FALSE.
       got_wind(1:2)=.FALSE.
+# if defined WIND_MINUS_CURRENT && !defined BULK_FLUXES
+      got_RhoAir=.FALSE.
+      got_Wstar=.FALSE.
+      got_wind_sbl(1:2)=.FALSE.
+# endif
 !
 !  Loop over all import fields to process.
 !
@@ -3427,9 +3466,14 @@
 # endif
 # if defined BULK_FLUXES || defined ECOSIM
 !
-!  Surface eastward wind component (m s-1).
+!  Surface eastward wind component (m s-1). Imported wind component
+!  is at RHO-points.
 !
             CASE ('wndu', 'Uwind')
+              IF (.not.allocated(Uwind)) THEN
+                allocate ( Uwind(LBi:UBi,LBj:UBj) )
+                Uwind=MISSING_dp
+              END IF
               got_wind(1)=.TRUE.
               romsScale=scale
               ifield=idUair
@@ -3449,30 +3493,35 @@
 #  ifdef TIME_INTERP
                   FORCES(ng)%UwindG(i,j,Tindex)=Fval
 #  else
-                  FORCES(ng)%Uwind(i,j)=Fval
+                  Uwind(i,j)=Fval
 #  endif
                 END DO
               END DO
-#  if !(defined TIME_INTERP || defined CUVILINEAR)
+#  ifndef TIME_INTERP
               IF (localDE.eq.localDEcount-1) THEN
                 IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
                   CALL exchange_r2d_tile (ng, tile,                     &
      &                                    LBi, UBi, LBj, UBj,           &
-     &                                    FORCES(ng)%Uwind)
+     &                                    Uwind)
                 END IF
                 CALL mp_exchange2d (ng, tile, iNLM, 1,                  &
      &                              LBi, UBi, LBj, UBj,                 &
      &                              NghostPoints,                       &
      &                              EWperiodic(ng), NSperiodic(ng),     &
-     &                              FORCES(ng)%Uwind)
+     &                              Uwind)
               END IF
 #  endif
 # endif
 # if defined BULK_FLUXES || defined ECOSIM
 !
-!  Surface northward wind component (m s-1).
+!  Surface northward wind component (m s-1). Imported wind component
+!  is at RHO-points.
 !
             CASE ('wndv', 'Vwind')
+              IF (.not.allocated(Vwind)) THEN
+                allocate ( Vwind(LBi:UBi,LBj:UBj) )
+                Vwind=MISSING_dp
+              END IF
               got_wind(2)=.TRUE.
               romsScale=scale
               ifield=idVair
@@ -3492,22 +3541,22 @@
 #  ifdef TIME_INTERP
                   FORCES(ng)%VwindG(i,j,Tindex)=Fval
 #  else
-                  FORCES(ng)%Vwind(i,j)=Fval
+                  Vwind(i,j)=Fval
 #  endif
                 END DO
               END DO
-#  if !(defined TIME_INTERP || defined CUVILINEAR)
+#  ifndef TIME_INTERP
               IF (localDE.eq.localDEcount-1) THEN
                 IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
                   CALL exchange_r2d_tile (ng, tile,                     &
      &                                    LBi, UBi, LBj, UBj,           &
-     &                                    FORCES(ng)%Vwind)
+     &                                    Vwind)
                 END IF
                 CALL mp_exchange2d (ng, tile, iNLM, 1,                  &
      &                              LBi, UBi, LBj, UBj,                 &
      &                              NghostPoints,                       &
      &                              EWperiodic(ng), NSperiodic(ng),     &
-     &                              FORCES(ng)%Vwind)
+     &                              Vwind)
               END IF
 #  endif
 # endif
@@ -3738,9 +3787,14 @@
 # endif
 # if !defined BULK_FLUXES
 !
-!  Surface eastward wind stress component (m2 s-2).
+!  Surface eastward wind stress component (m2 s-2). Imported stress
+!  component is at RHO-points.
 !
             CASE ('taux', 'sustr')
+              IF (.not.allocated(Ustress)) THEN
+                allocate ( Ustress(LBi:UBi,LBj:UBj) )
+                Ustress=MISSING_dp
+              END IF
               got_stress(1)=.TRUE.
               romsScale=StressScale
               ifield=idUsms
@@ -3761,30 +3815,33 @@
 #  ifdef TIME_INTERP
                   FORCES(ng)%sustrG(i,j,Tindex)=Fval
 #  else
-                  FORCES(ng)%sustr(i,j)=Fval
+                  Ustress(i,j)=Fval
 #  endif
                 END DO
               END DO
-#  if !(defined TIME_INTERP || defined CUVILINEAR)
               IF (localDE.eq.localDEcount-1) THEN
                 IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
-                  CALL exchange_u2d_tile (ng, tile,                     &
+                  CALL exchange_r2d_tile (ng, tile,                     &
      &                                    LBi, UBi, LBj, UBj,           &
-     &                                    FORCES(ng)%sustr)
+     &                                    Ustress)
                 END IF
                 CALL mp_exchange2d (ng, tile, iNLM, 1,                  &
      &                              LBi, UBi, LBj, UBj,                 &
      &                              NghostPoints,                       &
      &                              EWperiodic(ng), NSperiodic(ng),     &
-     &                              FORCES(ng)%sustr)
+     &                              Ustress)
               END IF
-#  endif
 # endif
 # if !defined BULK_FLUXES
 !
-!  Surface northward wind stress component (m2 s-2).
+!  Surface northward wind stress component (m2 s-2). Imported stress
+!  component is at RHO-points.
 !
             CASE ('tauy', 'svstr')
+              IF (.not.allocated(Vstress)) THEN
+                allocate ( Vstress(LBi:UBi,LBj:UBj) )
+                Vstress=MISSING_dp
+              END IF
               got_stress(2)=.TRUE.
               romsScale=StressScale
               ifield=idVsms
@@ -3805,25 +3862,176 @@
 #  ifdef TIME_INTERP
                   FORCES(ng)%svstrG(i,j,Tindex)=Fval
 #  else
-                  FORCES(ng)%svstr(i,j)=Fval
+                  Vstress(i,j)=Fval
 #  endif
                 END DO
               END DO
-#  if !(defined TIME_INTERP || defined CUVILINEAR)
               IF (localDE.eq.localDEcount-1) THEN
                 IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
-                  CALL exchange_v2d_tile (ng, tile,                     &
+                  CALL exchange_r2d_tile (ng, tile,                     &
      &                                    LBi, UBi, LBj, UBj,           &
-     &                                    FORCES(ng)%svstr)
+     &                                    Vstress)
                 END IF
                 CALL mp_exchange2d (ng, tile, iNLM, 1,                  &
      &                              LBi, UBi, LBj, UBj,                 &
      &                              NghostPoints,                       &
      &                              EWperiodic(ng), NSperiodic(ng),     &
-     &                              FORCES(ng)%svstr)
+     &                              Vstress)
+              END IF
+# endif
+# if defined WIND_MINUS_CURRENT && !defined BULK_FLUXES
+!
+!  Surface air density (kg/m3).
+!
+            CASE ('RhoAir')
+              IF (.not.allocated(RhoAir)) THEN
+                allocate ( RhoAir(LBi:UBi,LBj:UBj) )
+                RhoAir=MISSING_dp
+              END IF
+              got_RhoAir=.TRUE.
+              romsScale=scale
+              DO j=JstrR,JendR
+                DO i=IstrR,IendR
+                  IF (ABS(ptr2d(i,j)).lt.TOL_dp) THEN
+                    Fval=scale*ptr2d(i,j)+add_offset
+                  ELSE
+                    Fval=0.0_dp
+                  END IF
+                  MyFmin(1)=MIN(MyFmin(1),Fval)
+                  MyFmax(1)=MAX(MyFmax(1),Fval)
+                  Fval=Fval*romsScale
+                  MyFmin(2)=MIN(MyFmin(2),Fval)
+                  MyFmax(2)=MAX(MyFmax(2),Fval)
+                  RhoAir(i,j)=Fval
+                END DO
+              END DO
+              IF (localDE.eq.localDEcount-1) THEN
+                IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+                  CALL exchange_r2d_tile (ng, tile,                     &
+     &                                    LBi, UBi, LBj, UBj,           &
+     &                                    RhoAir)
+                END IF
+                CALL mp_exchange2d (ng, tile, iNLM, 1,                  &
+     &                              LBi, UBi, LBj, UBj,                 &
+     &                              NghostPoints,                       &
+     &                              EWperiodic(ng), NSperiodic(ng),     &
+     &                              RhoAir)
+              END IF
+!
+!  Eastward wind component (m s-1) at surface boundary layer. Imported
+!  wind component is at RHO-points.
+!
+            CASE ('Uwind_sbl')
+              IF (.not.allocated(Xwind)) THEN
+                allocate ( Xwind(LBi:UBi,LBj:UBj) )
+                Xwind=MISSING_dp
+              END IF
+              got_wind_sbl(1)=.TRUE.
+              romsScale=scale
+              DO j=JstrR,JendR
+                DO i=IstrR,IendR
+                  IF (ABS(ptr2d(i,j)).lt.TOL_dp) THEN
+                    Fval=scale*ptr2d(i,j)+add_offset
+                  ELSE
+                    Fval=0.0_dp
+                  END IF
+                  MyFmin(1)=MIN(MyFmin(1),ptr2d(i,j))
+                  MyFmax(1)=MAX(MyFmax(1),ptr2d(i,j))
+                  Fval=Fval*romsScale
+                  MyFmin(2)=MIN(MyFmin(2),Fval)
+                  MyFmax(2)=MAX(MyFmax(2),Fval)
+                  Xwind(i,j)=Fval
+                END DO
+              END DO
+              IF (localDE.eq.localDEcount-1) THEN
+                IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+                  CALL exchange_r2d_tile (ng, tile,                     &
+     &                                    LBi, UBi, LBj, UBj,           &
+     &                                    Xwind)
+                END IF
+                CALL mp_exchange2d (ng, tile, iNLM, 1,                  &
+     &                              LBi, UBi, LBj, UBj,                 &
+     &                              NghostPoints,                       &
+     &                              EWperiodic(ng), NSperiodic(ng),     &
+     &                              Xwind)
+              END IF
+!
+!  Northward wind component (m s-1) at surface boundary layer. Imported
+!  wind component is at RHO-points.
+!
+            CASE ('Vwind_sbl')
+              IF (.not.allocated(Ywind)) THEN
+                allocate ( Ywind(LBi:UBi,LBj:UBj) )
+                Ywind=MISSING_dp
+              END IF
+              got_wind_sbl(2)=.TRUE.
+              romsScale=scale
+              DO j=JstrR,JendR
+                DO i=IstrR,IendR
+                  IF (ABS(ptr2d(i,j)).lt.TOL_dp) THEN
+                    Fval=scale*ptr2d(i,j)+add_offset
+                  ELSE
+                    Fval=0.0_dp
+                  END IF
+                  MyFmin(1)=MIN(MyFmin(1),ptr2d(i,j))
+                  MyFmax(1)=MAX(MyFmax(1),ptr2d(i,j))
+                  Fval=Fval*romsScale
+                  MyFmin(2)=MIN(MyFmin(2),Fval)
+                  MyFmax(2)=MAX(MyFmax(2),Fval)
+                  Ywind(i,j)=Fval
+                END DO
+              END DO
+              IF (localDE.eq.localDEcount-1) THEN
+                IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+                  CALL exchange_r2d_tile (ng, tile,                     &
+     &                                    LBi, UBi, LBj, UBj,           &
+     &                                    Ywind)
+                END IF
+                CALL mp_exchange2d (ng, tile, iNLM, 1,                  &
+     &                              LBi, UBi, LBj, UBj,                 &
+     &                              NghostPoints,                       &
+     &                              EWperiodic(ng), NSperiodic(ng),     &
+     &                              Ywind)
+              END IF
+!
+!  Surface frictional wind magnitude (m s-1) from similarity theory.
+!  Imported wind magnitude is at RHO-points.
+!
+            CASE ('Wstar')
+              IF (.not.allocated(Wstar)) THEN
+                allocate ( Wstar(LBi:UBi,LBj:UBj) )
+                Wstar=MISSING_dp
+              END IF
+              got_Wstar=.TRUE.
+              romsScale=scale
+              DO j=JstrR,JendR
+                DO i=IstrR,IendR
+                  IF (ABS(ptr2d(i,j)).lt.TOL_dp) THEN
+                    Fval=scale*ptr2d(i,j)+add_offset
+                  ELSE
+                    Fval=0.0_dp
+                  END IF
+                  MyFmin(1)=MIN(MyFmin(1),ptr2d(i,j))
+                  MyFmax(1)=MAX(MyFmax(1),ptr2d(i,j))
+                  Fval=Fval*romsScale
+                  MyFmin(2)=MIN(MyFmin(2),Fval)
+                  MyFmax(2)=MAX(MyFmax(2),Fval)
+                  Wstar(i,j)=Fval
+                END DO
+              END DO
+              IF (localDE.eq.localDEcount-1) THEN
+                IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+                  CALL exchange_r2d_tile (ng, tile,                     &
+     &                                    LBi, UBi, LBj, UBj,           &
+     &                                    Wstar)
+                END IF
+                CALL mp_exchange2d (ng, tile, iNLM, 1,                  &
+     &                              LBi, UBi, LBj, UBj,                 &
+     &                              NghostPoints,                       &
+     &                              EWperiodic(ng), NSperiodic(ng),     &
+     &                              Wstar)
               END IF
 #  endif
-# endif
 !
 !  Import field not found.
 !
@@ -3945,35 +4153,18 @@
 
       END DO FLD_LOOP
 
-# ifdef CURVILINEAR
-#  if defined BULK_FLUXES || defined ECOSIM
+# if defined BULK_FLUXES || defined ECOSIM
 !
 !  If applicable, rotate wind components to ROMS curvilinear grid.
 !
-      DO j=JstrR,JendR
-        DO i=IstrR,IendR
-          cff1=FORCES(ng)%Uwind(i,j)*GRID(ng)%CosAngler(i,j)+           &
-     &         FORCES(ng)%Vwind(i,j)*GRID(ng)%SinAngler(i,j)
-          cff2=FORCES(ng)%Vwind(i,j)*GRID(ng)%CosAngler(i,j)-           &
-     &         FORCES(ng)%Uwind(i,j)*GRID(ng)%SinAngler(i,j)
-          FORCES(ng)%Uwind(i,j)=cff1
-          FORCES(ng)%Vwind(i,j)=cff2
-        END DO
-      END DO
-      IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
-        CALL exchange_r2d_tile (ng, tile,                               &
-     &                          LBi, UBi, LBj, UBj,                     &
-     &                          FORCES(ng)%UWind)
-        CALL exchange_r2d_tile (ng, tile,                               &
-     &                          LBi, UBi, LBj, UBj,                     &
-     &                          FORCES(ng)%VWind)
-      END IF
-      CALL mp_exchange2d (ng, tile, iNLM, 2,                            &
+      IF (got_wind(1).and.got_wind(2)) THEN
+        CALL ROMS_Rotate (ng, tile, geo2grid_rho,                       &
      &                    LBi, UBi, LBj, UBj,                           &
-     &                    NghostPoints,                                 &
-     &                    EWperiodic(ng), NSperiodic(ng),               &
-     &                    FORCES(ng)%UWind,                             &
-     &                    FORCES(ng)%VWind)
+     &                    Uwind, Vwind,                                 &
+     &                    FORCES(ng)%Uwind, FORCES(ng)%Vwind)
+        deallocate (Uwind)
+        deallocate (Vwind)
+      END IF
 #  endif
 #  if !defined BULK_FLUXES
 !
@@ -3981,32 +4172,128 @@
 !  grid.
 !
       IF (got_stress(1).and.got_stress(2)) THEN
-        DO j=JstrR,JendR
-          DO i=IstrR,IendR
-            cff1=FORCES(ng)%sustr(i,j)*GRID(ng)%CosAngler(i,j)+         &
-     &           FORCES(ng)%svstr(i,j)*GRID(ng)%SinAngler(i,j)
-            cff2=FORCES(ng)%svstr(i,j)*GRID(ng)%CosAngler(i,j)-         &
-     &           FORCES(ng)%sustr(i,j)*GRID(ng)%SinAngler(i,j)
-            FORCES(ng)%sustr(i,j)=cff1
-            FORCES(ng)%svstr(i,j)=cff2
+        CALL ROMS_Rotate (ng, tile, geo2grid,                            &
+     &                    LBi, UBi, LBj, UBj,                            &
+     &                    Ustress, Vstress,                              &
+     &                    FORCES(ng)%sustr, FORCES(ng)%svstr)
+        deallocate (Ustress)
+        deallocate (Vstress)
+      END IF
+# endif
+# if defined WIND_MINUS_CURRENT && !defined BULK_FLUXES
+!
+!  If applicable, compute surface wind stress components. The surface
+!  ocean currents are substracted to the wind.
+!
+!  The wind stress component are computed as:
+!
+!          taux/rho0 = RhoAir * Cd * Wrel * Urel
+!          tauy/rho0 = RhoAir * Cd * Wrel * Vrel
+!  where
+!          Cd = Wstr**2 / Wmag**2
+!
+!  so the magnitude is diminished by the weaker relative (wind minus
+!  current) components. The coupling is incompleate becasue there is
+!  not feeback to the atmosphere (wind is not modified by currents).
+!
+      MyFmin= MISSING_dp
+      MyFmax=-MISSING_dp
+!
+      IF (got_RhoAir.and.got_Wstar.and.                                 &
+     &    got_wind_sbl(1).and.got_wind_sbl(2)) THEN
+        IF (.not.allocated(Uwrk)) THEN
+          allocate ( Uwrk(LBi:UBi,LBj:UBj) )
+          Uwrk=MISSING_dp
+        END IF
+        IF (.not.allocated(Vwrk)) THEN
+          allocate ( Vwrk(LBi:UBi,LBj:UBj) )
+          Vwrk=MISSING_dp
+        END IF
+!
+        CALL ROMS_Rotate (ng, tile, grid2geo_rho,                       &
+     &                    LBi, UBi, LBj, UBj,                           &
+     &                    OCEAN(ng)%u(:,:,N(ng),nstp(ng)),              &
+     &                    OCEAN(ng)%v(:,:,N(ng),nstp(ng)),              &
+     &                    Uwrk, Vwrk)         ! rotated currents to E-N
+!
+        DO j=Jstr-1,Jend+1
+          DO i=Istr-1,Iend+1
+            romsScale=StressScale                   ! m3/kg
+            Urel=Xwind(i,j)-Uwrk(i,j)               ! relative wind:
+            Vrel=Ywind(i,j)-Vwrk(i,j)               ! wind minus current
+            Wmag=SQRT(Xwind(i,j)*Xwind(i,j)+                            &
+     &                Ywind(i,j)*Ywind(i,j))        ! ATM wind magnitude
+            Wrel=SQRT(Urel*Urel+Vrel*Vrel)          ! relative magmitude
+            cff1=romsScale*RhoAir(i,j)
+            cff2=Wstar(i,j)*Wstar(i,j)/(Wmag*Wmag+eps)
+            cff3=cff1*cff2*Wrel                     ! m/s
+            Uwrk(i,j)=cff3*Urel                     ! m2/s2
+            Vwrk(i,j)=cff3*Vrel                     ! m2/s2
+            MyFmin(1)=MIN(MyFmin(1),Uwrk(i,j))
+            MyFmin(2)=MIN(MyFmin(2),Vwrk(i,j))
+            MyFmax(1)=MAX(MyFmax(1),Uwrk(i,j))
+            MyFmax(2)=MAX(MyFmax(2),Vwrk(i,j))
           END DO
         END DO
-        IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
-          CALL exchange_u2d_tile (ng, tile,                             &
-     &                            LBi, UBi, LBj, UBj,                   &
-     &                            FORCES(ng)%sustr)
-          CALL exchange_v2d_tile (ng, tile,                             &
-     &                            LBi, UBi, LBj, UBj,                   &
-     &                            FORCES(ng)%svstr)
+        deallocate (RhoAir)
+        deallocate (Wstar)
+        deallocate (Xwind)
+        deallocate (Ywind)
+!                                            ! rotate stress to grid
+        CALL ROMS_Rotate (ng, tile, geo2grid,                           &
+     &                    LBi, UBi, LBj, UBj,                           &
+     &                    Uwrk, Vwrk,                                   &
+     &                    FORCES(ng)%sustr,                             &
+     &                    FORCES(ng)%svstr)
+        deallocate (Uwrk)
+        deallocate (Vwrk)
+!
+!  Report computed wind stress minimum and maximum values.
+!
+        IF (DebugLevel.ge.0) THEN
+          CALL ESMF_VMAllReduce (vm,                                    &
+     &                           sendData=MyFmin,                       &
+     &                           recvData=Fmin,                         &
+     &                           count=2,                               &
+     &                           reduceflag=ESMF_REDUCE_MIN,            &
+     &                           rc=rc)
+          IF (ESMF_LogFoundError(rcToCheck=rc,                          &
+     &                           msg=ESMF_LOGERR_PASSTHRU,              &
+     &                           line=__LINE__,                         &
+     &                           file=MyFile)) THEN
+            RETURN
+          END IF
+!
+          CALL ESMF_VMAllReduce (vm,                                    &
+     &                           sendData=MyFmax,                       &
+     &                           recvData=Fmax,                         &
+     &                           count=2,                               &
+     &                           reduceflag=ESMF_REDUCE_MAX,            &
+     &                           rc=rc)
+          IF (ESMF_LogFoundError(rcToCheck=rc,                          &
+     &                           msg=ESMF_LOGERR_PASSTHRU,              &
+     &                           line=__LINE__,                         &
+     &                           file=MyFile)) THEN
+            RETURN
+          END IF
+!
+          IF (localPET.eq.0) THEN
+            WRITE (cplout,60) 'sustr',                                  &
+     &                        TRIM(Time_CurrentString), ng,             &
+     &                        Fmin(1)/StressScale,                      &
+     &                        Fmax(1)/StressScale
+            WRITE (cplout,40) Fmin(1), Fmax(1),                         &
+     &                        ' romsScale = ', StressScale
+!
+            WRITE (cplout,60) 'svstr',                                  &
+     &                        TRIM(Time_CurrentString), ng,             &
+     &                        Fmin(2)/StressScale,                      &
+     &                        Fmax(2)/StressScale
+            WRITE (cplout,40) Fmin(2), Fmax(2),                         &
+     &                        ' romsScale = ', StressScale
+          END IF
         END IF
-        CALL mp_exchange2d (ng, tile, iNLM, 2,                          &
-     &                      LBi, UBi, LBj, UBj,                         &
-     &                      NghostPoints,                               &
-     &                      EWperiodic(ng), NSperiodic(ng),             &
-     &                      FORCES(ng)%sustr,                           &
-     &                      FORCES(ng)%svstr)
       END IF
-#  endif
 # endif
 !
 !  Deallocate local arrays.
@@ -4022,9 +4309,9 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_Import',             &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
-      IF (DebugLevel.gt.0) CALL my_flush (cplout)
+      IF (DebugLevel.gt.0) FLUSH (cplout)
 !
   10  FORMAT (/,3x,' ROMS_Import - unable to find option to import: ',  &
      &        a,t72,a,/,18x,'check ''Import(roms)'' in input script: ', &
@@ -4044,7 +4331,11 @@
      &        1x,a,1p,e15.8,0p,')')
   50  FORMAT ('roms_',i2.2,'_import_',a,'_',i4.4,2('-',i2.2),'_',       &
      &        i2.2,2('.',i2.2),'.nc')
-
+  60  FORMAT (3x,' ROMS_Import - ESMF: computing field ''',a,'''',      &
+     &        t72,a,2x,'Grid ',i2.2,                                    &
+     &        /,19x,'(InpMin = ', 1p,e15.8,0p,' InpMax = ',1p,e15.8,0p, &
+     &        ')')
+!
       RETURN
       END SUBROUTINE ROMS_Import
 !
@@ -4065,8 +4356,12 @@
 !
 !  Local variable declarations.
 !
+      logical :: get_barotropic
+      logical :: get_SurfaceCurrent
+!
       integer :: Istr,  Iend,  Jstr,  Jend
       integer :: IstrR, IendR, JstrR, JendR
+      integer :: LBi, UBi, LBj, UBj
       integer :: ExportCount
       integer :: localDE, localDEcount, localPET, tile
       integer :: year, month, day, hour, minutes, seconds, sN, SD
@@ -4076,7 +4371,12 @@
 !
       real (dp), pointer :: ptr2d(:,:) => NULL()
 !
+      real (dp), allocatable  :: Ubar(:,:), Vbar(:,:)
+      real (dp), allocatable  :: Usur(:,:), Vsur(:,:)
+!
       character (len=22)      :: Time_CurrentString
+
+      character (len=:), allocatable :: fldname
 
       character (len=*), parameter :: MyFile =                          &
      &  __FILE__//", ROMS_Export"
@@ -4095,7 +4395,7 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '==> Entering ROMS_Export',             &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
       rc=ESMF_SUCCESS
 !
@@ -4132,7 +4432,12 @@
 !  Set horizontal tile bounds.
 !
       tile=localPET
-
+!
+      LBi=BOUNDS(ng)%LBi(tile)       ! lower bound I-direction
+      UBi=BOUNDS(ng)%UBi(tile)       ! upper bound I-direction
+      LBj=BOUNDS(ng)%LBj(tile)       ! lower bound J-direction
+      UBj=BOUNDS(ng)%UBj(tile)       ! upper bound J-direction
+!
       IstrR=BOUNDS(ng)%IstrR(tile)   ! Full range I-starting (RHO)
       IendR=BOUNDS(ng)%IendR(tile)   ! Full range I-ending   (RHO)
       JstrR=BOUNDS(ng)%JstrR(tile)   ! Full range J-starting (RHO)
@@ -4208,6 +4513,9 @@
 !-----------------------------------------------------------------------
 !  Load export fields.
 !-----------------------------------------------------------------------
+!
+      get_barotropic=.TRUE.
+      get_SurfaceCurrent=.TRUE.
 !
       FLD_LOOP : DO ifld=1,ExportCount
 !
@@ -4294,6 +4602,140 @@
                   MyFmax(1)=MAX(MyFmax(1),Fval)
 #  endif
 # endif
+                  ptr2d(i,j)=Fval
+                END DO
+              END DO
+!
+!  Sea surface height (m).
+!
+            CASE ('ssh', 'SSH')
+              MyFmin(1)=1.0_dp
+              MyFmax(1)=0.0_dp
+              DO j=JstrR,JendR
+                DO i=IstrR,IendR
+                  Fval=OCEAN(ng)%zeta(i,j,knew(ng))
+# ifdef MASKING
+                  IF (GRID(ng)%rmask(i,j).gt.0.0_r8) THEN
+                    MyFmin(1)=MIN(MyFmin(1),Fval)
+                    MyFmax(1)=MAX(MyFmax(1),Fval)
+                  END IF
+# else
+                  MyFmin(1)=MIN(MyFmin(1),Fval)
+                  MyFmax(1)=MAX(MyFmax(1),Fval)
+# endif
+                  ptr2d(i,j)=Fval
+                END DO
+              END DO
+!
+!  Depth-integrated (barotropic) currents (m/s) at interior RHO-points
+!  (East/North direction).
+!
+            CASE ('Ubar', 'Vbar')
+              IF (FoundError(assign_string(fldname,                     &
+     &                                     ExportNameList(ifld)),       &
+     &            NoError, __LINE__, MyFile)) THEN
+                rc=ESMF_RC_NOT_FOUND
+                RETURN
+              END IF
+!
+              IF (get_barotropic) THEN
+                get_barotropic=.FALSE.
+                IF (.not.allocated(Ubar)) THEN
+                  allocate ( Ubar(LBi:UBi,LBj:UBj) )
+                  Ubar=MISSING_dp
+                END IF
+                IF (.not.allocated(Vbar)) THEN
+                  allocate ( Vbar(LBi:UBi,LBj:UBj) )
+                  Vbar=MISSING_dp
+                END IF
+                CALL ROMS_Rotate (ng, tile, grid2geo_rho,               &
+     &                            LBi, UBi, LBj, UBj,                   &
+     &                            OCEAN(ng)%ubar(:,:,knew(ng)),         &
+     &                            OCEAN(ng)%vbar(:,:,knew(ng)),         &
+     &                            Ubar, Vbar)
+              END IF
+!
+              IF (fldname.eq.'Ubar') THEN
+                DO j=Jstr,Jend
+                  DO i=Istr,Iend
+                    Fval=Ubar(i,j)
+                    MyFmin(1)=MIN(MyFmin(1),Fval)
+                    MyFmax(1)=MAX(MyFmax(1),Fval)
+                    ptr2d(i,j)=Fval
+                  END DO
+                END DO
+                deallocate (Ubar)
+              ELSE
+                DO j=Jstr,Jend
+                  DO i=Istr,Iend
+                    Fval=Vbar(i,j)
+                    MyFmin(1)=MIN(MyFmin(1),Fval)
+                    MyFmax(1)=MAX(MyFmax(1),Fval)
+                    ptr2d(i,j)=Fval
+                  END DO
+                END DO
+                deallocate (Vbar)
+              END IF
+!
+!  Surface currents (m/s) at interior RHO-points (East/North direction).
+!
+            CASE ('Usur', 'Vsur')
+              IF (FoundError(assign_string(fldname,                     &
+     &                                     ExportNameList(ifld)),       &
+     &            NoError, __LINE__, MyFile)) THEN
+                rc=ESMF_RC_NOT_FOUND
+                RETURN
+              END IF
+!
+              IF (get_SurfaceCurrent) THEN
+                get_SurfaceCurrent=.FALSE.
+                IF (.not.allocated(Ubar)) THEN
+                  allocate ( Usur(LBi:UBi,LBj:UBj) )
+                  Usur=MISSING_dp
+                END IF
+                IF (.not.allocated(Vbar)) THEN
+                  allocate ( Vsur(LBi:UBi,LBj:UBj) )
+                  Vsur=MISSING_dp
+                END IF
+                CALL ROMS_Rotate (ng, tile, grid2geo_rho,              &
+     &                            LBi, UBi, LBj, UBj,                  &
+     &                            OCEAN(ng)%u(:,:,N(ng),nstp(ng)),     &
+     &                            OCEAN(ng)%v(:,:,N(ng),nstp(ng)),     &
+     &                            Usur, Vsur)
+              END IF
+!
+              IF (fldname.eq.'Usur') THEN
+                DO j=Jstr,Jend
+                  DO i=Istr,Iend
+                    Fval=Usur(i,j)
+                    MyFmin(1)=MIN(MyFmin(1),Fval)
+                    MyFmax(1)=MAX(MyFmax(1),Fval)
+                    ptr2d(i,j)=Fval
+                  END DO
+                END DO
+                deallocate (Usur)
+              ELSE
+                DO j=Jstr,Jend
+                  DO i=Istr,Iend
+                    Fval=Vsur(i,j)
+                    MyFmin(1)=MIN(MyFmin(1),Fval)
+                    MyFmax(1)=MAX(MyFmax(1),Fval)
+                    ptr2d(i,j)=Fval
+                  END DO
+                END DO
+                deallocate (Vsur)
+              END IF
+!
+!  Bathymetry (m). It can be time dependent due sediment morphology.
+!
+            CASE ('bath')
+              MyFmin(1)=1.0_dp
+              MyFmax(1)=0.0_dp
+              DO j=JstrR,JendR
+                DO i=IstrR,IendR
+                  Fval=GRID(ng)%h(i,j)
+                  MyFmin(1)=MIN(MyFmin(1),Fval)
+                  MyFmax(1)=MAX(MyFmax(1),Fval)
                   ptr2d(i,j)=Fval
                 END DO
               END DO
@@ -4409,9 +4851,9 @@
       IF (ESM_track) THEN
         WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_Export',             &
      &                          ', PET', PETrank
-        CALL my_flush (trac)
+        FLUSH (trac)
       END IF
-      CALL my_flush (cplout)
+      FLUSH (cplout)
 !
   10  FORMAT (/,3x,' ROMS_Export - unable to find option to export: ',  &
      &        a,/,18x,'check ''Export(roms)'' in input script: ',a)
@@ -4424,6 +4866,231 @@
 
       RETURN
       END SUBROUTINE ROMS_Export
+!
+      SUBROUTINE ROMS_Rotate (ng, tile, Lrotate,                        &
+     &                        LBi, UBi, LBj, UBj,                       &
+     &                        Uinp, Vinp,                               &
+     &                        Uout, Vout)
+!
+!=======================================================================
+!                                                                      !
+!  It rotates exchanged vector components from computational grid to   !
+!  geographical EAST and NORTH directions or vice versa acccording to  !
+!  Lrotate flag:                                                       !
+!                                                                      !
+!    Lrotate =  geo2grid_rho       RHO-points rotation                 !
+!    Lrotate =  grid2geo_rho       Exporting interior RHO-points       !
+!    Lrotate =  geo2grid           U- and V-points staggered rotation  !
+!                                                                      !
+!=======================================================================
+!
+!  Imported variable declarations.
+!
+      integer, intent(in)  :: ng, tile, Lrotate
+      integer, intent(in)  :: LBi, UBi, LBj, UBj
+!
+      real (dp), intent(in)  :: Uinp(LBi:UBi,LBj:UBj)
+      real (dp), intent(in)  :: Vinp(LBi:UBi,LBj:UBj)
+      real (r8), intent(out) :: Uout(LBi:UBi,LBj:UBj)
+      real (r8), intent(out) :: Vout(LBi:UBi,LBj:UBj)
+!
+!  Local variable declarations.
+!
+      integer :: i, j
+      integer :: IstrR, IendR, JstrR, JendR
+      integer :: Istr, Iend, Jstr, Jend
+!
+      real :: Urho, Vrho
+!
+      real (r8) :: Urot(LBi:UBi,LBj:UBj)
+      real (r8) :: Vrot(LBi:UBi,LBj:UBj)
+!
+!-----------------------------------------------------------------------
+!  Initialize.
+!-----------------------------------------------------------------------
+!
+      IF (ESM_track) THEN
+        WRITE (trac,'(a,a,i0)') '==> Entering ROMS_Rotate',             &
+     &                          ', PET', PETrank
+        FLUSH (trac)
+      END IF
+!
+!  Set horizontal tile bounds.
+!
+      IstrR=BOUNDS(ng)%IstrR(tile)   ! Full range I-starting (RHO)
+      IendR=BOUNDS(ng)%IendR(tile)   ! Full range I-ending   (RHO)
+      JstrR=BOUNDS(ng)%JstrR(tile)   ! Full range J-starting (RHO)
+      JendR=BOUNDS(ng)%JendR(tile)   ! Full range J-ending   (RHO)
+!
+      Istr=BOUNDS(ng)%Istr(tile)     ! Full range I-starting (PSI, U)
+      Iend=BOUNDS(ng)%Iend(tile)     ! Full range I-ending   (PSI)
+      Jstr=BOUNDS(ng)%Jstr(tile)     ! Full range J-starting (PSI, V)
+      Jend=BOUNDS(ng)%Jend(tile)     ! Full range J-ending   (PSI)
+
+# ifdef CURVGRID
+!
+!-----------------------------------------------------------------------
+!  Rotate from geographical (EAST, NORTH) to computational grid
+!  directions (ROMS import case).
+!-----------------------------------------------------------------------
+!
+      IF ((Lrotate.eq.geo2grid).or.(lrotate.eq.geo2grid_rho)) THEN
+        DO j=JstrR,JendR
+          DO i=IstrR,IendR
+            Urot(i,j)=Uinp(i,j)*GRID(ng)%CosAngler(i,j)+                &
+     &                Vinp(i,j)*GRID(ng)%SinAngler(i,j)
+            Vrot(i,j)=Vinp(i,j)*GRID(ng)%CosAngler(i,j)-                &
+     &                Uinp(i,j)*GRID(ng)%SinAngler(i,j)
+          END DO
+        END DO
+!
+!  There is an option to import the rotated vector to staggered U- and
+!  V-locations (arithmetic avererage) or import vector at its native
+!  cell center (RHO-points).
+!
+        IF (Lrotate.eq.geo2grid_rho) THEN             ! RHO-points
+          DO j=JstrR,JendR
+            DO i=IstrR,IendR
+              Uout(i,j)=Urot(i,j)
+              Vout(i,j)=Vrot(i,j)
+            END DO
+          END DO
+!
+          IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+            CALL exchange_r2d_tile (ng, tile,                           &
+     &                              LBi, UBi, LBj, UBj,                 &
+     &                              Uout)
+            CALL exchange_r2d_tile (ng, tile,                           &
+     &                              LBi, UBi, LBj, UBj,                 &
+     &                              Vout)
+          END IF
+
+        ELSE IF (Lrotate.eq.geo2grid) THEN            ! U- and V-points
+          DO j=JstrR,JendR
+            DO i=Istr,IendR
+              Uout(i,j)=0.5_r8*(Urot(i-1,j)+Urot(i,j))
+            END DO
+          END DO
+          DO j=Jstr,JendR
+            DO i=IstrR,IendR
+              Vout(i,j)=0.5_r8*(Vrot(i,j-1)+Vrot(i,j))
+            END DO
+          END DO
+
+          IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+            CALL exchange_u2d_tile (ng, tile,                           &
+     &                              LBi, UBi, LBj, UBj,                 &
+     &                              Uout)
+            CALL exchange_v2d_tile (ng, tile,                           &
+     &                              LBi, UBi, LBj, UBj,                 &
+     &                              Vout)
+          END IF
+        END IF
+!
+!-----------------------------------------------------------------------
+!  Rotate from computational grid to geographical (EAST, NORTH)
+!  directions (ROMS Export case: vector at RHO-points).
+!-----------------------------------------------------------------------
+!
+      ELSE IF (Lrotate.eq.grid2geo_rho) THEN
+        Uout=0.0_r8
+        Vout=0.0_r8
+        DO j=Jstr,Jend
+          DO i=Istr,Iend
+            Urho=0.5_r8*(Uinp(i,j)+Uinp(i+1,j))
+            Vrho=0.5_r8*(Vinp(i,j)+Vinp(i,j+1))
+            Uout(i,j)=Urho*GRID(ng)%CosAngler(i,j)-                     &
+     &                Vrho*GRID(ng)%SinAngler(i,j)
+            Vout(i,j)=Vrho*GRID(ng)%CosAngler(i,j)+                     &
+     &                Urho*GRID(ng)%SinAngler(i,j)
+#  ifdef MASKING
+            Uout(i,j)=Uout(i,j)*GRID(ng)%rmask(i,j)
+            Vout(i,j)=Vout(i,j)*GRID(ng)%rmask(i,j)
+#  endif
+          END DO
+        END DO
+!
+        CALL bc_r2d_tile (ng, tile,                                     &
+     &                    LBi, UBi, LBj, UBj,                           &
+     &                    Uout)
+        CALL bc_r2d_tile (ng, tile,                                     &
+     &                    LBi, UBi, LBj, UBj,                           &
+     &                    Vout)
+!
+        IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+          CALL exchange_r2d_tile (ng, tile,                             &
+     &                            LBi, UBi, LBj, UBj,                   &
+     &                            Uout)
+          CALL exchange_r2d_tile (ng, tile,                             &
+     &                            LBi, UBi, LBj, UBj,                   &
+     &                            Vout)
+        END IF
+      END IF
+# else
+!
+!-----------------------------------------------------------------------
+!  Otherwise, load unrotated components to staggered location. ROMS grid
+!  is not curvilinear (ROMS import case). It is very unlikely to have
+!  realistic applications that are not curvilinear and rotated).
+!-----------------------------------------------------------------------
+!
+      IF (Lrotate.eq.geo2grid_rho) THEN               ! RHO-points
+        DO j=JstrR,JendR
+          DO i=IstrR,IendR
+            Uout(i,j)=Uinp(i,j)
+            Vout(i,j)=Vinp(i,j)
+          END DO
+        END DO
+!
+        IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+          CALL exchange_r2d_tile (ng, tile,                             &
+     &                            LBi, UBi, LBj, UBj,                   &
+     &                            Uout)
+          CALL exchange_r2d_tile (ng, tile,                             &
+     &                            LBi, UBi, LBj, UBj,                   &
+     &                            Vout)
+        END IF
+
+      ELSE IF (Lrotate.eq.geo2grid) THEN              ! U- and V-points
+        DO j=JstrR,JendR
+          DO i=Istr,IendR
+            Uout(i,j)=0.5_r8*(Uinp(i-1,j)+Uinp(i,j))
+          END DO
+        END DO
+        DO j=Jstr,JendR
+          DO i=IstrR,IendR
+            Vout(i,j)=0.5_r8*(Vinp(i,j-1)+Vinp(i,j))
+          END DO
+        END DO
+!
+        IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+          CALL exchange_u2d_tile (ng, tile,                             &
+     &                            LBi, UBi, LBj, UBj,                   &
+     &                            Uout)
+          CALL exchange_v2d_tile (ng, tile,                             &
+     &                            LBi, UBi, LBj, UBj,                   &
+     &                            Vout)
+        END IF
+      END IF
+# endif
+!
+!-----------------------------------------------------------------------
+!  Distributed-memory tile (halo) exchange.
+!-----------------------------------------------------------------------
+!
+      CALL mp_exchange2d (ng, tile, iNLM, 2,                            &
+     &                    LBi, UBi, LBj, UBj,                           &
+     &                    NghostPoints,                                 &
+     &                    EWperiodic(ng), NSperiodic(ng),               &
+     &                    Uout, Vout)
+!
+      IF (ESM_track) THEN
+        WRITE (trac,'(a,a,i0)') '<== Exiting  ROMS_Rotate',             &
+     &                          ', PET', PETrank
+        FLUSH (trac)
+      END IF
+!
+      END SUBROUTINE ROMS_Rotate
 !
 #endif
       END MODULE esmf_roms_mod
